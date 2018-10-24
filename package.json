@@ -1,0 +1,13 @@
+{
+  "name": "guide_to_market",
+  "version": "1.0.0",
+  "description": "gude_to_market with express.",
+  "main": "server.js",
+  "alexa": {
+    "applicationId": "amzn1.ask.skill.d928634f-f6c9-40c9-9b8c-2e14ccd8f5e2"
+  },
+  "dependencies": {
+    "ask-sdk": "^2.1.0",
+    "express": "^4.16.4"
+  }
+}

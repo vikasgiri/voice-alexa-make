@@ -1,0 +1,8 @@
+---
+applications:
+- name: alexa-ask
+  instances: 1
+  random-route: true
+  memory: 256M
+  command: node server.js
+  host: alexa-ask
