@@ -4,10 +4,11 @@
   "description": "gude_to_market with express.",
   "main": "server.js",
   "alexa": {
-    "applicationId": "amzn1.ask.skill.d928634f-f6c9-40c9-9b8c-2e14ccd8f5e2"
+    "applicationId": "amzn1.ask.skill.047a0c51-44a6-423a-9272-a324b6af372c"
   },
   "dependencies": {
     "ask-sdk": "^2.1.0",
-    "express": "^4.16.4"
+    "express": "^4.16.4",
+    "ssml-builder": "^0.4.3"
   }
 }

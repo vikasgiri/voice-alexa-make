@@ -10,21 +10,23 @@ app.use(bodyParser.json());
 app.use(router);
 
 let helloSkill;
-router.post('/voice/alexa/guidetomarket', function(req, res) {
-  // console.log("in guidetomarket");
+router.post('/voice/alexa/marketinsights', function(req, res) {
+  console.log("in marketinsights");
   // console.log("---------------guidetomarket-------------------------");
   // console.log(req);
   // console.log("---------------guidetomarket-------------------------");
   if (!helloSkill) {
 
     helloSkill = Alexa.SkillBuilders.custom()
-      .withSkillId('amzn1.ask.skill.d928634f-f6c9-40c9-9b8c-2e14ccd8f5e2')
       .addRequestHandlers(
         helper.LaunchRequestHandler,
-        helper.HelloWorldIntentHandler
-      ).addErrorHandlers(helloAppHandler)
+        helper.HelloWorldIntentHandler,
+        helper.AboutDrKellyIntentHandler
+      ).addErrorHandlers(helper.ErrorHandler)
       .create();
   }
+
+        // .withSkillId('amzn1.ask.skill.d928634f-f6c9-40c9-9b8c-2e14ccd8f5e2')
 
   helloSkill.invoke(req.body)
     .then(function(responseBody) {
