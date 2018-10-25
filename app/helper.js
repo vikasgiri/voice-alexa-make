@@ -107,14 +107,14 @@ const LaunchRequestHandler = {
   },
   handle(handlerInput) {
 
-    const attributes = handlerInput.attributesManager.getSessionAttributes();
-    console.log('-----------------------');
-    console.log(attributes);
-    console.log('-----------------------');
+    // const attributes = handlerInput.attributesManager.getSessionAttributes();
+    // console.log('-----------------------');
+    // console.log(attributes);
+    // console.log('-----------------------');
 
-    attributes.lastIntent = "LaunchRequest";
-    attributes.currentSession = 0;
-    handlerInput.attributesManager.setSessionAttributes(attributes);
+    // attributes.lastIntent = "LaunchRequest";
+    // attributes.currentSession = 0;
+    // handlerInput.attributesManager.setSessionAttributes(attributes);
 
     const USER_TYPE = 'newUser';
     console.log('from launch');
@@ -237,11 +237,11 @@ const PlayClipForIntentHandler = {
     var commentaryId = 4
     console.log('in PlayClipForIntentHandler');
 
-    console.log(JSON.stringify(handlerInput.requestEnvelope.request.intent.slots.commentaryNumber));
-    console.log(JSON.stringify(handlerInput.requestEnvelope.request.intent.slots.commentaryNumber.name));
-    console.log(JSON.stringify(handlerInput.requestEnvelope.request.intent.slots.commentaryNumber.value));
-    //if slot value
-    if(handlerInput.requestEnvelope.request.intent.slots.commentaryNumber.value 
+    // console.log(JSON.stringify(handlerInput.requestEnvelope.request.intent.slots.commentaryNumber));
+    // console.log(JSON.stringify(handlerInput.requestEnvelope.request.intent.slots.commentaryNumber.name));
+    // console.log(JSON.stringify(handlerInput.requestEnvelope.request.intent.slots.commentaryNumber.value));
+    // //if slot value
+    if(handlerInput.requestEnvelope.request.intent.slots.commentaryNumber && handlerInput.requestEnvelope.request.intent.slots.commentaryNumber.value 
       && handlerInput.requestEnvelope.request.intent.slots.commentaryNumber.value != '' ) {
       
         console.log('slot value for commentary : ');
@@ -310,6 +310,53 @@ const CommentaryIntentHandler = {
   }
 };
 
+const NextMessageIntentHandler = {
+  canHandle(handlerInput) {
+    return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+      && handlerInput.requestEnvelope.request.intent.name === 'NextMessageIntent';
+  },
+  handle(handlerInput) {
+    console.log('in NextMessageIntentHandler');
+
+    const attributes = handlerInput.attributesManager.getSessionAttributes();
+    
+    if(attributes.commentaryObj) {
+      const curCommentaryNum = attributes.commentaryObj.commentary || 0;
+      const nextCommentaryNum =  curCommentaryNum + 1;
+
+      var commentaryObjNew = {
+        "commentaryError": 0,
+        "commentary": nextCommentaryNum,
+        "commentaryNumber": nextCommentaryNum
+      }
+
+      attributes.commentaryObj
+    }
+    
+    console.log('--------------------------------------');
+    console.log(attributes)
+    console.log('--------------------------------------');
+    //if(attributes.) 
+
+    return PlayClipForIntentHandler.handle(handlerInput);
+  }
+};
+
+// 'NextMessageIntent': function() {
+//   const session = this.getSessionAttributes();
+//   const curCommentaryNum = session.commentary || 0;
+//   const nextCommentaryNum =  curCommentaryNum + 1;
+
+//   if (commentariesById[nextCommentaryNum]) {
+//     this.toIntent('PlayCommentary', nextCommentaryNum);
+//   } else {
+//     const SPEECH = this.speechBuilder()
+//       .addAudio(_.sample(commentary.last.prompt), commentary.last.altText)
+//     ;
+//     this.tell(SPEECH);
+//   }
+//   },
+
 const NotesOnTheWeekAheadIntentHandler = {
   canHandle(handlerInput) {
     return handlerInput.requestEnvelope.request.type === 'IntentRequest'
@@ -317,11 +364,6 @@ const NotesOnTheWeekAheadIntentHandler = {
   },
   handle(handlerInput) {
     console.log('in NotesOnTheWeekAheadIntentHandler');
-
-    const attributes = handlerInput.attributesManager.getSessionAttributes();
-    console.log('-----------notes------------');
-    console.log(attributes);
-    console.log('-----------notes------------');
 
     var notesSpeech = new Speech()
     .audio(lodash.sample(notes.intro.preprompt))
@@ -412,5 +454,6 @@ module.exports = {
     SessionEndedRequestHandler,
     ErrorHandler,
     NotesOnTheWeekAheadIntentHandler,
-    YesIntentHandler
+    YesIntentHandler,
+    NextMessageIntentHandler
 }

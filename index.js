@@ -34,7 +34,8 @@ router.post('/voice/alexa/marketinsights', function(req, res) {
         helper.CommentaryIntentHandler,
         helper.SessionEndedRequestHandler,
         helper.NotesOnTheWeekAheadIntentHandler,
-        helper.YesIntentHandler
+        helper.YesIntentHandler,
+        helper.NextMessageIntentHandler
       ).addErrorHandlers(helper.ErrorHandler)
       .create();
   }

@@ -13,14 +13,22 @@ module.exports = {
         const selectedCommentary = commentaryMap.commentariesById[selectedNumber];
 
         //create the object to be stored in session
-        // var commentaryObj = {
-        //     "commentaryError": 0,
-        //     "commentary": selectedNumber,
-        //     "commentaryNumber": selectedNumber
-        // }
+        var commentaryObj = {
+            "commentaryError": 0,
+            "commentary": selectedNumber,
+            "commentaryNumber": selectedNumber
+        }
 
         //store the object in session
         // conv.data.commentaryObj = commentaryObj;
+
+        const attributes = handlerInput.attributesManager.getSessionAttributes();
+        console.log('-----------------------');
+        console.log(attributes);
+        console.log('-----------------------');
+
+        attributes.commentaryObj = commentaryObj;
+        handlerInput.attributesManager.setSessionAttributes(attributes);
 
         console.log('selected one object : ' + JSON.stringify(selectedCommentary));
 
