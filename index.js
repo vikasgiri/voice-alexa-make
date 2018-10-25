@@ -22,8 +22,10 @@ router.post('/voice/alexa/marketinsights', function(req, res) {
     helloSkill = Alexa.SkillBuilders.custom()
       .addRequestHandlers(
         helper.LaunchRequestHandler,
-        helper.HelloWorldIntentHandler,
-        helper.AboutDrKellyIntentHandler
+        helper.AboutDrKellyIntentHandler,
+        helper.QuoteIntentHandler,
+        helper.WhatIsThisIntentHandler,
+        helper.DisclosuresIntentHandler
       ).addErrorHandlers(helper.ErrorHandler)
       .create();
   }
@@ -41,7 +43,7 @@ router.post('/voice/alexa/marketinsights', function(req, res) {
 });
 
 
-app.listen(8080, function () {
+app.listen(3000, function () {
   console.log('Development endpoint listening on port 8080!');
 });
 
