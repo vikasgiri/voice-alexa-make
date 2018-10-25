@@ -1,11 +1,23 @@
 var Speech = require('ssml-builder');
 const lodash = require('lodash');
 // const util = require('./util');
+const intentHelper = require('./intentHelper');
 const eastereggs = require('./responses/easterEggs');
 const welcome = require('./responses/welcome');
 const disclosures = require('./responses/disclosures');
 const exceptions = require('./responses/exceptions');
 const commentary = require('./responses/commentary');
+const notes = require("./responses/notes.js");
+
+
+var podcastURL = "https://am.jpmorgan.com/blob-gim/1383559896296/83456/WeeklyNotes.mp3";
+
+var stream = {
+  "url": podcastURL,
+  "token": "0",
+  "expectedPreviousToken": null,
+  "offsetInMilliseconds": 0
+};
 
 const AboutDrKellyIntentHandler = {
   canHandle(handlerInput) {
@@ -34,6 +46,7 @@ const AboutDrKellyIntentHandler = {
     return handlerInput.responseBuilder
       .speak(speechOutput)
       .reprompt(repromptSpeechOutput)
+      .withShouldEndSession(false)
       .getResponse();
   }
 };
@@ -58,6 +71,7 @@ const QuoteIntentHandler = {
     return handlerInput.responseBuilder
       .speak(speechOutput)
       .reprompt(repromptSpeechOutput)
+      .withShouldEndSession(false)
       .getResponse();
   }
 };
@@ -82,6 +96,7 @@ const WhatIsThisIntentHandler = {
     return handlerInput.responseBuilder
       .speak(speechOutput)
       .reprompt(repromptSpeechOutput)
+      .withShouldEndSession(false)
       .getResponse();
   }
 };
@@ -91,6 +106,16 @@ const LaunchRequestHandler = {
     return handlerInput.requestEnvelope.request.type === 'LaunchRequest';
   },
   handle(handlerInput) {
+
+    const attributes = handlerInput.attributesManager.getSessionAttributes();
+    console.log('-----------------------');
+    console.log(attributes);
+    console.log('-----------------------');
+
+    attributes.lastIntent = "LaunchRequest";
+    attributes.currentSession = 0;
+    handlerInput.attributesManager.setSessionAttributes(attributes);
+
     const USER_TYPE = 'newUser';
     console.log('from launch');
 
@@ -101,9 +126,11 @@ const LaunchRequestHandler = {
     speech.pause('500ms');
     var speechOutput = speech.ssml(true);
 
+    // .speak(speechOutput)
     return handlerInput.responseBuilder
-      .speak(speechOutput)
+      .speak('Hello')
       .withStandardCard(CARD.title, CARD.body, 'https://image.shutterstock.com/image-photo/financial-business-color-charts-450w-1039907653.jpg', 'https://image.shutterstock.com/image-photo/financial-business-color-charts-450w-1039907653.jpg')
+      .withShouldEndSession(false)
       .getResponse();
   } 
 };
@@ -125,6 +152,7 @@ const DisclosuresIntentHandler = {
     return handlerInput.responseBuilder
       .speak(speechOutput)
       .withStandardCard(CARD.title, CARD.body, 'https://image.shutterstock.com/image-photo/financial-business-color-charts-450w-1039907653.jpg', 'https://image.shutterstock.com/image-photo/financial-business-color-charts-450w-1039907653.jpg')
+      .withShouldEndSession(false)
       .getResponse();
   } 
 };
@@ -158,6 +186,7 @@ const StopIntentHandler = {
    
     return handlerInput.responseBuilder
       .speak(speechOutput)
+      .withShouldEndSession(false)
       .getResponse();
   }
 };
@@ -187,6 +216,152 @@ const CancelIntentHandler = {
   }
 };
 
+const PlayClipForIntentHandler = {
+  //handle/ implement this.alexaSkill().audioPlayer().stop();
+  canHandle(handlerInput) {
+
+    // return new Promise((resolve, reject) => {
+    //   handlerInput.attributesManager.getPersistentAttributes()
+    //     .then((attributes) => {
+    //       resolve(attributes.foo === 'bar');
+    //     })
+    //     .catch((error) => {
+    //       reject(error);
+    //     })
+    // });
+
+    return handlerInput.requestEnvelope.request.type === 'IntentRequest' && handlerInput.requestEnvelope.request.intent.name === 'PlayClipForIntent';
+  },
+  handle(handlerInput) {
+    //in case of play clip for 
+    var commentaryId = 4
+    console.log('in PlayClipForIntentHandler');
+
+    console.log(JSON.stringify(handlerInput.requestEnvelope.request.intent.slots.commentaryNumber));
+    console.log(JSON.stringify(handlerInput.requestEnvelope.request.intent.slots.commentaryNumber.name));
+    console.log(JSON.stringify(handlerInput.requestEnvelope.request.intent.slots.commentaryNumber.value));
+    //if slot value
+    if(handlerInput.requestEnvelope.request.intent.slots.commentaryNumber.value 
+      && handlerInput.requestEnvelope.request.intent.slots.commentaryNumber.value != '' ) {
+      
+        console.log('slot value for commentary : ');
+        console.log(handlerInput.requestEnvelope.request.intent.slots.commentaryNumber.value)
+        commentaryId = handlerInput.requestEnvelope.request.intent.slots.commentaryNumber.value;
+    }
+
+    // var commentaryObj = {
+    //   "commentaryError": 0,
+    //   "commentary": commentaryId,
+    //   "commentaryNumber": commentaryId
+    // }
+    
+    // return new Promise((resolve, reject) => {
+    //   handlerInput.attributesManager.getPersistentAttributes()
+    //     .then((attributes) => {
+    //       attributes.foo = 'bar';
+    //       handlerInput.attributesManager.setPersistentAttributes(attributes);
+
+    //       return handlerInput.attributesManager.savePersistentAttributes();
+    //     })
+    //     .then(() => {
+    //       resolve(handlerInput.responseBuilder
+    //         .speak('Persistent attributes updated!')
+    //         .getResponse());
+    //     })
+    //     .catch((error) => {
+    //       reject(error);
+    //     });
+    // });
+
+    // return new Promise((resolve, reject) => {
+    //   handlerInput.attributesManager.setPersistentAttributes
+    //   getPersistentAttributes()
+    //       .then((attributes) => {
+              
+    //           console.log('then');
+    //           attributes.commentaryObj = commentaryObj;
+    //           handlerInput.attributesManager.setPersistentAttributes(attributes);
+      
+    //           handlerInput.attributesManager.savePersistentAttributes();
+    //       })
+    //       .then(() => {
+    //           console.log('Session updated successfully!!!');
+    //           resolve(intentHelper.createCommentaryOnId(handlerInput, commentaryId));
+    //       })
+    //       .catch((error) => {
+    //           console.log('in error')
+    //           reject(error);
+    //       });
+    // });
+
+    return intentHelper.createCommentaryOnId(handlerInput, commentaryId);
+  }
+};
+
+
+const CommentaryIntentHandler = {
+  canHandle(handlerInput) {
+    return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+      && handlerInput.requestEnvelope.request.intent.name === 'CommentaryIntent';
+  },
+  handle(handlerInput) {
+    console.log('in CommentaryIntentHandler');
+    return PlayClipForIntentHandler.handle(handlerInput);
+  }
+};
+
+const NotesOnTheWeekAheadIntentHandler = {
+  canHandle(handlerInput) {
+    return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+      && handlerInput.requestEnvelope.request.intent.name === 'NotesOnTheWeekAheadIntent';
+  },
+  handle(handlerInput) {
+    console.log('in NotesOnTheWeekAheadIntentHandler');
+
+    const attributes = handlerInput.attributesManager.getSessionAttributes();
+    console.log('-----------notes------------');
+    console.log(attributes);
+    console.log('-----------notes------------');
+
+    var notesSpeech = new Speech()
+    .audio(lodash.sample(notes.intro.preprompt))
+    .audio(notes.preview.prompt)
+    .audio(notes.preview.reprompt);
+     var notesSpeechOutput = notesSpeech.ssml(true);
+    
+    var repromptSpeech = new Speech();
+    repromptSpeech.audio(notes.preview.reprompt);
+    var repromptSpeechOutput = repromptSpeech.ssml(true);
+
+    return handlerInput.responseBuilder
+      .speak(notesSpeechOutput)
+      .reprompt(repromptSpeechOutput)
+      .withShouldEndSession(false)
+      .getResponse();
+  }
+};
+
+const YesIntentHandler = {
+  canHandle(handlerInput) {
+    console.log(handlerInput.requestEnvelope);
+    return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+      && handlerInput.requestEnvelope.request.intent.name === 'AMAZON.YesIntent';
+  },
+  handle(handlerInput) {
+    console.log('in YesIntentHandler');
+
+    var repromptSpeech = new Speech();
+    repromptSpeech.audio(notes.preview.reprompt);
+    // var repromptSpeechOutput = repromptSpeech.ssml(true);
+
+    var token2 = handlerInput.requestEnvelope.context.System.apiAccessToken;
+
+    return handlerInput.responseBuilder
+      .addAudioPlayerPlayDirective('REPLACE_ALL', podcastURL, '', 0,token2)
+      .getResponse();
+  }
+};
+
 const SessionEndedRequestHandler = {
   canHandle(handlerInput) {
     console.log('in session');
@@ -206,6 +381,7 @@ const SessionEndedRequestHandler = {
   }
 };
 
+
 const ErrorHandler = {
   canHandle() {
     return true;
@@ -216,6 +392,7 @@ const ErrorHandler = {
     return handlerInput.responseBuilder
       .speak('Sorry, I can\'t understand the command. Please say again.')
       .reprompt('Sorry, I can\'t understand the command. Please say again.')
+      .withShouldEndSession(false)
       .getResponse();
   },
 };
@@ -230,6 +407,10 @@ module.exports = {
     KeepReadingIntentHandler,
     StopIntentHandler,
     CancelIntentHandler,
+    PlayClipForIntentHandler,
+    CommentaryIntentHandler,
     SessionEndedRequestHandler,
-    ErrorHandler
+    ErrorHandler,
+    NotesOnTheWeekAheadIntentHandler,
+    YesIntentHandler
 }

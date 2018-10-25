@@ -30,7 +30,11 @@ router.post('/voice/alexa/marketinsights', function(req, res) {
         helper.KeepReadingIntentHandler,
         helper.StopIntentHandler,
         helper.CancelIntentHandler,
-        helper.SessionEndedRequestHandler
+        helper.PlayClipForIntentHandler,
+        helper.CommentaryIntentHandler,
+        helper.SessionEndedRequestHandler,
+        helper.NotesOnTheWeekAheadIntentHandler,
+        helper.YesIntentHandler
       ).addErrorHandlers(helper.ErrorHandler)
       .create();
   }
@@ -39,6 +43,8 @@ router.post('/voice/alexa/marketinsights', function(req, res) {
 
   helloSkill.invoke(req.body)
     .then(function(responseBody) {
+      console.log(responseBody);
+
       res.json(responseBody);
     })
     .catch(function(error) {
@@ -47,7 +53,7 @@ router.post('/voice/alexa/marketinsights', function(req, res) {
     });
 });
 
-app.listen(3000, function () {
+app.listen(8080, function () {
   console.log('Development endpoint listening on port 8080!');
 });
 
