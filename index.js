@@ -9,6 +9,8 @@ var router = express.Router();
 app.use(bodyParser.json());
 app.use(router);
 
+console.log('testing');
+
 let helloSkill;
 router.post('/voice/alexa/marketinsights', function(req, res) {
   console.log("in marketinsights");
