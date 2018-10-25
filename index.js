@@ -25,7 +25,12 @@ router.post('/voice/alexa/marketinsights', function(req, res) {
         helper.AboutDrKellyIntentHandler,
         helper.QuoteIntentHandler,
         helper.WhatIsThisIntentHandler,
-        helper.DisclosuresIntentHandler
+        helper.DisclosuresIntentHandler,
+        helper.NoIntentHandler,
+        helper.KeepReadingIntentHandler,
+        helper.StopIntentHandler,
+        helper.CancelIntentHandler,
+        helper.SessionEndedRequestHandler
       ).addErrorHandlers(helper.ErrorHandler)
       .create();
   }
@@ -41,7 +46,6 @@ router.post('/voice/alexa/marketinsights', function(req, res) {
       res.status(500).send('Error during the request');
     });
 });
-
 
 app.listen(3000, function () {
   console.log('Development endpoint listening on port 8080!');

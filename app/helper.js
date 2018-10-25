@@ -4,6 +4,8 @@ const lodash = require('lodash');
 const eastereggs = require('./responses/easterEggs');
 const welcome = require('./responses/welcome');
 const disclosures = require('./responses/disclosures');
+const exceptions = require('./responses/exceptions');
+const commentary = require('./responses/commentary');
 
 const AboutDrKellyIntentHandler = {
   canHandle(handlerInput) {
@@ -127,6 +129,83 @@ const DisclosuresIntentHandler = {
   } 
 };
 
+const NoIntentHandler = {
+  canHandle(handlerInput) {
+    console.log('in no intent');
+    // console.log(handlerInput);
+    return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+      && handlerInput.requestEnvelope.request.intent.name === 'AMAZON.NoIntent';
+  },
+  handle(handlerInput) {
+    console.log('in NoIntentHandler');
+    return SessionEndedRequestHandler.handle(handlerInput);
+  }
+};
+
+const StopIntentHandler = {
+  canHandle(handlerInput) {
+    console.log('in StopIntent');
+    // console.log(handlerInput);
+    return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+      && handlerInput.requestEnvelope.request.intent.name === 'AMAZON.StopIntent';
+  },
+  handle(handlerInput) {
+    console.log('in StopIntentHandler');
+
+    var speech = new Speech();
+    speech.audio(lodash.sample(commentary.stop.prompt));
+    var speechOutput = speech.ssml(true);
+   
+    return handlerInput.responseBuilder
+      .speak(speechOutput)
+      .getResponse();
+  }
+};
+
+const KeepReadingIntentHandler = {
+  canHandle(handlerInput) {
+    console.log('in no intent');
+    return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+      && handlerInput.requestEnvelope.request.intent.name === 'KeepReadingIntent';
+  },
+  handle(handlerInput) {
+    console.log('in KeepReadingIntentHandler');
+    return SessionEndedRequestHandler.handle(handlerInput);
+  }
+};
+
+const CancelIntentHandler = {
+  //handle/ implement this.alexaSkill().audioPlayer().stop();
+  canHandle(handlerInput) {
+    console.log('in CancelIntent');
+    return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+      && handlerInput.requestEnvelope.request.intent.name === 'AMAZON.CancelIntent';
+  },
+  handle(handlerInput) {
+    console.log('in CancelIntentHandler');
+    return SessionEndedRequestHandler.handle(handlerInput);
+  }
+};
+
+const SessionEndedRequestHandler = {
+  canHandle(handlerInput) {
+    console.log('in session');
+    return handlerInput.requestEnvelope.request.type === 'SessionEndedRequest';
+  },
+  handle(handlerInput) {
+    console.log('in SessionEndedRequestHandler');
+
+    var speech = new Speech();
+    speech.audio(lodash.sample(exceptions.goodbye.prompt));
+    speech.pause('500ms')
+    var speechOutput = speech.ssml(true);
+   
+    return handlerInput.responseBuilder
+      .speak(speechOutput)
+      .getResponse();
+  }
+};
+
 const ErrorHandler = {
   canHandle() {
     return true;
@@ -147,5 +226,10 @@ module.exports = {
     QuoteIntentHandler,
     WhatIsThisIntentHandler,
     DisclosuresIntentHandler,
+    NoIntentHandler,
+    KeepReadingIntentHandler,
+    StopIntentHandler,
+    CancelIntentHandler,
+    SessionEndedRequestHandler,
     ErrorHandler
 }
