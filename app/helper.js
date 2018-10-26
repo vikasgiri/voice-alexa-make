@@ -30,14 +30,7 @@ const AboutDrKellyIntentHandler = {
     var speech = new Speech();
     speech.audio(eastereggs.aboutDr.prompt);
     speech.pause('500ms')
-    // //add audio
-    // var speechText = util.addAudio("", eastereggs.aboutDr.prompt, eastereggs.aboutDr.altText);
-    // //add break
-    // speechText = util.addBreak(speechText, '500ms');
-    // // const speechText = '<audio src="https://am.jpmorgan.com/blob-gim/1383559896296/83456/WeeklyNotes.mp3" /> ';
-    
-    // var repromptTxt = util.addAudio("", eastereggs.general.prompt, eastereggs.general.altText);
-
+  
     var speechOutput = speech.ssml(true);
     var repromptSpeech = new Speech();
     repromptSpeech.audio(eastereggs.general.prompt);
@@ -220,79 +213,43 @@ const PlayClipForIntentHandler = {
   //handle/ implement this.alexaSkill().audioPlayer().stop();
   canHandle(handlerInput) {
 
-    // return new Promise((resolve, reject) => {
-    //   handlerInput.attributesManager.getPersistentAttributes()
-    //     .then((attributes) => {
-    //       resolve(attributes.foo === 'bar');
-    //     })
-    //     .catch((error) => {
-    //       reject(error);
-    //     })
-    // });
-
-    return handlerInput.requestEnvelope.request.type === 'IntentRequest' && handlerInput.requestEnvelope.request.intent.name === 'PlayClipForIntent';
+    console.log('canhandle')
+    console.log(handlerInput.requestEnvelope.request.intent.name);
+    return handlerInput.requestEnvelope.request.intent.name === 'PlayClipForIntent';
   },
   handle(handlerInput) {
     //in case of play clip for 
     var commentaryId = 4
     console.log('in PlayClipForIntentHandler');
 
-    // console.log(JSON.stringify(handlerInput.requestEnvelope.request.intent.slots.commentaryNumber));
-    // console.log(JSON.stringify(handlerInput.requestEnvelope.request.intent.slots.commentaryNumber.name));
-    // console.log(JSON.stringify(handlerInput.requestEnvelope.request.intent.slots.commentaryNumber.value));
-    // //if slot value
-    if(handlerInput.requestEnvelope.request.intent.slots.commentaryNumber && handlerInput.requestEnvelope.request.intent.slots.commentaryNumber.value 
+    console.log("---------------------in------------------");
+    console.log(handlerInput.requestEnvelope.request.intent)
+    // console.log(handlerInput.requestEnvelope.request.intent.slots)
+    // console.log(handlerInput.requestEnvelope.request.intent.slots.commentaryNumber)
+
+    if(handlerInput.requestEnvelope.request.intent.name === 'NextMessageIntent'
+    || handlerInput.requestEnvelope.request.intent.name === 'AMAZON.NextIntent'
+    || handlerInput.requestEnvelope.request.intent.name === 'AMAZON.RepeatIntent') {
+
+      console.log("in if method")
+      const attributes = handlerInput.attributesManager.getSessionAttributes();
+    
+      // if(attributes.commentaryObj) {
+        console.log(attributes);
+      console.log(attributes.commentaryObj);
+      commentaryId = attributes.commentaryObj.commentary;
+      // }
+    } else if(handlerInput.requestEnvelope.request.intent.slots.commentaryNumber && handlerInput.requestEnvelope.request.intent.slots.commentaryNumber.value 
       && handlerInput.requestEnvelope.request.intent.slots.commentaryNumber.value != '' ) {
       
+        console.log("in else if")
         console.log('slot value for commentary : ');
         console.log(handlerInput.requestEnvelope.request.intent.slots.commentaryNumber.value)
         commentaryId = handlerInput.requestEnvelope.request.intent.slots.commentaryNumber.value;
-    }
+    } 
 
-    // var commentaryObj = {
-    //   "commentaryError": 0,
-    //   "commentary": commentaryId,
-    //   "commentaryNumber": commentaryId
-    // }
-    
-    // return new Promise((resolve, reject) => {
-    //   handlerInput.attributesManager.getPersistentAttributes()
-    //     .then((attributes) => {
-    //       attributes.foo = 'bar';
-    //       handlerInput.attributesManager.setPersistentAttributes(attributes);
-
-    //       return handlerInput.attributesManager.savePersistentAttributes();
-    //     })
-    //     .then(() => {
-    //       resolve(handlerInput.responseBuilder
-    //         .speak('Persistent attributes updated!')
-    //         .getResponse());
-    //     })
-    //     .catch((error) => {
-    //       reject(error);
-    //     });
-    // });
-
-    // return new Promise((resolve, reject) => {
-    //   handlerInput.attributesManager.setPersistentAttributes
-    //   getPersistentAttributes()
-    //       .then((attributes) => {
-              
-    //           console.log('then');
-    //           attributes.commentaryObj = commentaryObj;
-    //           handlerInput.attributesManager.setPersistentAttributes(attributes);
-      
-    //           handlerInput.attributesManager.savePersistentAttributes();
-    //       })
-    //       .then(() => {
-    //           console.log('Session updated successfully!!!');
-    //           resolve(intentHelper.createCommentaryOnId(handlerInput, commentaryId));
-    //       })
-    //       .catch((error) => {
-    //           console.log('in error')
-    //           reject(error);
-    //       });
-    // });
+    console.log('final commentary id decided is : ');
+    console.log(commentaryId);
 
     return intentHelper.createCommentaryOnId(handlerInput, commentaryId);
   }
@@ -310,6 +267,28 @@ const CommentaryIntentHandler = {
   }
 };
 
+const NextIntentHandler = {
+  canHandle(handlerInput) {
+    return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+      && handlerInput.requestEnvelope.request.intent.name === 'AMAZON.NextIntent';
+  },
+  handle(handlerInput) {
+    console.log('in NextIntentHandler');
+    return NextMessageIntentHandler.handle(handlerInput);
+  }
+};
+
+const RepeatIntentHandler = {
+  canHandle(handlerInput) {
+    return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+      && handlerInput.requestEnvelope.request.intent.name === 'AMAZON.RepeatIntent';
+  },
+  handle(handlerInput) {
+    console.log('in RepeatIntentHandler');
+    return NextMessageIntentHandler.handle(handlerInput);
+  }
+};
+
 const NextMessageIntentHandler = {
   canHandle(handlerInput) {
     return handlerInput.requestEnvelope.request.type === 'IntentRequest'
@@ -318,44 +297,75 @@ const NextMessageIntentHandler = {
   handle(handlerInput) {
     console.log('in NextMessageIntentHandler');
 
-    const attributes = handlerInput.attributesManager.getSessionAttributes();
+    var attributes = handlerInput.attributesManager.getSessionAttributes();
     
-    if(attributes.commentaryObj) {
-      const curCommentaryNum = attributes.commentaryObj.commentary || 0;
-      const nextCommentaryNum =  curCommentaryNum + 1;
+    console.log('from next message intent attributes');
+    console.log(attributes);
 
-      var commentaryObjNew = {
-        "commentaryError": 0,
-        "commentary": nextCommentaryNum,
-        "commentaryNumber": nextCommentaryNum
+    if(handlerInput.requestEnvelope.request.intent.name === 'AMAZON.RepeatIntent') {
+
+      if(attributes.commentaryObj) {
+        const curCommentaryNum = attributes.commentaryObj.commentary || 1;
+
+        var commentaryObjNew = {
+          "commentaryError": 0,
+          "commentary": curCommentaryNum,
+          "commentaryNumber": curCommentaryNum
+        }
+
+        attributes.commentaryObj =commentaryObjNew
+        handlerInput.attributesManager.getSessionAttributes(attributes);
+      } else {
+        
+        const curCommentaryNum = 1;
+
+        var commentaryObjNew = {
+          "commentaryError": 0, 
+          "commentary": curCommentaryNum,
+          "commentaryNumber": curCommentaryNum
+        }
+
+        attributes.commentaryObj =commentaryObjNew
+        handlerInput.attributesManager.getSessionAttributes(attributes);
       }
+    } else {
+      if(attributes.commentaryObj) {
+        const curCommentaryNum = attributes.commentaryObj.commentary || 0;
+        const nextCommentaryNum =  curCommentaryNum + 1;
 
-      attributes.commentaryObj
+        var commentaryObjNew = {
+          "commentaryError": 0,
+          "commentary": nextCommentaryNum,
+          "commentaryNumber": nextCommentaryNum
+        }
+
+        attributes.commentaryObj =commentaryObjNew
+        handlerInput.attributesManager.getSessionAttributes(attributes);
+      } else {
+
+        const curCommentaryNum = 1;
+
+        var commentaryObjNew = {
+          "commentaryError": 0, 
+          "commentary": curCommentaryNum,
+          "commentaryNumber": curCommentaryNum
+        }
+
+        attributes.commentaryObj =commentaryObjNew
+        handlerInput.attributesManager.getSessionAttributes(attributes);
+      }
     }
-    
-    console.log('--------------------------------------');
+
+
+    attributes = handlerInput.attributesManager.getSessionAttributes();
+    console.log('------------------next--------------------');
     console.log(attributes)
-    console.log('--------------------------------------');
+    console.log('--------------------next------------------');
     //if(attributes.) 
 
     return PlayClipForIntentHandler.handle(handlerInput);
   }
 };
-
-// 'NextMessageIntent': function() {
-//   const session = this.getSessionAttributes();
-//   const curCommentaryNum = session.commentary || 0;
-//   const nextCommentaryNum =  curCommentaryNum + 1;
-
-//   if (commentariesById[nextCommentaryNum]) {
-//     this.toIntent('PlayCommentary', nextCommentaryNum);
-//   } else {
-//     const SPEECH = this.speechBuilder()
-//       .addAudio(_.sample(commentary.last.prompt), commentary.last.altText)
-//     ;
-//     this.tell(SPEECH);
-//   }
-//   },
 
 const NotesOnTheWeekAheadIntentHandler = {
   canHandle(handlerInput) {
@@ -455,5 +465,7 @@ module.exports = {
     ErrorHandler,
     NotesOnTheWeekAheadIntentHandler,
     YesIntentHandler,
-    NextMessageIntentHandler
+    NextMessageIntentHandler,
+    NextIntentHandler,
+    RepeatIntentHandler
 }
