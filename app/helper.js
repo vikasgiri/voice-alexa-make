@@ -109,7 +109,7 @@ const LaunchRequestHandler = {
     //convert into a method to check whether a user is present and increment visit count
     var userIdVal = handlerInput.requestEnvelope.session.user.userId;
 
-    return new Promise(function(resolve, reject) {
+    // return new Promise(function(resolve, reject) {
       
    
       db.user.findOne({
@@ -132,11 +132,11 @@ const LaunchRequestHandler = {
             .then(function(rowsUpdated) {
               console.log('updated visit');
               console.log(rowsUpdated);
-              resolve();
+              // resolve();
 
             }).catch(err => {
               console.log('error in updating user visit');
-              reject();
+              // reject();
             })
           
 
@@ -148,24 +148,24 @@ const LaunchRequestHandler = {
               visit:1
             }).then(output => {
                 console.log("user record inserted request");
-                resolve();
+                // resolve();
             }).catch(err => {
                 console.log('Error in storing the user id record');
                 console.log(err);
-                reject()
+                // reject()
             }) ;
           }
       }).catch(err => {
         console.log('Error in checking user id');
         console.log(err);
-        reject();
+        // reject();
       });
 
-  });
+  // });
     
   // resolve runs the first function in .then
-  promise.then(
-    result => {
+  // promise.then(
+    // result => {
 
       if(visitVal  > 2) {
         console.log('user visit')
@@ -190,45 +190,45 @@ const LaunchRequestHandler = {
         .withShouldEndSession(false)
         .getResponse();
 
-    }, // shows "done!" after 1 second
-    error => {
-      alert(error)
-      console.log('from launch ' + USER_TYPE);
+    // }, // shows "done!" after 1 second
+    // error => {
+      // alert(error)
+      // console.log('from launch ' + USER_TYPE);
   
-      const CARD = disclosures.card;
+      // const CARD = disclosures.card;
       
-      var speech = new Speech();
-      speech.audio(welcome[USER_TYPE].prompt);
-      speech.pause('500ms');
-      var speechOutput = speech.ssml(true);
+      // var speech = new Speech();
+      // speech.audio(welcome[USER_TYPE].prompt);
+      // speech.pause('500ms');
+      // var speechOutput = speech.ssml(true);
   
-      // .speak(speechOutput)
-      // .speak('Hello')
-      return handlerInput.responseBuilder
-        .speak(speechOutput)
-        .withStandardCard(CARD.title, CARD.body, 'https://image.shutterstock.com/image-photo/financial-business-color-charts-450w-1039907653.jpg', 'https://image.shutterstock.com/image-photo/financial-business-color-charts-450w-1039907653.jpg')
-        .withShouldEndSession(false)
-        .getResponse();
-     } // doesn't run
-  );
+      // // .speak(speechOutput)
+      // // .speak('Hello')
+      // return handlerInput.responseBuilder
+      //   .speak(speechOutput)
+      //   .withStandardCard(CARD.title, CARD.body, 'https://image.shutterstock.com/image-photo/financial-business-color-charts-450w-1039907653.jpg', 'https://image.shutterstock.com/image-photo/financial-business-color-charts-450w-1039907653.jpg')
+      //   .withShouldEndSession(false)
+      //   .getResponse();
+    //  } // doesn't run
+  // );
 
-  promise.catch(alert => {
+  // promise.catch(alert => {
     
-    const CARD = disclosures.card;
+  //   const CARD = disclosures.card;
       
-      var speech = new Speech();
-      speech.audio(welcome[USER_TYPE].prompt);
-      speech.pause('500ms');
-      var speechOutput = speech.ssml(true);
+  //     var speech = new Speech();
+  //     speech.audio(welcome[USER_TYPE].prompt);
+  //     speech.pause('500ms');
+  //     var speechOutput = speech.ssml(true);
   
-      // .speak(speechOutput)
-      // .speak('Hello')
-      return handlerInput.responseBuilder
-        .speak(speechOutput)
-        .withStandardCard(CARD.title, CARD.body, 'https://image.shutterstock.com/image-photo/financial-business-color-charts-450w-1039907653.jpg', 'https://image.shutterstock.com/image-photo/financial-business-color-charts-450w-1039907653.jpg')
-        .withShouldEndSession(false)
-        .getResponse();
-  });
+  //     // .speak(speechOutput)
+  //     // .speak('Hello')
+  //     return handlerInput.responseBuilder
+  //       .speak(speechOutput)
+  //       .withStandardCard(CARD.title, CARD.body, 'https://image.shutterstock.com/image-photo/financial-business-color-charts-450w-1039907653.jpg', 'https://image.shutterstock.com/image-photo/financial-business-color-charts-450w-1039907653.jpg')
+  //       .withShouldEndSession(false)
+  //       .getResponse();
+  // });
     
   } 
 };

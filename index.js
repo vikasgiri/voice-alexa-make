@@ -6,7 +6,7 @@ const express = require('express');
 var bodyParser = require('body-parser');
 var NODE_ENV = process.env.NODE_ENV || 'development';
 var models = require("./app/model");
-var port = process.env.VCAP_APP_PORT || 8080;
+var port = process.env.VCAP_APP_PORT || 3000;
 
 
 //Sync Database
