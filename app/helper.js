@@ -9,6 +9,8 @@ const exceptions = require('./responses/exceptions');
 const commentary = require('./responses/commentary');
 const notes = require("./responses/notes.js");
 
+// const voicedata = require('./model').voicedata;
+const db = require('./model');
 
 var podcastURL = "https://am.jpmorgan.com/blob-gim/1383559896296/83456/WeeklyNotes.mp3";
 
@@ -51,7 +53,6 @@ const QuoteIntentHandler = {
   },
   handle(handlerInput) {
     console.log('in QuoteIntentHandler');
-
     var speech = new Speech();
     speech.audio(lodash.sample(eastereggs.quote.prompt));
     speech.pause('500ms')
@@ -98,33 +99,137 @@ const LaunchRequestHandler = {
   canHandle(handlerInput) {
     return handlerInput.requestEnvelope.request.type === 'LaunchRequest';
   },
-  handle(handlerInput) {
-
-    // const attributes = handlerInput.attributesManager.getSessionAttributes();
-    // console.log('-----------------------');
-    // console.log(attributes);
-    // console.log('-----------------------');
-
-    // attributes.lastIntent = "LaunchRequest";
-    // attributes.currentSession = 0;
-    // handlerInput.attributesManager.setSessionAttributes(attributes);
-
-    const USER_TYPE = 'newUser';
-    console.log('from launch');
-
-    const CARD = disclosures.card;
+  handle(handlerInput) {      
+    console.log(JSON.stringify(handlerInput));
+    const attributes = handlerInput.attributesManager.getSessionAttributes();
     
-    var speech = new Speech();
-    speech.audio(welcome[USER_TYPE].prompt);
-    speech.pause('500ms');
-    var speechOutput = speech.ssml(true);
+    //check whether user is new or registered
+    var USER_TYPE = 'newUser';
+    var visitVal =0;
+    //convert into a method to check whether a user is present and increment visit count
+    var userIdVal = handlerInput.requestEnvelope.session.user.userId;
 
-    // .speak(speechOutput)
-    return handlerInput.responseBuilder
-      .speak('Hello')
-      .withStandardCard(CARD.title, CARD.body, 'https://image.shutterstock.com/image-photo/financial-business-color-charts-450w-1039907653.jpg', 'https://image.shutterstock.com/image-photo/financial-business-color-charts-450w-1039907653.jpg')
-      .withShouldEndSession(false)
-      .getResponse();
+    return new Promise(function(resolve, reject) {
+      
+   
+      db.user.findOne({
+        where: {
+          user_id: userIdVal
+        }})
+        .then(person => {
+          console.log('from then user ::::::')
+          console.log(JSON.stringify(person)) 
+
+          if(person) { 
+            // update
+            console.log('update');
+            // return obj.update(values);
+            visitVal = person.visit + 1;
+            db.user.update(
+              {visit: visitVal},
+              { returning: true, where: {user_id: userIdVal }}
+            )
+            .then(function(rowsUpdated) {
+              console.log('updated visit');
+              console.log(rowsUpdated);
+              resolve();
+
+            }).catch(err => {
+              console.log('error in updating user visit');
+              reject();
+            })
+          
+
+          } else { // insert
+            console.log('insert');
+            visitVal = 0
+            db.user.create({
+              user_id: userIdVal,
+              visit:1
+            }).then(output => {
+                console.log("user record inserted request");
+                resolve();
+            }).catch(err => {
+                console.log('Error in storing the user id record');
+                console.log(err);
+                reject()
+            }) ;
+          }
+      }).catch(err => {
+        console.log('Error in checking user id');
+        console.log(err);
+        reject();
+      });
+
+  });
+    
+  // resolve runs the first function in .then
+  promise.then(
+    result => {
+
+      if(visitVal  > 2) {
+        console.log('user visit')
+        // console.log(attributes.visits);
+        USER_TYPE = 'returningUser';
+      }
+  
+      console.log('from launch ' + USER_TYPE);
+  
+      const CARD = disclosures.card;
+      
+      var speech = new Speech();
+      speech.audio(welcome[USER_TYPE].prompt);
+      speech.pause('500ms');
+      var speechOutput = speech.ssml(true);
+  
+      // .speak(speechOutput)
+      // .speak('Hello')
+      return handlerInput.responseBuilder
+        .speak(speechOutput)
+        .withStandardCard(CARD.title, CARD.body, 'https://image.shutterstock.com/image-photo/financial-business-color-charts-450w-1039907653.jpg', 'https://image.shutterstock.com/image-photo/financial-business-color-charts-450w-1039907653.jpg')
+        .withShouldEndSession(false)
+        .getResponse();
+
+    }, // shows "done!" after 1 second
+    error => {
+      alert(error)
+      console.log('from launch ' + USER_TYPE);
+  
+      const CARD = disclosures.card;
+      
+      var speech = new Speech();
+      speech.audio(welcome[USER_TYPE].prompt);
+      speech.pause('500ms');
+      var speechOutput = speech.ssml(true);
+  
+      // .speak(speechOutput)
+      // .speak('Hello')
+      return handlerInput.responseBuilder
+        .speak(speechOutput)
+        .withStandardCard(CARD.title, CARD.body, 'https://image.shutterstock.com/image-photo/financial-business-color-charts-450w-1039907653.jpg', 'https://image.shutterstock.com/image-photo/financial-business-color-charts-450w-1039907653.jpg')
+        .withShouldEndSession(false)
+        .getResponse();
+     } // doesn't run
+  );
+
+  promise.catch(alert => {
+    
+    const CARD = disclosures.card;
+      
+      var speech = new Speech();
+      speech.audio(welcome[USER_TYPE].prompt);
+      speech.pause('500ms');
+      var speechOutput = speech.ssml(true);
+  
+      // .speak(speechOutput)
+      // .speak('Hello')
+      return handlerInput.responseBuilder
+        .speak(speechOutput)
+        .withStandardCard(CARD.title, CARD.body, 'https://image.shutterstock.com/image-photo/financial-business-color-charts-450w-1039907653.jpg', 'https://image.shutterstock.com/image-photo/financial-business-color-charts-450w-1039907653.jpg')
+        .withShouldEndSession(false)
+        .getResponse();
+  });
+    
   } 
 };
 
@@ -395,7 +500,7 @@ const NotesOnTheWeekAheadIntentHandler = {
 
 const YesIntentHandler = {
   canHandle(handlerInput) {
-    console.log(handlerInput.requestEnvelope);
+   // console.log(handlerInput.requestEnvelope);
     return handlerInput.requestEnvelope.request.type === 'IntentRequest'
       && handlerInput.requestEnvelope.request.intent.name === 'AMAZON.YesIntent';
   },
@@ -404,13 +509,53 @@ const YesIntentHandler = {
 
     var repromptSpeech = new Speech();
     repromptSpeech.audio(notes.preview.reprompt);
-    // var repromptSpeechOutput = repromptSpeech.ssml(true);
+     var repromptSpeechOutput = repromptSpeech.ssml(true);
 
     var token2 = handlerInput.requestEnvelope.context.System.apiAccessToken;
-
-    return handlerInput.responseBuilder
-      .addAudioPlayerPlayDirective('REPLACE_ALL', podcastURL, '', 0,token2)
+      return handlerInput.responseBuilder
+      .addAudioPlayerPlayDirective('REPLACE_ALL', podcastURL, token2, 0,null)
       .getResponse();
+     
+      // .reprompt(repromptSpeechOutput)
+      // .withShouldEndSession(false)
+  }
+};
+
+const PauseIntentHandler = {
+  canHandle(handlerInput) {
+   // console.log(handlerInput.requestEnvelope);
+    return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+      && handlerInput.requestEnvelope.request.intent.name === 'AMAZON.PauseIntent';
+  },
+  handle(handlerInput) {
+    console.log('in PauseIntentHandler');
+
+    console.log(handlerInput);
+    // var token2 = handlerInput.requestEnvelope.context.System.apiAccessToken;
+      return handlerInput.responseBuilder
+      .addAudioPlayerStopDirective()
+      .withShouldEndSession(false)
+      .getResponse();
+     
+  }
+};
+
+const ResumeIntentHandler = {
+  canHandle(handlerInput) {
+   // console.log(handlerInput.requestEnvelope);
+    return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+      && handlerInput.requestEnvelope.request.intent.name === 'AMAZON.ResumeIntent';
+  },
+  handle(handlerInput) {
+    console.log('in ResumeIntentHandler');
+
+    console.log(handlerInput);
+    // var token2 = handlerInput.requestEnvelope.context.System.apiAccessToken;
+      return handlerInput.responseBuilder
+      .addAudioPlayerStopDirective()
+      .withShouldEndSession(false)
+      .getResponse();
+     
   }
 };
 
@@ -434,6 +579,146 @@ const SessionEndedRequestHandler = {
 };
 
 
+const HelpIntentHandler = {
+  canHandle(handlerInput) {
+   // console.log(handlerInput.requestEnvelope);
+    return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+      && handlerInput.requestEnvelope.request.intent.name === 'AMAZON.HelpIntent';
+  },
+  //session -> notes -> state = notes
+  //session -> commentary -> state = commentary
+   
+  handle(handlerInput) {
+    console.log('in HelpIntentHandler');
+
+    var sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
+
+    if(sessionAttributes 
+      && sessionAttributes.notes 
+      && sessionAttributes.notes.state === 'notes') {
+
+      console.log('in help for notes ');
+      const attributes = handlerInput.attributesManager.getSessionAttributes();
+      attributes.commentaryError = 0;
+      handlerInput.attributesManager.setSessionAttributes(attributes);
+
+      var speech = new Speech();
+      speech.audio(lodash.sample(notes.help.prompt));
+      var speechOutput = speech.ssml(true);
+    
+      return handlerInput.responseBuilder
+        .speak(speechOutput)
+        .getResponse();
+
+    } else if(
+      sessionAttributes 
+      && sessionAttributes.commentary 
+      && sessionAttributes.commentary.state === 'commentary'
+    ) {
+
+      console.log('in help from fallback');
+      const attributes = handlerInput.attributesManager.getSessionAttributes();
+      attributes.commentaryError = 0;
+      handlerInput.attributesManager.setSessionAttributes(attributes);
+
+      var speech = new Speech();
+      speech.audio(lodash.sample(commentary.help.prompt));
+      var speechOutput = speech.ssml(true);
+    
+      return handlerInput.responseBuilder
+        .speak(speechOutput)
+        .getResponse();
+
+    } else {
+
+      const attributes = handlerInput.attributesManager.getSessionAttributes();
+      attributes.generalError = 0;
+      handlerInput.attributesManager.setSessionAttributes(attributes);
+
+      var speech = new Speech();
+      speech.audio(lodash.sample(exceptions.help.prompt));
+      var speechOutput = speech.ssml(true);
+    
+      return handlerInput.responseBuilder
+        .speak(speechOutput)
+        .getResponse();
+    }
+  }
+};
+
+const UnhandledIntentHandler = {
+  canHandle(handlerInput) {
+    return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+      && handlerInput.requestEnvelope.request.intent.name === 'AMAZON.FallbackIntent';
+  },
+  handle(handlerInput) {
+    console.log('in UnhandledIntentHandler');
+
+    
+
+    //get the session attributes
+    var sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
+    
+    if(
+      sessionAttributes 
+      && sessionAttributes.commentary 
+      && sessionAttributes.commentary.state === 'commentary'
+    ) {
+
+      //check whether there is commentary error and update the session
+      const commentaryError = sessionAttributes.commentaryError || 0;
+      var updatedCommentaryError =  parseInt(commentaryError, 10) + 1;
+      sessionAttributes.commentaryError = updatedCommentaryError;
+      
+      handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
+
+      if(!commentaryError) {
+        var speech = new Speech();
+        speech.audio(lodash.sample(commentary.invalid.first));
+        var speechOutput = speech.ssml(true);
+    
+        return handlerInput.responseBuilder
+          .speak(speechOutput)
+          .getResponse();
+
+      } else if(commentaryError < 2) {
+        var speech = new Speech();
+        speech.audio(lodash.sample(commentary.invalid.second));
+        var speechOutput = speech.ssml(true);
+    
+        return handlerInput.responseBuilder
+          .speak(speechOutput)
+          .getResponse();
+      
+      } else {
+        HelpIntentHandler.handle(handlerInput);
+      }
+      
+    }
+    var  generalError = sessionAttributes.generalError || 0
+    sessionAttributes.generalError = parseInt(generalError, 10) + 1;
+
+
+    //set the value fo general error back to 
+    handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
+
+    if(generalError<2) {
+
+      var speech = new Speech();
+      speech.audio(lodash.sample(exceptions.unhandled.prompt));
+      var speechOutput = speech.ssml(true);
+    
+      return handlerInput.responseBuilder
+        .speak(speechOutput)
+        .getResponse();
+
+    } else {
+      HelpIntentHandler.handle(handlerInput);
+    }
+     
+  }
+};
+
 const ErrorHandler = {
   canHandle() {
     return true;
@@ -447,6 +732,48 @@ const ErrorHandler = {
       .withShouldEndSession(false)
       .getResponse();
   },
+};
+
+//logging request to database
+const RequestLog = {
+  process(handlerInput) {
+    // console.log("REQUEST ENVELOPE = " + JSON.stringify(handlerInput));
+    // Sequelize.sync().then(function () {
+    // Table created
+    return db.voicedata.create({
+              logdata: JSON.stringify(handlerInput)
+            }).then(output => {
+                console.log("log inserted request");
+            }).catch(err => {
+                console.log('Error in storing the request log record');
+                console.log(err);
+            }) ;
+    // });
+    
+  }
+};
+
+//logging response to database
+const ResponseLog = {
+  process(handlerInput) {
+       return new Promise((resolve, reject) => {
+          // sequelize.sync().then(function () {
+          console.log("4");
+            // Table created
+            // console.log(db);
+          return db.voicedata.create({
+                    logdata: JSON.stringify(handlerInput)
+                  }).then(output => {
+                      console.log("log inserted response");
+                      resolve();
+                  }).catch(err => {
+                      console.log('Error in storing the response log record');
+                      console.log(err);
+                      reject(err)
+                  }) ;
+          // });
+      });
+  }
 };
 
 module.exports = {
@@ -467,5 +794,11 @@ module.exports = {
     YesIntentHandler,
     NextMessageIntentHandler,
     NextIntentHandler,
-    RepeatIntentHandler
+    RepeatIntentHandler,
+    PauseIntentHandler,
+    ResumeIntentHandler,
+    HelpIntentHandler,
+    UnhandledIntentHandler,
+    RequestLog,
+    ResponseLog
 }

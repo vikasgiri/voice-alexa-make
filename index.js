@@ -1,21 +1,37 @@
 const Alexa = require('ask-sdk');
 const helper = require('./app/helper');
 
+// var Sequelize = require('sequelize');
 const express = require('express');
 var bodyParser = require('body-parser');
+var NODE_ENV = process.env.NODE_ENV || 'development';
+var models = require("./app/model");
+var port = process.env.VCAP_APP_PORT || 8080;
+
+
+//Sync Database
+models
+    .sequelize
+    .sync()
+    .then(function () {
+        console.log('Nice! Database syncup looks fine');
+    })
+    .catch(function (err) {
+        console.log("Something went wrong with the Database Update!");
+        console.log(err);
+    });
+
 const app = express();
 var router = express.Router();
 
 app.use(bodyParser.json());
 app.use(router);
 
-console.log('testing');
-
 let helloSkill;
 router.post('/voice/alexa/marketinsights', function(req, res) {
-  console.log("in marketinsights");
+  // console.log("in marketinsights");
   // console.log("---------------guidetomarket-------------------------");
-  // console.log(req);
+  // console.log(JSON.stringify(req.body));
   // console.log("---------------guidetomarket-------------------------");
   if (!helloSkill) {
 
@@ -37,16 +53,24 @@ router.post('/voice/alexa/marketinsights', function(req, res) {
         helper.YesIntentHandler,
         helper.NextMessageIntentHandler,
         helper.NextIntentHandler,
-        helper.RepeatIntentHandler
+        helper.RepeatIntentHandler,
+        helper.PauseIntentHandler,
+        helper.ResumeIntentHandler,
+        helper.HelpIntentHandler,
+        helper.UnhandledIntentHandler
       ).addErrorHandlers(helper.ErrorHandler)
+      .addRequestInterceptors(helper.RequestLog)
+      .addResponseInterceptors(helper.ResponseLog)
       .create();
+
   }
 
         // .withSkillId('amzn1.ask.skill.d928634f-f6c9-40c9-9b8c-2e14ccd8f5e2')
-
   helloSkill.invoke(req.body)
     .then(function(responseBody) {
-      console.log(responseBody);
+      // console.log("--------------------------------req.body start-------------------------------");
+      // console.log(responseBody);
+      // console.log("--------------------------------req.body stop-------------------------------");
 
       res.json(responseBody);
     })
@@ -56,8 +80,13 @@ router.post('/voice/alexa/marketinsights', function(req, res) {
     });
 });
 
-app.listen(8080, function () {
-  console.log('Development endpoint listening on port 8080!');
-});
 
+// Start server
+app.listen(port, function () {
+  console.log('************' + NODE_ENV + '******************');
+  // console.log('************' + process.env.VCAP_APP_PORT + '******************');
+  console.log("Server started.");
+  console.log('*******************************');
+
+});
 // app.listen(process.env.PORT);
