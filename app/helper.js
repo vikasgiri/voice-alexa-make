@@ -498,6 +498,9 @@ const NotesOnTheWeekAheadIntentHandler = {
   }
 };
 
+
+
+
 const YesIntentHandler = {
   canHandle(handlerInput) {
    // console.log(handlerInput.requestEnvelope);
@@ -513,7 +516,8 @@ const YesIntentHandler = {
 
     var token2 = handlerInput.requestEnvelope.context.System.apiAccessToken;
       return handlerInput.responseBuilder
-      .addAudioPlayerPlayDirective('REPLACE_ALL', podcastURL, token2, 0,null)
+      .addAudioPlayerPlayDirective('REPLACE_ALL', podcastURL, 'wx', 0,null)
+      .withShouldEndSession(true)
       .getResponse();
      
       // .reprompt(repromptSpeechOutput)
