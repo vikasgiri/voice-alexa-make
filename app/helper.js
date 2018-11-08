@@ -109,9 +109,7 @@ const LaunchRequestHandler = {
     //convert into a method to check whether a user is present and increment visit count
     var userIdVal = handlerInput.requestEnvelope.session.user.userId;
 
-    // return new Promise(function(resolve, reject) {
-      
-   
+    var promiseObj = new Promise(function(resolve, reject) {
       db.user.findOne({
         where: {
           user_id: userIdVal
@@ -132,11 +130,11 @@ const LaunchRequestHandler = {
             .then(function(rowsUpdated) {
               console.log('updated visit');
               console.log(rowsUpdated);
-              // resolve();
+              resolve();
 
             }).catch(err => {
               console.log('error in updating user visit');
-              // reject();
+              reject();
             })
           
 
@@ -148,88 +146,56 @@ const LaunchRequestHandler = {
               visit:1
             }).then(output => {
                 console.log("user record inserted request");
-                // resolve();
+                resolve();
             }).catch(err => {
                 console.log('Error in storing the user id record');
                 console.log(err);
-                // reject()
+                reject()
             }) ;
           }
       }).catch(err => {
         console.log('Error in checking user id');
         console.log(err);
-        // reject();
+        reject();
       });
 
-  // });
+  });
     
-  // resolve runs the first function in .then
-  // promise.then(
-    // result => {
+  // helper.card(conv, welcome[USER_TYPE]);
+  console.log('after user : ' + USER_TYPE);
+  const CARD = disclosures.card;
+  return promiseObj.then(function() {
+      console.log('in promise then');
 
-      if(visitVal  > 2) {
-        console.log('user visit')
-        // console.log(attributes.visits);
-        USER_TYPE = 'returningUser';
-      }
-  
-      console.log('from launch ' + USER_TYPE);
-  
-      const CARD = disclosures.card;
+      USER_TYPE = visitVal < 2 ? 'newUser' : 'returningUser'
+      console.log(visitVal + ' visit count final ' + USER_TYPE + ' is the final ');
       
       var speech = new Speech();
       speech.audio(welcome[USER_TYPE].prompt);
       speech.pause('500ms');
       var speechOutput = speech.ssml(true);
   
-      // .speak(speechOutput)
-      // .speak('Hello')
       return handlerInput.responseBuilder
         .speak(speechOutput)
         .withStandardCard(CARD.title, CARD.body, 'https://image.shutterstock.com/image-photo/financial-business-color-charts-450w-1039907653.jpg', 'https://image.shutterstock.com/image-photo/financial-business-color-charts-450w-1039907653.jpg')
         .withShouldEndSession(false)
         .getResponse();
-
-    // }, // shows "done!" after 1 second
-    // error => {
-      // alert(error)
-      // console.log('from launch ' + USER_TYPE);
-  
-      // const CARD = disclosures.card;
       
-      // var speech = new Speech();
-      // speech.audio(welcome[USER_TYPE].prompt);
-      // speech.pause('500ms');
-      // var speechOutput = speech.ssml(true);
+    })
+    .catch(function(err) {
+      console.log('in promise catch');
+      console.log(err);
+      var speech = new Speech();
+      speech.audio(welcome[USER_TYPE].prompt);
+      speech.pause('500ms');
+      var speechOutput = speech.ssml(true);
   
-      // // .speak(speechOutput)
-      // // .speak('Hello')
-      // return handlerInput.responseBuilder
-      //   .speak(speechOutput)
-      //   .withStandardCard(CARD.title, CARD.body, 'https://image.shutterstock.com/image-photo/financial-business-color-charts-450w-1039907653.jpg', 'https://image.shutterstock.com/image-photo/financial-business-color-charts-450w-1039907653.jpg')
-      //   .withShouldEndSession(false)
-      //   .getResponse();
-    //  } // doesn't run
-  // );
-
-  // promise.catch(alert => {
-    
-  //   const CARD = disclosures.card;
-      
-  //     var speech = new Speech();
-  //     speech.audio(welcome[USER_TYPE].prompt);
-  //     speech.pause('500ms');
-  //     var speechOutput = speech.ssml(true);
-  
-  //     // .speak(speechOutput)
-  //     // .speak('Hello')
-  //     return handlerInput.responseBuilder
-  //       .speak(speechOutput)
-  //       .withStandardCard(CARD.title, CARD.body, 'https://image.shutterstock.com/image-photo/financial-business-color-charts-450w-1039907653.jpg', 'https://image.shutterstock.com/image-photo/financial-business-color-charts-450w-1039907653.jpg')
-  //       .withShouldEndSession(false)
-  //       .getResponse();
-  // });
-    
+      return handlerInput.responseBuilder
+        .speak(speechOutput)
+        .withStandardCard(CARD.title, CARD.body, 'https://image.shutterstock.com/image-photo/financial-business-color-charts-450w-1039907653.jpg', 'https://image.shutterstock.com/image-photo/financial-business-color-charts-450w-1039907653.jpg')
+        .withShouldEndSession(false)
+        .getResponse();
+    });
   } 
 };
 
@@ -258,7 +224,7 @@ const DisclosuresIntentHandler = {
 const NoIntentHandler = {
   canHandle(handlerInput) {
     console.log('in no intent');
-    // console.log(handlerInput);
+    console.log(handlerInput.requestEnvelope.request);
     return handlerInput.requestEnvelope.request.type === 'IntentRequest'
       && handlerInput.requestEnvelope.request.intent.name === 'AMAZON.NoIntent';
   },
@@ -527,13 +493,26 @@ const YesIntentHandler = {
 
 const PauseIntentHandler = {
   canHandle(handlerInput) {
-   // console.log(handlerInput.requestEnvelope);
+    console.log(JSON.stringify(handlerInput.requestEnvelope));
     return handlerInput.requestEnvelope.request.type === 'IntentRequest'
       && handlerInput.requestEnvelope.request.intent.name === 'AMAZON.PauseIntent';
   },
   handle(handlerInput) {
     console.log('in PauseIntentHandler');
+    console.log('--------------------------------pause related---------------------------------');
+    console.log(handlerInput.requestEnvelope.context.AudioPlayer.offsetInMilliseconds);
+    console.log(handlerInput.requestEnvelope.context.System.apiAccessToken);
 
+    var audioPause = {
+      "offsetInMilliseconds": handlerInput.requestEnvelope.context.AudioPlayer.offsetInMilliseconds,
+      "apiAccessToken" : handlerInput.requestEnvelope.context.System.apiAccessToken
+    }
+
+    var attributes = handlerInput.attributesManager.getSessionAttributes();
+    attributes.audioPause = audioPause;
+    handlerInput.attributesManager.setSessionAttributes(attributes);
+
+    console.log('--------------------------------pause related---------------------------------');
     console.log(handlerInput);
     // var token2 = handlerInput.requestEnvelope.context.System.apiAccessToken;
       return handlerInput.responseBuilder
@@ -553,7 +532,11 @@ const ResumeIntentHandler = {
   handle(handlerInput) {
     console.log('in ResumeIntentHandler');
 
-    console.log(handlerInput);
+    var sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
+
+    console.log(JSON.stringify(sessionAttributes));
+
+    console.log(JSON.stringify(handlerInput.requestEnvelope));
     // var token2 = handlerInput.requestEnvelope.context.System.apiAccessToken;
       return handlerInput.responseBuilder
       .addAudioPlayerStopDirective()
@@ -578,6 +561,7 @@ const SessionEndedRequestHandler = {
    
     return handlerInput.responseBuilder
       .speak(speechOutput)
+      .withShouldEndSession(false)
       .getResponse();
   }
 };
@@ -635,6 +619,7 @@ const HelpIntentHandler = {
 
     } else {
 
+      console.log('help last else ')
       const attributes = handlerInput.attributesManager.getSessionAttributes();
       attributes.generalError = 0;
       handlerInput.attributesManager.setSessionAttributes(attributes);
@@ -645,6 +630,7 @@ const HelpIntentHandler = {
     
       return handlerInput.responseBuilder
         .speak(speechOutput)
+        .withShouldEndSession(false)
         .getResponse();
     }
   }
@@ -658,11 +644,11 @@ const UnhandledIntentHandler = {
   handle(handlerInput) {
     console.log('in UnhandledIntentHandler');
 
-    
-
     //get the session attributes
     var sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
     
+    console.log('from unhandledIntentHandler ' + JSON.stringify(sessionAttributes));
+
     if(
       sessionAttributes 
       && sessionAttributes.commentary 
@@ -714,6 +700,7 @@ const UnhandledIntentHandler = {
     
       return handlerInput.responseBuilder
         .speak(speechOutput)
+        .withShouldEndSession(false)
         .getResponse();
 
     } else {
@@ -762,7 +749,7 @@ const ResponseLog = {
   process(handlerInput) {
        return new Promise((resolve, reject) => {
           // sequelize.sync().then(function () {
-          console.log("4");
+          // console.log("4");
             // Table created
             // console.log(db);
           return db.voicedata.create({
