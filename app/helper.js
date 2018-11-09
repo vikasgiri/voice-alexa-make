@@ -523,6 +523,89 @@ const PauseIntentHandler = {
   }
 };
 
+const AudioPlayerEventHandler = {
+
+  canHandle(handlerInput) {
+    return handlerInput.requestEnvelope.request.type.startsWith('AudioPlayer.');
+  },
+  async handle(handlerInput) {
+
+    console.log('AudioPlayerEventHandler 1');
+    const {
+      requestEnvelope,
+      // attributesManager,
+      responseBuilder
+    } = handlerInput;
+    const audioPlayerEventName = requestEnvelope.request.type.split('.')[1];
+    // const {
+    //   playbackSetting,
+    //   playbackInfo
+    // } = await attributesManager.getPersistentAttributes();
+    console.log('AudioPlayerEventHandler 2');
+    switch (audioPlayerEventName) {
+      case 'PlaybackStarted':
+        console.log('AudioPlayerEventHandler 3');
+        // playbackInfo.token = getToken(handlerInput);
+        // playbackInfo.index = await getIndex(handlerInput);
+        // playbackInfo.inPlaybackSession = true;
+        // playbackInfo.hasPreviousPlaybackSession = true;
+        break;
+      case 'PlaybackFinished':
+        console.log('AudioPlayerEventHandler 4');
+        // playbackInfo.inPlaybackSession = false;
+        // playbackInfo.hasPreviousPlaybackSession = false;
+        // playbackInfo.nextStreamEnqueued = false;
+        break;
+      case 'PlaybackStopped':
+        console.log('AudioPlayerEventHandler 5');
+        // playbackInfo.token = getToken(handlerInput);
+        // playbackInfo.index = await getIndex(handlerInput);
+        // playbackInfo.offsetInMilliseconds = getOffsetInMilliseconds(handlerInput);
+        break;
+      case 'PlaybackNearlyFinished':
+        {
+          console.log('AudioPlayerEventHandler 6');
+          // if (playbackInfo.nextStreamEnqueued) {
+          //   break;
+          // }
+
+          // const enqueueIndex = (playbackInfo.index + 1) % constants.audioData.length;
+
+          // if (enqueueIndex === 0 && !playbackSetting.loop) {
+          //   break;
+          // }
+
+          // playbackInfo.nextStreamEnqueued = true;
+
+          // const enqueueToken = playbackInfo.playOrder[enqueueIndex];
+          // const playBehavior = 'ENQUEUE';
+          // const podcast = constants.audioData[playbackInfo.playOrder[enqueueIndex]];
+          // const expectedPreviousToken = playbackInfo.token;
+          // const offsetInMilliseconds = 0;
+
+          // responseBuilder.addAudioPlayerPlayDirective(
+          //   playBehavior,
+          //   podcast.url,
+          //   enqueueToken,
+          //   offsetInMilliseconds,
+          //   expectedPreviousToken,
+          // );
+          break;
+        }
+      case 'PlaybackFailed':
+        console.log('AudioPlayerEventHandler 7');
+        // playbackInfo.inPlaybackSession = false;
+        console.log('Playback Failed : %j', handlerInput.requestEnvelope.request.error);
+        return;
+      default:
+        throw new Error('Should never reach here!');
+    }
+
+    console.log('AudioPlayerEventHandler 8');
+    return responseBuilder.getResponse();
+  }
+}
+
 const ResumeIntentHandler = {
   canHandle(handlerInput) {
    // console.log(handlerInput.requestEnvelope);
@@ -787,6 +870,7 @@ module.exports = {
     NextIntentHandler,
     RepeatIntentHandler,
     PauseIntentHandler,
+    AudioPlayerEventHandler,
     ResumeIntentHandler,
     HelpIntentHandler,
     UnhandledIntentHandler,
