@@ -1,5 +1,5 @@
 const Alexa = require('ask-sdk');
-const helper = require('./app/helper');
+const helper = require('./app/marketinsights/helper');
 
 // var Sequelize = require('sequelize');
 const express = require('express');
@@ -42,24 +42,18 @@ router.post('/voice/alexa/marketinsights', function(req, res) {
         helper.PauseIntentHandler,
         helper.ResumeIntentHandler,
         helper.AudioPlayerEventHandler,
-
         helper.AboutDrKellyIntentHandler,
         helper.QuoteIntentHandler,
         helper.WhatIsThisIntentHandler,
         helper.DisclosuresIntentHandler,
-        
         helper.KeepReadingIntentHandler,
-        
         helper.PlayClipForIntentHandler,
         helper.CommentaryIntentHandler,
         helper.SessionEndedRequestHandler,
         helper.NotesOnTheWeekAheadIntentHandler,
-        
         helper.NextMessageIntentHandler,
         helper.NextIntentHandler,
         helper.RepeatIntentHandler,
-        
-        
         helper.HelpIntentHandler,
         helper.NoIntentHandler,
         helper.StopIntentHandler,
@@ -69,7 +63,6 @@ router.post('/voice/alexa/marketinsights', function(req, res) {
       .addRequestInterceptors(helper.RequestLog)
       .addResponseInterceptors(helper.ResponseLog)
       .create();
-
   }
 
         // .withSkillId('amzn1.ask.skill.d928634f-f6c9-40c9-9b8c-2e14ccd8f5e2')

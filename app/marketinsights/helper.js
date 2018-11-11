@@ -10,7 +10,7 @@ const commentary = require('./responses/commentary');
 const notes = require("./responses/notes.js");
 
 // const voicedata = require('./model').voicedata;
-const db = require('./model');
+const db = require('../model');
 
 var podcastURL = "https://am.jpmorgan.com/blob-gim/1383559896296/83456/WeeklyNotes.mp3";
 
@@ -286,7 +286,7 @@ const PlayClipForIntentHandler = {
 
     console.log('canhandle')
     console.log(handlerInput.requestEnvelope.request.intent.name);
-    return handlerInput.requestEnvelope.request.intent.name === 'PlayClipForIntent';
+    return handlerInput.requestEnvelope.request.type === 'IntentRequest' && handlerInput.requestEnvelope.request.intent.name === 'PlayClipForIntent';
   },
   handle(handlerInput) {
     //in case of play clip for 
@@ -644,7 +644,7 @@ const SessionEndedRequestHandler = {
    
     return handlerInput.responseBuilder
       .speak(speechOutput)
-      .withShouldEndSession(false)
+      .withShouldEndSession(true)
       .getResponse();
   }
 };
