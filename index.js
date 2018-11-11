@@ -38,7 +38,11 @@ router.post('/voice/alexa/marketinsights', function(req, res) {
     helloSkill = Alexa.SkillBuilders.custom()
       .addRequestHandlers(
         helper.LaunchRequestHandler,
+        helper.YesIntentHandler,
         helper.PauseIntentHandler,
+        helper.ResumeIntentHandler,
+        helper.AudioPlayerEventHandler,
+
         helper.AboutDrKellyIntentHandler,
         helper.QuoteIntentHandler,
         helper.WhatIsThisIntentHandler,
@@ -50,12 +54,12 @@ router.post('/voice/alexa/marketinsights', function(req, res) {
         helper.CommentaryIntentHandler,
         helper.SessionEndedRequestHandler,
         helper.NotesOnTheWeekAheadIntentHandler,
-        helper.YesIntentHandler,
+        
         helper.NextMessageIntentHandler,
         helper.NextIntentHandler,
         helper.RepeatIntentHandler,
         
-        helper.ResumeIntentHandler,
+        
         helper.HelpIntentHandler,
         helper.NoIntentHandler,
         helper.StopIntentHandler,

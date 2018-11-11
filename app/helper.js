@@ -617,15 +617,15 @@ const ResumeIntentHandler = {
 
     var sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
 
-    console.log(JSON.stringify(sessionAttributes));
+    // console.log(JSON.stringify(sessionAttributes));
 
-    console.log(JSON.stringify(handlerInput.requestEnvelope));
-    // var token2 = handlerInput.requestEnvelope.context.System.apiAccessToken;
-      return handlerInput.responseBuilder
-      .addAudioPlayerStopDirective()
-      .withShouldEndSession(false)
-      .getResponse();
-     
+    // console.log(JSON.stringify(handlerInput.requestEnvelope));
+    // console.log('offset : ' + handlerInput.requestEnvelope.context.AudioPlayer.offsetInMilliseconds);
+    return handlerInput.responseBuilder
+    .addAudioPlayerPlayDirective('REPLACE_ALL', podcastURL, 'wx', handlerInput.requestEnvelope.context.AudioPlayer.offsetInMilliseconds,null)
+    .withShouldEndSession(true)
+    .getResponse();
+   
   }
 };
 
