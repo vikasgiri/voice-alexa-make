@@ -10,7 +10,7 @@ const commentary = require('./responses/commentary');
 const notes = require("./responses/notes.js");
 
 // const voicedata = require('./model').voicedata;
-const db = require('../model');
+const db = require('../../model');
 
 var podcastURL = "https://am.jpmorgan.com/blob-gim/1383559896296/83456/WeeklyNotes.mp3";
 

@@ -1,5 +1,5 @@
 const Alexa = require('ask-sdk');
-const helper = require('./app/marketinsights/helper');
+const helper = require('./app/skill/marketinsights/helper');
 
 // var Sequelize = require('sequelize');
 const express = require('express');
