@@ -1,5 +1,4 @@
 const main =  require("./responses/main");
-// const commentaryMap = require("./responses/commentaryMap");
 
 const lodash = require('lodash');
 var Speech = require('ssml-builder');
