@@ -807,7 +807,8 @@ const ErrorHandler = {
 //logging request to database
 const RequestLog = {
   process(handlerInput) {
-    console.log("REQUEST ENVELOPE = " + JSON.stringify(handlerInput));
+    console.log('THIS.EVENT = ' + JSON.stringify(this.event));
+    console.log("REQUEST ENVELOPE = " + JSON.stringify(handlerInput.requestEnvelope));
     // Sequelize.sync().then(function () {
     // Table created
     // return db.voicedata.create({
