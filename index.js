@@ -10,21 +10,7 @@ const myNextMoveHelper = require('./app/skill/mynextmove/helper');
 const express = require('express');
 var bodyParser = require('body-parser');
 var NODE_ENV = process.env.NODE_ENV || 'development';
-var models = require("./app/model");
 var port = process.env.VCAP_APP_PORT || 3000;
-
-
-//Sync Database
-models
-    .sequelize
-    .sync()
-    .then(function () {
-        console.log('Nice! Database syncup looks fine');
-    })
-    .catch(function (err) {
-        console.log("Something went wrong with the Database Update!");
-        console.log(err);
-    });
 
 const app = express();
 var router = express.Router();

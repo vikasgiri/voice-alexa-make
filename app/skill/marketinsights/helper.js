@@ -1,6 +1,5 @@
 var Speech = require('ssml-builder');
 const lodash = require('lodash');
-// const util = require('./util');
 const intentHelper = require('./intentHelper');
 const eastereggs = require('./responses/easterEggs');
 const welcome = require('./responses/welcome');
@@ -8,9 +7,6 @@ const disclosures = require('./responses/disclosures');
 const exceptions = require('./responses/exceptions');
 const commentary = require('./responses/commentary');
 const notes = require("./responses/notes.js");
-
-// const voicedata = require('./model').voicedata;
-const db = require('../../model');
 
 var podcastURL = "https://am.jpmorgan.com/blob-gim/1383559896296/83456/WeeklyNotes.mp3";
 
@@ -109,62 +105,62 @@ const LaunchRequestHandler = {
     //convert into a method to check whether a user is present and increment visit count
     var userIdVal = handlerInput.requestEnvelope.session.user.userId;
 
-    var promiseObj = new Promise(function(resolve, reject) {
-      db.user.findOne({
-        where: {
-          user_id: userIdVal
-        }})
-        .then(person => {
-          console.log('from then user ::::::')
-          console.log(JSON.stringify(person)) 
+  //   var promiseObj = new Promise(function(resolve, reject) {
+  //     db.user.findOne({
+  //       where: {
+  //         user_id: userIdVal
+  //       }})
+  //       .then(person => {
+  //         console.log('from then user ::::::')
+  //         console.log(JSON.stringify(person)) 
 
-          if(person) { 
-            // update
-            console.log('update');
-            // return obj.update(values);
-            visitVal = person.visit + 1;
-            db.user.update(
-              {visit: visitVal},
-              { returning: true, where: {user_id: userIdVal }}
-            )
-            .then(function(rowsUpdated) {
-              console.log('updated visit');
-              console.log(rowsUpdated);
-              resolve();
+  //         if(person) { 
+  //           // update
+  //           console.log('update');
+  //           // return obj.update(values);
+  //           visitVal = person.visit + 1;
+  //           db.user.update(
+  //             {visit: visitVal},
+  //             { returning: true, where: {user_id: userIdVal }}
+  //           )
+  //           .then(function(rowsUpdated) {
+  //             console.log('updated visit');
+  //             console.log(rowsUpdated);
+  //             resolve();
 
-            }).catch(err => {
-              console.log('error in updating user visit');
-              reject();
-            })
+  //           }).catch(err => {
+  //             console.log('error in updating user visit');
+  //             reject();
+  //           })
           
 
-          } else { // insert
-            console.log('insert');
-            visitVal = 0
-            db.user.create({
-              user_id: userIdVal,
-              visit:1
-            }).then(output => {
-                console.log("user record inserted request");
-                resolve();
-            }).catch(err => {
-                console.log('Error in storing the user id record');
-                console.log(err);
-                reject()
-            }) ;
-          }
-      }).catch(err => {
-        console.log('Error in checking user id');
-        console.log(err);
-        reject();
-      });
+  //         } else { // insert
+  //           console.log('insert');
+  //           visitVal = 0
+  //           db.user.create({
+  //             user_id: userIdVal,
+  //             visit:1
+  //           }).then(output => {
+  //               console.log("user record inserted request");
+  //               resolve();
+  //           }).catch(err => {
+  //               console.log('Error in storing the user id record');
+  //               console.log(err);
+  //               reject()
+  //           }) ;
+  //         }
+  //     }).catch(err => {
+  //       console.log('Error in checking user id');
+  //       console.log(err);
+  //       reject();
+  //     });
 
-  });
+  // });
     
   // helper.card(conv, welcome[USER_TYPE]);
   console.log('after user : ' + USER_TYPE);
   const CARD = disclosures.card;
-  return promiseObj.then(function() {
+  // return promiseObj.then(function() {
       console.log('in promise then');
 
       USER_TYPE = visitVal < 2 ? 'newUser' : 'returningUser'
@@ -181,21 +177,21 @@ const LaunchRequestHandler = {
         .withShouldEndSession(false)
         .getResponse();
       
-    })
-    .catch(function(err) {
-      console.log('in promise catch');
-      console.log(err);
-      var speech = new Speech();
-      speech.audio(welcome[USER_TYPE].prompt);
-      speech.pause('500ms');
-      var speechOutput = speech.ssml(true);
+    // })
+    // .catch(function(err) {
+      // console.log('in promise catch');
+      // console.log(err);
+      // var speech = new Speech();
+      // speech.audio(welcome[USER_TYPE].prompt);
+      // speech.pause('500ms');
+      // var speechOutput = speech.ssml(true);
   
-      return handlerInput.responseBuilder
-        .speak(speechOutput)
-        .withStandardCard(CARD.title, CARD.body, 'https://image.shutterstock.com/image-photo/financial-business-color-charts-450w-1039907653.jpg', 'https://image.shutterstock.com/image-photo/financial-business-color-charts-450w-1039907653.jpg')
-        .withShouldEndSession(false)
-        .getResponse();
-    });
+      // return handlerInput.responseBuilder
+      //   .speak(speechOutput)
+      //   .withStandardCard(CARD.title, CARD.body, 'https://image.shutterstock.com/image-photo/financial-business-color-charts-450w-1039907653.jpg', 'https://image.shutterstock.com/image-photo/financial-business-color-charts-450w-1039907653.jpg')
+      //   .withShouldEndSession(false)
+      //   .getResponse();
+    // });
   } 
 };
 
@@ -811,17 +807,17 @@ const ErrorHandler = {
 //logging request to database
 const RequestLog = {
   process(handlerInput) {
-    // console.log("REQUEST ENVELOPE = " + JSON.stringify(handlerInput));
+    console.log("REQUEST ENVELOPE = " + JSON.stringify(handlerInput));
     // Sequelize.sync().then(function () {
     // Table created
-    return db.voicedata.create({
-              logdata: JSON.stringify(handlerInput)
-            }).then(output => {
-                console.log("log inserted request");
-            }).catch(err => {
-                console.log('Error in storing the request log record');
-                console.log(err);
-            }) ;
+    // return db.voicedata.create({
+    //           logdata: JSON.stringify(handlerInput)
+    //         }).then(output => {
+    //             console.log("log inserted request");
+    //         }).catch(err => {
+    //             console.log('Error in storing the request log record');
+    //             console.log(err);
+    //         }) ;
     // });
     
   }
@@ -830,23 +826,24 @@ const RequestLog = {
 //logging response to database
 const ResponseLog = {
   process(handlerInput) {
-       return new Promise((resolve, reject) => {
-          // sequelize.sync().then(function () {
-          // console.log("4");
-            // Table created
-            // console.log(db);
-          return db.voicedata.create({
-                    logdata: JSON.stringify(handlerInput)
-                  }).then(output => {
-                      console.log("log inserted response");
-                      resolve();
-                  }).catch(err => {
-                      console.log('Error in storing the response log record');
-                      console.log(err);
-                      reject(err)
-                  }) ;
-          // });
-      });
+    console.log("RESPONSE ENVELOPE = " + JSON.stringify(handlerInput));
+      //  return new Promise((resolve, reject) => {
+      //     // sequelize.sync().then(function () {
+      //     // console.log("4");
+      //       // Table created
+      //       // console.log(db);
+      //     return db.voicedata.create({
+      //               logdata: JSON.stringify(handlerInput)
+      //             }).then(output => {
+      //                 console.log("log inserted response");
+      //                 resolve();
+      //             }).catch(err => {
+      //                 console.log('Error in storing the response log record');
+      //                 console.log(err);
+      //                 reject(err)
+      //             }) ;
+      //     // });
+      // });
   }
 };
 
