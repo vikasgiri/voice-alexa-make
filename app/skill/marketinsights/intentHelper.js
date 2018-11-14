@@ -23,10 +23,7 @@ module.exports = {
         // conv.data.commentaryObj = commentaryObj;
 
         const attributes = handlerInput.attributesManager.getSessionAttributes();
-        console.log('-----------------------');
-        console.log(attributes);
-        console.log('-----------------------');
-
+       
         attributes.commentaryObj = commentaryObj;
         handlerInput.attributesManager.setSessionAttributes(attributes);
 

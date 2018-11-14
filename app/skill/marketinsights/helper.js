@@ -10,13 +10,6 @@ const notes = require("./responses/notes.js");
 
 var podcastURL = "https://am.jpmorgan.com/blob-gim/1383559896296/83456/WeeklyNotes.mp3";
 
-var stream = {
-  "url": podcastURL,
-  "token": "0",
-  "expectedPreviousToken": null,
-  "offsetInMilliseconds": 0
-};
-
 const AboutDrKellyIntentHandler = {
   canHandle(handlerInput) {
     return handlerInput.requestEnvelope.request.type === 'IntentRequest'
