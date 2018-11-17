@@ -46,6 +46,48 @@ module.exports = {
           .reprompt(repromptSpeechOutput)
           .withShouldEndSession(false)
           .getResponse();
+    },
+    promptEpisodes(handlerInput, data) {
+
+        console.log('PromptEpisodes');
+        const titles = data.titles;
+        const subSet = titles.splice(0, 3);
+
+        var attributes = handlerInput.attributesManager.getSessionAttributes();
+        attributes.titles = titles;
+        handlerInput.attributesManager.setSessionAttributes(attributes);
+
+        //need to check and implement this
+        // const list = createOxfordCommaList(subSet);
+        const list = "";
+
+        //add speech
+        var speech = new Speech();
+        speech.audio(data.prompt)
+
+        //add reprompt
+        var repromptSpeech = new Speech();
+        repromptSpeech.audio(data.reprompt);
+
+        //make it ssml
+        var speechOutput = speech.ssml(true);
+        var repromptSpeechOutput = repromptSpeech.ssml(true);
+
+        console.log('titles.length', titles.length);
+
+        return handlerInput.responseBuilder
+          .speak(speechOutput)
+          .reprompt(repromptSpeechOutput)
+          .withShouldEndSession(false)
+          .getResponse();
+
+        //need to check and implement this
+        // let reprompt = this.speechBuilder()
+        // .addText(data.reprompt)
+        // .addText(data.repromptMore, titles.length > 0)
+
+        // this.followUpState(state.LIBRARY)
+        //   .ask(speech, reprompt);
     }
 
 };
