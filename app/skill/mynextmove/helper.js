@@ -5,6 +5,7 @@ const intentHelper = require('./intentHelper');
 const main = require('./responses/main');
 const errors = require('./responses/errors');
 const library = require('./responses/library');
+const libraryObj = require('./handlers/library');
 //get access to database
 // const db = require('../../model');
 
@@ -137,9 +138,47 @@ const StopIntentHandler = {
       console.log('in StopIntentHandler');
       return SessionEndedRequestHandler.handle(handlerInput);
     }
-  };
+};
 
-  
+const LibraryIntentHandler = {
+    canHandle(handlerInput) {
+      console.log('in LibraryIntentHandler');
+      // console.log(handlerInput);
+      return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+        && handlerInput.requestEnvelope.request.intent.name === 'LibraryIntent';
+    },
+    handle(handlerInput) {
+      console.log('in LibraryIntentHandler');
+      return libraryObj.IntroIntent.handle(handlerInput);
+    }
+};
+
+const EpisodeIntentHandler = {
+    canHandle(handlerInput) {
+      console.log('in EpisodeIntentHandler');
+      // console.log(handlerInput);
+      return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+        && handlerInput.requestEnvelope.request.intent.name === 'EpisodeIntent';
+    },
+    handle(handlerInput) {
+      console.log('in EpisodeIntentHandler');
+      return libraryObj.EpisodeIntentHandler.handle(handlerInput);
+    }
+};
+
+const SubjectIntentHandler = {
+    canHandle(handlerInput) {
+      console.log('in SubjectIntentHandler');
+      // console.log(handlerInput);
+      return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+        && handlerInput.requestEnvelope.request.intent.name === 'SubjectIntent';
+    },
+    handle(handlerInput) {
+      console.log('in SubjectIntentHandler');
+      return libraryObj.SubjectIntentHandler.handle(handlerInput);
+    }
+};
+
 const SessionEndedRequestHandler = {
     canHandle(handlerInput) {
       console.log('in session');
