@@ -3,23 +3,34 @@
 // const va = require("virtual-alexa");
 // const { describe, it} = require('mocha');
 const expect = require("chai").expect;
-// const assert = require('chai').assert;
+const assert = require('chai').assert;
 const va = require("virtual-alexa");
 const alexa = va.VirtualAlexa.Builder()
-    .skillURL('http://8ecf1656.ngrok.io/voice/alexa/marketinsights')// Lambda function file and name
+    .skillURL('https://a0a6e05c.ngrok.io/voice/alexa/marketinsights')// Lambda function file and name
     .interactionModelFile("./models/en-US.json") // Path to interaction model file
     .create();
     // .handler('index.handler') 
 
 // let reply = alexa.launch();
 //for launch
-alexa.utter("disclosures").then((payload) => {
-    // console.log('Output');
-    console.log(JSON.stringify(payload.response));
-    expect(payload.response.outputSpeech.ssml).to.include("Disclosure");
-}).catch(err => {
-    console.log(err);
+
+
+describe('DsclosuresIntent', function() {
+    it('Card Contents', function() {
+    //   var arr = [];
+
+        alexa.utter("disclosures").then((payload) => {
+        // console.log('Output');
+            // console.log(JSON.stringify(payload.response));
+            // expect(payload.response.outputSpeech.ssml).to.include("Disclosure");
+            assert.include(JSON.stringify(payload.response.card.text), 'content', 'String contains content')
+        }).catch(err => {
+            console.log('ERROR in DsclosuresIntent test: ' + err );
+        });
+    //   assert.equal(arr.length, 0);
+    });
 });
+
 // alexa.utter("play").then((payload) => {
 //     console.log("OutputSpeech: " + payload.response.outputSpeech.ssml);
 //     // Prints out returned SSML, e.g., "<speak> Welcome to my Skill </speak>"
