@@ -23,7 +23,7 @@ module.exports = {
         // conv.data.commentaryObj = commentaryObj;
 
         const attributes = handlerInput.attributesManager.getSessionAttributes();
-       
+        attributes.state = 'commentary'
         attributes.commentaryObj = commentaryObj;
         handlerInput.attributesManager.setSessionAttributes(attributes);
 

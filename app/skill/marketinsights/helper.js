@@ -435,6 +435,11 @@ const NotesOnTheWeekAheadIntentHandler = {
   handle(handlerInput) {
     console.log('in NotesOnTheWeekAheadIntentHandler');
 
+    //set state for context in session 
+    const attributes = handlerInput.attributesManager.getSessionAttributes();
+    attributes.state = 'notes'
+    handlerInput.attributesManager.setSessionAttributes(attributes);
+
     var notesSpeech = new Speech()
     .audio(lodash.sample(notes.intro.preprompt))
     .audio(notes.preview.prompt)
@@ -653,9 +658,13 @@ const HelpIntentHandler = {
 
     var sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
 
+    console.log('----------------from notes start-------------------');
+    console.log(console.log(sessionAttributes));
+    console.log('----------------from notes start-------------------');
+
+
     if(sessionAttributes 
-      && sessionAttributes.notes 
-      && sessionAttributes.notes.state === 'notes') {
+      && sessionAttributes.state === 'notes') {
 
       console.log('in help for notes ');
       const attributes = handlerInput.attributesManager.getSessionAttributes();
@@ -672,8 +681,7 @@ const HelpIntentHandler = {
 
     } else if(
       sessionAttributes 
-      && sessionAttributes.commentary 
-      && sessionAttributes.commentary.state === 'commentary'
+      && sessionAttributes.state === 'commentary'
     ) {
 
       console.log('in help from fallback');
@@ -719,12 +727,11 @@ const UnhandledIntentHandler = {
     //get the session attributes
     var sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
     
-    console.log('from unhandledIntentHandler ' + JSON.stringify(sessionAttributes));
+    // console.log('from unhandledIntentHandler ' + JSON.stringify(sessionAttributes));
 
     if(
       sessionAttributes 
-      && sessionAttributes.commentary 
-      && sessionAttributes.commentary.state === 'commentary'
+      && sessionAttributes.state === 'commentary'
     ) {
 
       //check whether there is commentary error and update the session
@@ -760,11 +767,16 @@ const UnhandledIntentHandler = {
     var  generalError = sessionAttributes.generalError || 0
     sessionAttributes.generalError = parseInt(generalError, 10) + 1;
 
-
+    console.log('========= from unhandled ===================');
+    console.log(JSON.stringify(sessionAttributes));
+    console.log(generalError);
+    console.log('========= from unhandled ===================');
     //set the value fo general error back to 
     handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
 
-    if(generalError<2) {
+    if(generalError < 2) {
+
+      console.log('************************ in general exceptions unhandled part ************************');
 
       var speech = new Speech();
       speech.audio(lodash.sample(exceptions.unhandled.prompt));
