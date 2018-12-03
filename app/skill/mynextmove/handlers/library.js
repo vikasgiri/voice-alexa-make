@@ -59,7 +59,8 @@ const EpisodeIntentHandler = {
         }
 
         //replace the url and check
-        const feed = await audioFeed.getJSONFeed(process.env.AUDIO_API_URI);
+        // const feed = await audioFeed.getJSONFeed(process.env.AUDIO_API_URI);
+        const feed = audioFeed.getJSONFeed(process.env.AUDIO_API_URI);
         const episode = feed.getEpisode(episodeNumber);
 
         if(episode === '') {
@@ -120,7 +121,8 @@ const SubjectIntentHandler = {
         } else {
 
             //replace with the original url and test
-            const feed = await audioFeed.getJSONFeed(process.env.AUDIO_API_URI);
+            // const feed = await audioFeed.getJSONFeed(process.env.AUDIO_API_URI);
+            const feed = audioFeed.getJSONFeed(process.env.AUDIO_API_URI);
             const subjects = feed.getSubjectList(subject);
 
             const titles = subjects.map(episode => {

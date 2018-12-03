@@ -15,6 +15,7 @@ const LaunchRequestHandler = {
       return handlerInput.requestEnvelope.request.type === 'LaunchRequest';
     },
     handle(handlerInput) {      
+        console.log('In launch handler')
       console.log(JSON.stringify(handlerInput));
       const attributes = handlerInput.attributesManager.getSessionAttributes();
       
@@ -24,93 +25,27 @@ const LaunchRequestHandler = {
       //convert into a method to check whether a user is present and increment visit count
       var userIdVal = handlerInput.requestEnvelope.session.user.userId;
   
-    //   var promiseObj = new Promise(function(resolve, reject) {
-    //     db.user.findOne({
-    //       where: {
-    //         user_id: userIdVal
-    //       }})
-    //       .then(person => {
-    //         console.log('from then user ::::::')
-    //         console.log(JSON.stringify(person)) 
-  
-    //         if(person) { 
-    //           // update
-    //           console.log('update');
-    //           // return obj.update(values);
-    //           visitVal = person.visit + 1;
-    //           db.user.update(
-    //             {visit: visitVal},
-    //             { returning: true, where: {user_id: userIdVal }}
-    //           )
-    //           .then(function(rowsUpdated) {
-    //             console.log('updated visit');
-    //             console.log(rowsUpdated);
-    //             resolve();
-  
-    //           }).catch(err => {
-    //             console.log('error in updating user visit');
-    //             reject();
-    //           })
-            
-  
-    //         } else { // insert
-    //           console.log('insert');
-    //           visitVal = 0
-    //           db.user.create({
-    //             user_id: userIdVal,
-    //             visit:1
-    //           }).then(output => {
-    //               console.log("user record inserted request");
-    //               resolve();
-    //           }).catch(err => {
-    //               console.log('Error in storing the user id record');
-    //               console.log(err);
-    //               reject()
-    //           }) ;
-    //         }
-    //     }).catch(err => {
-    //       console.log('Error in checking user id');
-    //       console.log(err);
-    //       reject();
-    //     });
-  
-    // });
-      
     // helper.card(conv, welcome[USER_TYPE]);
-    console.log('after user : ' + USER_TYPE);
-    const CARD = disclosures.card;
-    // return promiseObj.then(function() {
-        console.log('in promise then');
+    // console.log('after user : ' + USER_TYPE);
+    // const CARD = disclosures.card;
+    // // return promiseObj.then(function() {
+    //     console.log('in promise then');
   
-        USER_TYPE = visitVal < 2 ? 'newUser' : 'returningUser'
-        console.log(visitVal + ' visit count final ' + USER_TYPE + ' is the final ');
+    //     USER_TYPE = visitVal < 2 ? 'newUser' : 'returningUser'
+    //     console.log(visitVal + ' visit count final ' + USER_TYPE + ' is the final ');
         
-        var speech = new Speech();
-        speech.audio(welcome[USER_TYPE].prompt);
-        speech.pause('500ms');
-        var speechOutput = speech.ssml(true);
+    //     var speech = new Speech();
+    //     speech.audio(welcome[USER_TYPE].prompt);
+    //     speech.pause('500ms');
+    //     var speechOutput = speech.ssml(true);
     
-        return handlerInput.responseBuilder
-          .speak(speechOutput)
-          .withStandardCard(CARD.title, CARD.body, 'https://image.shutterstock.com/image-photo/financial-business-color-charts-450w-1039907653.jpg', 'https://image.shutterstock.com/image-photo/financial-business-color-charts-450w-1039907653.jpg')
-          .withShouldEndSession(false)
-          .getResponse();
-        
-      // })
-      // .catch(function(err) {
-      //   console.log('in promise catch');
-      //   console.log(err);
-      //   var speech = new Speech();
-      //   speech.audio(welcome[USER_TYPE].prompt);
-      //   speech.pause('500ms');
-      //   var speechOutput = speech.ssml(true);
+    //     return handlerInput.responseBuilder
+    //       .speak(speechOutput)
+    //       .withStandardCard(CARD.title, CARD.body, 'https://image.shutterstock.com/image-photo/financial-business-color-charts-450w-1039907653.jpg', 'https://image.shutterstock.com/image-photo/financial-business-color-charts-450w-1039907653.jpg')
+    //       .withShouldEndSession(false)
+    //       .getResponse();
+    intentHelper.newWelcomeIntent(handlerInput);
     
-      //   return handlerInput.responseBuilder
-      //     .speak(speechOutput)
-      //     .withStandardCard(CARD.title, CARD.body, 'https://image.shutterstock.com/image-photo/financial-business-color-charts-450w-1039907653.jpg', 'https://image.shutterstock.com/image-photo/financial-business-color-charts-450w-1039907653.jpg')
-      //     .withShouldEndSession(false)
-      //     .getResponse();
-      // });
     } 
 };
 

@@ -73,7 +73,7 @@ router.post('/voice/alexa/marketinsights', function(req, res) {
 
 router.post('/voice/alexa/mynextmove', function(req, res) {
   // console.log("in marketinsights");
-  // console.log("---------------guidetomarket-------------------------");
+  console.log("---------------mynextmove-------------------------");
   // console.log(JSON.stringify(req.body));
   // console.log("---------------guidetomarket-------------------------");
   if (!myNextMove) {
@@ -81,7 +81,7 @@ router.post('/voice/alexa/mynextmove', function(req, res) {
     //change the request and response loggers to common
     myNextMove = Alexa.SkillBuilders.custom()
       .addRequestHandlers(
-        
+        myNextMoveHelper.LaunchRequestHandler
       ).addErrorHandlers(helper.ErrorHandler)
       .addRequestInterceptors(helper.RequestLog)
       .addResponseInterceptors(helper.ResponseLog)
