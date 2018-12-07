@@ -4,7 +4,8 @@ const Alexa = require('ask-sdk');
 const helper = require('./app/skill/marketinsights/helper');
 
 //helper for mynextmove
-const myNextMoveHelper = require('./app/skill/mynextmove/helper');
+const myNextMoveMainHelper = require('./app/skill/mynextmove/handlers/main');
+const myNextMoveIntroIntentHandler = require('./app/skill/mynextmove/handlers/introHandler');
 
 // var Sequelize = require('sequelize');
 const express = require('express');
@@ -81,10 +82,12 @@ router.post('/voice/alexa/mynextmove', function(req, res) {
     //change the request and response loggers to common
     myNextMove = Alexa.SkillBuilders.custom()
       .addRequestHandlers(
-        myNextMoveHelper.LaunchRequestHandler
-      ).addErrorHandlers(helper.ErrorHandler)
-      .addRequestInterceptors(helper.RequestLog)
-      .addResponseInterceptors(helper.ResponseLog)
+        myNextMoveMainHelper.LaunchRequestHandler,
+        myNextMoveMainHelper.NewWelcomeIntentHandler,
+        myNextMoveMainHelper.UnhandledIntentHandler
+      ).addErrorHandlers(myNextMoveMainHelper.ErrorHandler)
+      .addRequestInterceptors(myNextMoveMainHelper.RequestLog)
+      .addResponseInterceptors(myNextMoveMainHelper.ResponseLog)
       .create();
   }
         // .withSkillId('amzn1.ask.skill.d928634f-f6c9-40c9-9b8c-2e14ccd8f5e2')
