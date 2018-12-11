@@ -284,6 +284,10 @@ const EpisodeIntentHandler = {
     
         let episodeNumber ='';
         // handlerInput.requestEnvelope.request.intent.slots.commentaryNumber && handlerInput.requestEnvelope.request.intent.slots.commentaryNumber.value
+
+        console.log('episode number : ' + JSON.stringify(handlerInput.requestEnvelope.request));
+        console.log('episode number : ' + JSON.stringify(handlerInput.requestEnvelope.request.intent.slots.episodeNumber.value));
+
         if(handlerInput.requestEnvelope.request.intent.slots.episodeNumber 
             && handlerInput.requestEnvelope.request.intent.slots.episodeNumber.value) {
             
@@ -295,11 +299,15 @@ const EpisodeIntentHandler = {
         // const feed = audioFeed.getJSONFeed(process.env.AUDIO_API_URI);
         const episode = feed.getEpisode(episodeNumber);
 
-        if(episode === '') {
+        console.log("episode details : " + episode );
+
+        if(!episode || episode === '') {
 
             console.log('in episode if');
             //send to unhandled or fallback
-            this.toIntent('Unhandled');
+            // this.toIntent('Unhandled');
+            return UnhandledIntentHandler.handle(handlerInput);
+
         } else {
 
             console.log('in episode else');
@@ -319,30 +327,6 @@ const EpisodeIntentHandler = {
     }
 }
 
-const YesIntentHandler = {
-    canHandle(handlerInput) {
-     // console.log(handlerInput.requestEnvelope);
-      return handlerInput.requestEnvelope.request.type === 'IntentRequest'
-        && handlerInput.requestEnvelope.request.intent.name === 'AMAZON.YesIntent';
-    },
-    handle(handlerInput) {
-      console.log('in YesIntentHandler');
-  
-      var repromptSpeech = new Speech();
-      repromptSpeech.audio(notes.preview.reprompt);
-       var repromptSpeechOutput = repromptSpeech.ssml(true);
-  
-      var token2 = handlerInput.requestEnvelope.context.System.apiAccessToken;
-        return handlerInput.responseBuilder
-        .addAudioPlayerPlayDirective('REPLACE_ALL', podcastURL, 'wx', 0,null)
-        .withShouldEndSession(true)
-        .getResponse();
-       
-        // .reprompt(repromptSpeechOutput)
-        // .withShouldEndSession(false)
-    }
-  };
-  
 const LatestIntentHandler = {
     canHandle(handlerInput) {
         console.log('in LatestIntentHandler');
@@ -364,6 +348,8 @@ const LatestIntentHandler = {
         // .speak(speechOutput)
         // .withSimpleCard('My Next Move', latest.title)
         return handlerInput.responseBuilder
+        .speak(speechOutput)
+        .withSimpleCard('My Next Move', latest.title)
         .addAudioPlayerPlayDirective('REPLACE_ALL', latest.audioURL, 'wx', 0,null)
         .withShouldEndSession(false)
         .getResponse();
