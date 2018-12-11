@@ -51,31 +51,6 @@ const LaunchRequestHandler = {
 };
 
 
-const NoIntentHandler = {
-    canHandle(handlerInput) {
-        console.log('in no intent');
-        console.log(handlerInput.requestEnvelope.request);
-        return handlerInput.requestEnvelope.request.type === 'IntentRequest'
-        && handlerInput.requestEnvelope.request.intent.name === 'AMAZON.NoIntent';
-    },
-    handle(handlerInput) {
-        console.log('in NoIntentHandler');
-        return SessionEndedRequestHandler.handle(handlerInput);
-    }
-};
-
-const StopIntentHandler = {
-    canHandle(handlerInput) {
-      console.log('in StopIntent');
-      // console.log(handlerInput);
-      return handlerInput.requestEnvelope.request.type === 'IntentRequest'
-        && handlerInput.requestEnvelope.request.intent.name === 'AMAZON.StopIntent';
-    },
-    handle(handlerInput) {
-      console.log('in StopIntentHandler');
-      return SessionEndedRequestHandler.handle(handlerInput);
-    }
-};
 
 const LibraryIntentHandler = {
     canHandle(handlerInput) {
@@ -116,64 +91,6 @@ const SubjectIntentHandler = {
     }
 };
 
-const SessionEndedRequestHandler = {
-    canHandle(handlerInput) {
-      console.log('in session');
-      return  handlerInput.requestEnvelope.request.type === 'IntentRequest'
-      && handlerInput.requestEnvelope.request.type === 'SessionEndedRequest';
-    },
-    handle(handlerInput) {
-      console.log('in SessionEndedRequestHandler');
-  
-      var speech = new Speech();
-      speech.audio(lodash.sample(main.goodbye.prompt));
-      var speechOutput = speech.ssml(true);
-     
-      return handlerInput.responseBuilder
-        .speak(speechOutput)
-        .withShouldEndSession(true)
-        .getResponse();
-    }
-};
-
-const HelpIntentHandler = {
-    canHandle(handlerInput) {
-     console.log('In help intent');
-      return handlerInput.requestEnvelope.request.type === 'IntentRequest'
-        && handlerInput.requestEnvelope.request.intent.name === 'AMAZON.HelpIntent';
-    },
-     
-    handle(handlerInput) {
-        var speech = new Speech();
-        speech.audio(lodash.sample(errors.help.prompt));
-        var speechOutput = speech.ssml(true);
-      
-        return handlerInput.responseBuilder
-          .speak(speechOutput)
-          .withShouldEndSession(false)
-          .getResponse();
-    }
-};
-
-const WhoIsIntentHandler = {
-    canHandle(handlerInput) {
-     console.log('In help intent');
-      return handlerInput.requestEnvelope.request.type === 'IntentRequest'
-        && handlerInput.requestEnvelope.request.intent.name === 'WhoIsIntent';
-    },
-     
-    handle(handlerInput) {
-        var speech = new Speech();
-        speech.audio(main.bio.prompt);
-        var speechOutput = speech.ssml(true);
-      
-        return handlerInput.responseBuilder
-          .speak(speechOutput)
-          .withShouldEndSession(false)
-          .getResponse();
-    }
-};
-
 const UnhandledIntentHandler = {
     canHandle(handlerInput) {
       return handlerInput.requestEnvelope.request.type === 'IntentRequest'
@@ -203,10 +120,6 @@ const UnhandledIntentHandler = {
 
 module.exports = {
     LaunchRequestHandler,
-    NoIntentHandler,
-    SessionEndedRequestHandler,
-    StopIntentHandler,
-    HelpIntentHandler,
-    WhoIsIntentHandler,
+    
     UnhandledIntentHandler
 }
