@@ -273,6 +273,18 @@ const IntroIntent = {
     }
 }
 
+const EpisodeOnlyIntentHandler = {
+    canHandle(handlerInput) {
+        console.log('in EpisodeOnlyIntentHandler');
+        return  handlerInput.requestEnvelope.request.type === 'IntentRequest'
+        && handlerInput.requestEnvelope.request.intent.name === 'EpisodeOnlyIntent';
+    },
+    handle(handlerInput) {
+        console.log('in EpisodeOnlyIntentHandler');
+        return EpisodeIntentHandler.handle(handlerInput);
+    }
+}
+
 const EpisodeIntentHandler = {
     canHandle(handlerInput) {
         console.log('in EpisodeIntentHandler');
@@ -285,7 +297,7 @@ const EpisodeIntentHandler = {
         let episodeNumber ='';
         // handlerInput.requestEnvelope.request.intent.slots.commentaryNumber && handlerInput.requestEnvelope.request.intent.slots.commentaryNumber.value
 
-        console.log('episode number : ' + JSON.stringify(handlerInput.requestEnvelope.request));
+        console.log('episode number : ' + JSON.stringify(handlerInput.requestEnvelope));
         console.log('episode number : ' + JSON.stringify(handlerInput.requestEnvelope.request.intent.slots.episodeNumber.value));
 
         if(handlerInput.requestEnvelope.request.intent.slots.episodeNumber 
@@ -324,6 +336,137 @@ const EpisodeIntentHandler = {
             .getResponse();
         }
         
+    }
+}
+
+
+const SubjectOnlyIntentHandler = {
+    canHandle(handlerInput) {
+        console.log('in SubjectOnlyIntentHandler');
+        return  handlerInput.requestEnvelope.request.type === 'IntentRequest'
+        && handlerInput.requestEnvelope.request.intent.name === 'SubjectOnlyIntent';
+    },
+    handle(handlerInput) {
+        console.log('in SubjectOnlyIntentHandler');
+        return SubjectIntentHandler.handle(handlerInput);
+    }
+}
+
+const SubjectIntentHandler = {
+    canHandle(handlerInput) {
+        console.log('in SubjectIntentHandler');
+        return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+            && handlerInput.requestEnvelope.request.intent.name === 'SubjectIntent';
+    },
+    async handle(handlerInput) {
+        console.log('in SubjectIntentHandler');
+
+        let subject ='';
+        // handlerInput.requestEnvelope.request.intent.slots.commentaryNumber && handlerInput.requestEnvelope.request.intent.slots.commentaryNumber.value
+        if(handlerInput.requestEnvelope.request.intent.slots.subject 
+            && handlerInput.requestEnvelope.request.intent.slots.subject.value) {
+            
+                //const subject = this.getInput('subject').key;
+                subject = handlerInput.requestEnvelope.request.intent.slots.subject.value;
+        }
+
+        if(!subject && subject === '') {
+            return UnhandledIntentHandler.handle(handlerInput);
+        } else {
+
+            //replace with the original url and test
+            // const feed = await audioFeed.getJSONFeed(process.env.AUDIO_API_URI);
+            const feed = await audioFeed.getJSONFeed(feedUrl);
+            const subjects = feed.getSubjectList(subject);
+
+            const titles = subjects.map(episode => {
+                return `episode ${episode.episode_num}, ${episode.title}`
+            })
+            const data =  {
+                titles: titles,
+                prompt: library.episodes.prompt,
+                reprompt: library.episodes.reprompt,
+                repromptMore: library.episodes.repromptMore
+            }
+
+            console.log('before sending to promptepisode from subjectintenthandler');
+            //call the promptepisodes method
+            // this.toStateIntent(state.LIBRARY, 'PromptEpisodes', data);
+            intentHelper.promptEpisodes(handlerInput, data);
+        }
+
+    }
+}
+
+const DescriptionIntentHandler = {
+    canHandle(handlerInput) {
+        console.log('in DescriptionIntentHandler');
+        return  handlerInput.requestEnvelope.request.type === 'IntentRequest'
+        && handlerInput.requestEnvelope.request.intent.name === 'DescriptionIntent';
+    },
+    handle(handlerInput) {
+        console.log('in DescriptionIntentHandler');
+    
+        var speech = new Speech();
+        speech.audio(library.description.prompt);
+        
+        var repromptSpeech = new Speech();
+        repromptSpeech.audio(library.description.prompt);
+
+        //make it ssml
+        var speechOutput = speech.ssml(true);
+        var repromptSpeechOutput = repromptSpeech.ssml(true);
+
+        return handlerInput.responseBuilder
+        .speak(speechOutput)
+        .reprompt(repromptSpeechOutput)
+        .withShouldEndSession(true)
+        .getResponse();
+    }
+}
+
+
+const MoreIntentHandler = {
+    canHandle(handlerInput) {
+        console.log('in MoreIntentHandler');
+        return  handlerInput.requestEnvelope.request.type === 'IntentRequest'
+        && handlerInput.requestEnvelope.request.intent.name === 'MoreIntent';
+    },
+    handle(handlerInput) {
+        console.log('in MoreIntentHandler');
+        
+        const attributes = handlerInput.attributesManager.getSessionAttributes();
+        const titles = attributes.titles;
+
+        if(!titles.length) {
+            var speech = new Speech();
+            speech.audio(lodash.sample(library.nocontent.prompt));
+            
+            var repromptSpeech = new Speech();
+            repromptSpeech.audio(lodash.sample(library.nocontent.prompt));
+
+            //make it ssml
+            var speechOutput = speech.ssml(true);
+            var repromptSpeechOutput = repromptSpeech.ssml(true);
+
+            return handlerInput.responseBuilder
+            .speak(speechOutput)
+            .reprompt(repromptSpeechOutput)
+            .withShouldEndSession(true)
+            .getResponse();
+        } else {
+            const data =  {
+                titles: titles,
+                prompt: library.moreEpisodes.prompt,
+                reprompt: library.moreEpisodes.reprompt,
+                repromptMore: library.moreEpisodes.repromptMore
+            }
+
+            //call the promptepisodes method
+            // this.toStateIntent(state.LIBRARY, 'PromptEpisodes', data);
+            intentHelper.promptEpisodes(handlerInput, data);
+        }
+      
     }
 }
 
@@ -417,6 +560,11 @@ module.exports = {
     SessionEndedRequestHandler,
     LibraryIntentHandler,
     EpisodeIntentHandler,
+    EpisodeOnlyIntentHandler,
+    SubjectIntentHandler,
+    SubjectOnlyIntentHandler,
+    DescriptionIntentHandler,
+    MoreIntentHandler,
     LatestIntentHandler,
     AudioPlayerEventHandler,
     ErrorHandler,

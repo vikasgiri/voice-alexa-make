@@ -81,9 +81,13 @@ router.post('/voice/alexa/mynextmove', function(req, res) {
     //change the request and response loggers to common
     myNextMove = Alexa.SkillBuilders.custom()
       .addRequestHandlers(
-        
+        myNextMoveMainHelper.MoreIntentHandler,
+        myNextMoveMainHelper.DescriptionIntentHandler,
+        myNextMoveMainHelper.SubjectIntentHandler,
+        myNextMoveMainHelper.SubjectOnlyIntentHandler,
         myNextMoveMainHelper.LibraryIntentHandler,
         myNextMoveMainHelper.EpisodeIntentHandler,
+        myNextMoveMainHelper.EpisodeOnlyIntentHandler,
         myNextMoveMainHelper.LatestIntentHandler,
         myNextMoveMainHelper.AudioPlayerEventHandler,
         myNextMoveMainHelper.HelpIntentHandler,

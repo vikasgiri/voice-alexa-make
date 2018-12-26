@@ -63,21 +63,30 @@ module.exports = {
 
         //add speech
         var speech = new Speech();
-        speech.audio(data.prompt)
+        speech.paragraph(data.prompt)
 
         //add reprompt
         var repromptSpeech = new Speech();
-        repromptSpeech.audio(data.reprompt);
+        // repromptSpeech.say(data.reprompt);
 
-        //make it ssml
-        var speechOutput = speech.ssml(true);
-        var repromptSpeechOutput = repromptSpeech.ssml(true);
+        // //make it ssml
+        // var speechOutput = speech.ssml();
+        // var repromptSpeechOutput = repromptSpeech.ssml();
+
+        // var speechOutput = speech.toObject();
+        // var repromptSpeechOutput = repromptSpeech.toObject();
 
         console.log('titles.length', titles.length);
 
+        var speechOutput = speech.ssml();
+        console.log('********************************************');
+        console.log(speechOutput);
+        console.log('********************************************');
+        // console.log(repromptSpeechOutput);
+        console.log('********************************************');
         return handlerInput.responseBuilder
           .speak(speechOutput)
-          .reprompt(repromptSpeechOutput)
+        //   .reprompt(repromptSpeechOutput)
           .withShouldEndSession(false)
           .getResponse();
 

@@ -3,7 +3,7 @@ module.exports = {
         prompt: "https://am.jpmorgan.com/blob-gim/1383563677039/83456/5.0-no.content.1.mp3"
     },
     episodes: {
-        prompt: "<p>Coming right up. We have</p>",
+        prompt: "Coming right up. We have",
         reprompt: "<p>Tell me the episode number you would like to hear</p>",
         repromptMore: "<p>or say more.</p>"
     },
