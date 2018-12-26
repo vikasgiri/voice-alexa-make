@@ -4,8 +4,8 @@ module.exports = {
     },
     episodes: {
         prompt: "Coming right up. We have",
-        reprompt: "<p>Tell me the episode number you would like to hear</p>",
-        repromptMore: "<p>or say more.</p>"
+        reprompt: "Tell me the episode number you would like to hear",
+        repromptMore: "or say more."
     },
     moreEpisodes: {
         prompt: "<p>Here are more episodes</p>",

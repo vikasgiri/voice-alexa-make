@@ -392,7 +392,7 @@ const SubjectIntentHandler = {
             console.log('before sending to promptepisode from subjectintenthandler');
             //call the promptepisodes method
             // this.toStateIntent(state.LIBRARY, 'PromptEpisodes', data);
-            intentHelper.promptEpisodes(handlerInput, data);
+            return intentHelper.promptEpisodes(handlerInput, data);
         }
 
     }
