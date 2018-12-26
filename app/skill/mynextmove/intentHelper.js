@@ -62,28 +62,20 @@ module.exports = {
         // const list = createOxfordCommaList(subSet);
         const list = createOxfordCommaList(subSet);
 
-        console.log('list : ' + JSON.stringify(list));
-        console.log('data.prompt : ' + JSON.stringify(data.prompt));
+        // console.log('list : ' + JSON.stringify(list));
+        // console.log('data.prompt : ' + JSON.stringify(data.prompt));
         //add speech
         var speech = new Speech();
         speech.paragraph(data.prompt)
         speech.paragraph(list)
         speech.paragraph(data.reprompt)
         speech.paragraph(data.repromptMore)
-              //add reprompt
+        //add reprompt
         var repromptSpeech = new Speech();
         repromptSpeech.paragraph(data.reprompt);
         repromptSpeech.paragraph(data.repromptMore);
-
-        // //make it ssml
-        // var speechOutput = speech.ssml();
-        // var repromptSpeechOutput = repromptSpeech.ssml();
-
-        // var speechOutput = speech.toObject();
-        // var repromptSpeechOutput = repromptSpeech.toObject();
-
-        console.log('titles.length', titles.length);
-        console.log('data : ' + JSON.stringify(data));
+        // console.log('titles.length', titles.length);
+        // console.log('data : ' + JSON.stringify(data));
 
         var speechOutput = speech.ssml();
         var repromptSpeechOutput = repromptSpeech.ssml();
@@ -98,11 +90,6 @@ module.exports = {
           .reprompt(repromptSpeechOutput)
           .withShouldEndSession(false)
           .getResponse();
-
-        //need to check and implement this
-        // let reprompt = this.speechBuilder()
-        // .addText(data.reprompt)
-        // .addText(data.repromptMore, titles.length > 0)
 
         // this.followUpState(state.LIBRARY)
         //   .ask(speech, reprompt);

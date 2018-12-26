@@ -546,6 +546,96 @@ const AudioPlayerEventHandler = {
     }
 }
 
+const PauseIntentHandler = {
+    canHandle(handlerInput) {
+      console.log(JSON.stringify(handlerInput.requestEnvelope));
+      return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+        && handlerInput.requestEnvelope.request.intent.name === 'AMAZON.PauseIntent';
+    },
+    handle(handlerInput) {
+      console.log('in PauseIntentHandler');
+      console.log('--------------------------------pause related---------------------------------');
+      console.log(handlerInput.requestEnvelope.context.AudioPlayer.offsetInMilliseconds);
+      console.log(handlerInput.requestEnvelope.context.System.apiAccessToken);
+  
+      var audioPause = {
+        "offsetInMilliseconds": handlerInput.requestEnvelope.context.AudioPlayer.offsetInMilliseconds,
+        "apiAccessToken" : handlerInput.requestEnvelope.context.System.apiAccessToken
+      }
+  
+      var attributes = handlerInput.attributesManager.getSessionAttributes();
+      attributes.audioPause = audioPause;
+      handlerInput.attributesManager.setSessionAttributes(attributes);
+  
+      console.log('--------------------------------pause related---------------------------------');
+      console.log(handlerInput);
+      // var token2 = handlerInput.requestEnvelope.context.System.apiAccessToken;
+        return handlerInput.responseBuilder
+        .addAudioPlayerStopDirective()
+        .withShouldEndSession(false)
+        .getResponse();
+       
+    }
+};
+
+const ResumeIntentHandler = {
+    canHandle(handlerInput) {
+     // console.log(handlerInput.requestEnvelope);
+      return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+        && handlerInput.requestEnvelope.request.intent.name === 'AMAZON.ResumeIntent';
+    },
+    handle(handlerInput) {
+      console.log('in ResumeIntentHandler');
+  
+      var sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
+  
+      // console.log(JSON.stringify(sessionAttributes));
+  
+      // console.log(JSON.stringify(handlerInput.requestEnvelope));
+      // console.log('offset : ' + handlerInput.requestEnvelope.context.AudioPlayer.offsetInMilliseconds);
+      return handlerInput.responseBuilder
+      .addAudioPlayerPlayDirective('REPLACE_ALL', podcastURL, 'wx', handlerInput.requestEnvelope.context.AudioPlayer.offsetInMilliseconds,null)
+      .withShouldEndSession(true)
+      .getResponse();
+     
+    }
+};
+
+const StopIntentHandler = {
+    canHandle(handlerInput) {
+      console.log('in StopIntent');
+      // console.log(handlerInput);
+      return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+        && handlerInput.requestEnvelope.request.intent.name === 'AMAZON.StopIntent';
+    },
+    handle(handlerInput) {
+      console.log('in StopIntentHandler');
+
+      return handlerInput.responseBuilder
+      .addAudioPlayerStopDirective()
+      .withShouldEndSession(true)
+      .getResponse();
+
+    }
+};
+
+const CancelIntentHandler = {
+    //handle/ implement this.alexaSkill().audioPlayer().stop();
+    canHandle(handlerInput) {
+      console.log('in CancelIntent');
+      return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+        && handlerInput.requestEnvelope.request.intent.name === 'AMAZON.CancelIntent';
+    },
+    handle(handlerInput) {
+      console.log('in CancelIntentHandler');
+      return handlerInput.responseBuilder
+      .addAudioPlayerStopDirective()
+      .withShouldEndSession(true)
+      .getResponse();
+
+    }
+};
+
 module.exports = {
     LaunchRequestHandler,
     NewWelcomeIntentHandler,
@@ -565,6 +655,8 @@ module.exports = {
     MoreIntentHandler,
     LatestIntentHandler,
     AudioPlayerEventHandler,
+    PauseIntentHandler,
+    ResumeIntentHandler,
     ErrorHandler,
     RequestLog,
     ResponseLog
