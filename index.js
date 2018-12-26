@@ -6,6 +6,8 @@ const helper = require('./app/skill/marketinsights/helper');
 //helper for mynextmove
 const myNextMoveMainHelper = require('./app/skill/mynextmove/handlers/main');
 
+//helper for eyeonthemarket
+const eyeOnTheMarketHelper = require('./app/skill/eyeonthemarket/handlers/main');
 // var Sequelize = require('sequelize');
 const express = require('express');
 var bodyParser = require('body-parser');
@@ -131,28 +133,15 @@ router.post('/voice/alexa/eyeonthemarket', function(req, res) {
     //change the request and response loggers to common
     eyeonthemarket = Alexa.SkillBuilders.custom()
       .addRequestHandlers(
-        myNextMoveMainHelper.MoreIntentHandler,
-        myNextMoveMainHelper.DescriptionIntentHandler,
-        myNextMoveMainHelper.SubjectIntentHandler,
-        myNextMoveMainHelper.SubjectOnlyIntentHandler,
-        myNextMoveMainHelper.LibraryIntentHandler,
-        myNextMoveMainHelper.EpisodeIntentHandler,
-        myNextMoveMainHelper.EpisodeOnlyIntentHandler,
-        myNextMoveMainHelper.LatestIntentHandler,
-        myNextMoveMainHelper.AudioPlayerEventHandler,
-        myNextMoveMainHelper.HelpIntentHandler,
-        myNextMoveMainHelper.NoIntentHandler,
-        myNextMoveMainHelper.StopIntentHandler,
-        myNextMoveMainHelper.SessionEndedRequestHandler,
-        myNextMoveMainHelper.WhoIsIntentHandler,
-        myNextMoveMainHelper.UnhandledIntentHandler,
-        myNextMoveMainHelper.LaunchRequestHandler,
-        myNextMoveMainHelper.NewWelcomeIntentHandler,
-        myNextMoveMainHelper.WelcomeIntentHandler
-        
-      ).addErrorHandlers(myNextMoveMainHelper.ErrorHandler)
-      .addRequestInterceptors(myNextMoveMainHelper.RequestLog)
-      .addResponseInterceptors(myNextMoveMainHelper.ResponseLog)
+        eyeOnTheMarketHelper.AboutMichaelIntentHandler,
+        eyeOnTheMarketHelper.NewContentIntentHandler,
+        eyeOnTheMarketHelper.AudioPlayerEventHandler,
+        eyeOnTheMarketHelper.LaunchRequestHandler,
+        eyeOnTheMarketHelper.SessionEndedRequestHandler,
+        eyeOnTheMarketHelper.UnhandledIntentHandler
+      ).addErrorHandlers(eyeOnTheMarketHelper.ErrorHandler)
+      .addRequestInterceptors(eyeOnTheMarketHelper.RequestLog)
+      .addResponseInterceptors(eyeOnTheMarketHelper.ResponseLog)
       .create();
   }
         // .withSkillId('amzn1.ask.skill.d928634f-f6c9-40c9-9b8c-2e14ccd8f5e2')

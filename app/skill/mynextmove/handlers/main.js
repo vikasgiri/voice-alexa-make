@@ -166,18 +166,19 @@ const NoIntentHandler = {
     }
 };
 
-const StopIntentHandler = {
-    canHandle(handlerInput) {
-      console.log('in StopIntent');
-      // console.log(handlerInput);
-      return handlerInput.requestEnvelope.request.type === 'IntentRequest'
-        && handlerInput.requestEnvelope.request.intent.name === 'AMAZON.StopIntent';
-    },
-    handle(handlerInput) {
-      console.log('in StopIntentHandler');
-      return SessionEndedRequestHandler.handle(handlerInput);
-    }
-};
+//need to merge the code and update
+// const StopIntentHandler = {
+//     canHandle(handlerInput) {
+//       console.log('in StopIntent');
+//       // console.log(handlerInput);
+//       return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+//         && handlerInput.requestEnvelope.request.intent.name === 'AMAZON.StopIntent';
+//     },
+//     handle(handlerInput) {
+//       console.log('in StopIntentHandler');
+//       return SessionEndedRequestHandler.handle(handlerInput);
+//     }
+// };
 
 const UnhandledIntentHandler = {
     canHandle(handlerInput) {
