@@ -637,7 +637,45 @@ const CancelIntentHandler = {
     }
 };
 
+//intents to get the notifications
+const SkillEventHandler = {
+    canHandle(handlerInput) {
+      const request = handlerInput.requestEnvelope.request;
+      return (request.type === 'AlexaSkillEvent.SkillEnabled' ||
+        request.type === 'AlexaSkillEvent.SkillDisabled' ||
+        request.type === 'AlexaSkillEvent.SkillPermissionAccepted' ||
+        request.type === 'AlexaSkillEvent.SkillPermissionChanged' ||
+        request.type === 'AlexaSkillEvent.SkillAccountLinked');
+    },
+    handle(handlerInput) {
+      const userId = handlerInput.requestEnvelope.context.System.user.userId;
+      let acceptedPermissions;
+      switch (handlerInput.requestEnvelope.request.type) {
+        case 'AlexaSkillEvent.SkillEnabled':
+          console.log(`skill was enabled for user: ${userId}`);
+          break;
+        case 'AlexaSkillEvent.SkillDisabled':
+          console.log(`skill was disabled for user: ${userId}`);
+          break;
+        case 'AlexaSkillEvent.SkillPermissionAccepted':
+          acceptedPermissions = JSON.stringify(handlerInput.requestEnvelope.request.body.acceptedPermissions);
+          console.log(`skill permissions were accepted for user ${userId}. New permissions: ${acceptedPermissions}`);
+          break;
+        case 'AlexaSkillEvent.SkillPermissionChanged':
+          acceptedPermissions = JSON.stringify(handlerInput.requestEnvelope.request.body.acceptedPermissions);
+          console.log(`skill permissions were changed for user ${userId}. New permissions: ${acceptedPermissions}`);
+          break;
+        case 'AlexaSkillEvent.SkillAccountLinked':
+          console.log(`skill account was linked for user ${userId}`);
+          break;
+        default:
+          console.log(`unexpected request type: ${handlerInput.requestEnvelope.request.type}`);
+      }
+    },
+  };
+
 module.exports = {
+    SkillEventHandler,
     LaunchRequestHandler,
     NewWelcomeIntentHandler,
     WelcomeIntentHandler,

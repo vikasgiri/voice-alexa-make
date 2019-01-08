@@ -4,5 +4,6 @@ applications:
   instances: 1
   random-route: true
   memory: 256M
-  command: node server.js
+  buildpack: https://github.com/cloudfoundry/nodejs-buildpack
+  command: node index.js
   host: alexa-ask

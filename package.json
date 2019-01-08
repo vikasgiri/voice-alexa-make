@@ -2,7 +2,7 @@
   "name": "guide_to_market",
   "version": "1.0.0",
   "description": "gude_to_market with express.",
-  "main": "server.js",
+  "main": "index.js",
   "alexa": {
     "applicationId": "amzn1.ask.skill.047a0c51-44a6-423a-9272-a324b6af372c"
   },
@@ -20,5 +20,8 @@
     "sequelize": "^4.41.0",
     "ssml-builder": "^0.4.3",
     "xml2js-es6-promise": "^1.1.1"
+  },
+  "engines": {
+    "node": "8.15.0"
   }
 }
