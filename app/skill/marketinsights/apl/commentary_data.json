@@ -1,0 +1,57 @@
+{
+    "bodyTemplate2Data": {
+        "type": "object",
+        "objectId": "bt2Sample",
+        "backgroundImage": {
+            "contentDescription": null,
+            "smallSourceUrl": null,
+            "largeSourceUrl": null,
+            "sources": [
+                {
+                    "url": "https://s3.amazonaws.com/vm-alexa/alexa-chase-voice/black-background.png",
+                    "size": "small",
+                    "widthPixels": 0,
+                    "heightPixels": 0
+                },
+                {
+                    "url": "https://s3.amazonaws.com/vm-alexa/alexa-chase-voice/black-background.png",
+                    "size": "large",
+                    "widthPixels": 0,
+                    "heightPixels": 0
+                }
+            ]
+        },
+        "title": "Page 19",
+        "image": {
+            "contentDescription": null,
+            "smallSourceUrl": null,
+            "largeSourceUrl": null,
+            "sources": [
+                {
+                    "url": "https://s3.amazonaws.com/vm-alexa/alexa-chase-voice/VM_JPM_DDK__Slide3_Spot.png",
+                    "size": "small",
+                    "widthPixels": 0,
+                    "heightPixels": 0
+                },
+                {
+                    "url": "https://s3.amazonaws.com/vm-alexa/alexa-chase-voice/VM_JPM_DDK__Slide3_Show.png",
+                    "size": "large",
+                    "widthPixels": 0,
+                    "heightPixels": 0
+                }
+            ]
+        },
+        "textContent": {
+            "title": {
+                "type": "PlainText",
+                "text": "Economic growth and the composition of GDP"
+            },
+            "primaryText": {
+                "type": "PlainText",
+                "text": "Although GDP growth picked up at the end of 2018, we expect growth to slow to roughly 2% yoy by the middle of 2019."
+            }
+        },
+        "logoUrl": "https://s3.amazonaws.com/vm-alexa/alexa-chase-voice/51%2BlPD%2BrXWL._SL210_QL95_BG0%2C0%2C0%2C0_FMpng_.png",
+        "hintText": "Try, \"Alexa, play the next commentary\""
+    }
+}
