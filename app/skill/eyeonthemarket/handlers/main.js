@@ -202,6 +202,44 @@ const YesIntentHandler = {
     }
   };
 
+
+//intents to get the notifications
+const SkillEventHandler = {
+  canHandle(handlerInput) {
+    const request = handlerInput.requestEnvelope.request;
+    return (request.type === 'AlexaSkillEvent.SkillEnabled' ||
+      request.type === 'AlexaSkillEvent.SkillDisabled' ||
+      request.type === 'AlexaSkillEvent.SkillPermissionAccepted' ||
+      request.type === 'AlexaSkillEvent.SkillPermissionChanged' ||
+      request.type === 'AlexaSkillEvent.SkillAccountLinked');
+  },
+  handle(handlerInput) {
+    const userId = handlerInput.requestEnvelope.context.System.user.userId;
+    let acceptedPermissions;
+    switch (handlerInput.requestEnvelope.request.type) {
+      case 'AlexaSkillEvent.SkillEnabled':
+        console.log(`skill was enabled for user: ${userId}`);
+        break;
+      case 'AlexaSkillEvent.SkillDisabled':
+        console.log(`skill was disabled for user: ${userId}`);
+        break;
+      case 'AlexaSkillEvent.SkillPermissionAccepted':
+        acceptedPermissions = JSON.stringify(handlerInput.requestEnvelope.request.body.acceptedPermissions);
+        console.log(`skill permissions were accepted for user ${userId}. New permissions: ${acceptedPermissions}`);
+        break;
+      case 'AlexaSkillEvent.SkillPermissionChanged':
+        acceptedPermissions = JSON.stringify(handlerInput.requestEnvelope.request.body.acceptedPermissions);
+        console.log(`skill permissions were changed for user ${userId}. New permissions: ${acceptedPermissions}`);
+        break;
+      case 'AlexaSkillEvent.SkillAccountLinked':
+        console.log(`skill account was linked for user ${userId}`);
+        break;
+      default:
+        console.log(`unexpected request type: ${handlerInput.requestEnvelope.request.type}`);
+    }
+  },
+};
+
 // 'PodcastIntent': function() {
 //     const PLATFORM_TYPE = this.getType();
 //     if (PLATFORM_TYPE === 'AlexaSkill') {
@@ -217,6 +255,28 @@ const YesIntentHandler = {
 // 'NotificationIntent': function() {
 //     this.toStateIntent(welcomeState, 'NotificationIntent');
 // }
+
+//helpintent
+const NotificationIntentHandler = {
+  canHandle(handlerInput) {
+   console.log('In help intent');
+    return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+      && handlerInput.requestEnvelope.request.intent.name === 'NotificationIntent';
+  },
+   
+  handle(handlerInput) {
+      var speech = new Speech();
+      speech.paragraph(welcome.notifications.prompt);
+      
+      //make it ssml
+      var speechOutput = speech.ssml(true);
+
+      return handlerInput.responseBuilder
+      .speak(speechOutput)
+      .withShouldEndSession(true)
+      .getResponse();
+}
+};
 
 //helpintent
 const HelpIntentHandler = {
@@ -438,6 +498,7 @@ module.exports = {
     AboutMichaelIntentHandler,
     NewContentIntentHandler,
     HelpIntentHandler,
+    SkillEventHandler,
     ErrorHandler,
     RequestLog,
     ResponseLog
