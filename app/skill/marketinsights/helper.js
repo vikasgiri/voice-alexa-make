@@ -339,7 +339,23 @@ const CommentaryIntentHandler = {
       && handlerInput.requestEnvelope.request.intent.name === 'CommentaryIntent';
   },
   handle(handlerInput) {
-    console.log('in CommentaryIntentHandler');
+    console.log('in CommentaryIntentHandler&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&');
+
+    if(handlerInput.requestEnvelope.request.intent.slots.commentaryNumber && !handlerInput.requestEnvelope.request.intent.slots.commentaryNumber.value ) {
+
+      console.log("commentary value : " + JSON.stringify(handlerInput.requestEnvelope.request.intent));
+        console.log("commentary introduction");
+        var speech = new Speech();
+        speech.audio(lodash.sample(commentary.intro.prompt));
+        var speechOutput = speech.ssml(true);
+      
+        return handlerInput.responseBuilder
+          .speak(speechOutput)
+          .withShouldEndSession(false)
+          .getResponse();
+        
+    }
+
     return PlayClipForIntentHandler.handle(handlerInput);
   }
 };
