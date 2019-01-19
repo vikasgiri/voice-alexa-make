@@ -220,7 +220,7 @@ const DisclosuresIntentHandler = {
 
 const NoIntentHandler = {
   canHandle(handlerInput) {
-    console.log('in no intent');
+    console.log('in no intent : i am here ');
     console.log(handlerInput.requestEnvelope.request);
     return handlerInput.requestEnvelope.request.type === 'IntentRequest'
       && handlerInput.requestEnvelope.request.intent.name === 'AMAZON.NoIntent';
@@ -291,7 +291,7 @@ const PlayClipForIntentHandler = {
   canHandle(handlerInput) {
 
     console.log('canhandle')
-    console.log(handlerInput.requestEnvelope.request.intent.name);
+    // console.log(handlerInput.requestEnvelope.request.intent.name);
     return handlerInput.requestEnvelope.request.type === 'IntentRequest' && handlerInput.requestEnvelope.request.intent.name === 'PlayClipForIntent';
   },
   handle(handlerInput) {
@@ -686,9 +686,13 @@ const HelpIntentHandler = {
 
     var sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
 
+    console.log('----------------from notes start-------------------');
+    console.log(console.log(sessionAttributes));
+    console.log('----------------from notes start-------------------');
+
+
     if(sessionAttributes 
-      && sessionAttributes.notes 
-      && sessionAttributes.notes.state === 'notes') {
+      && sessionAttributes.state === 'notes') {
 
       console.log('in help for notes ');
       const attributes = handlerInput.attributesManager.getSessionAttributes();
@@ -705,8 +709,7 @@ const HelpIntentHandler = {
 
     } else if(
       sessionAttributes 
-      && sessionAttributes.commentary 
-      && sessionAttributes.commentary.state === 'commentary'
+      && sessionAttributes.state === 'commentary'
     ) {
 
       console.log('in help from fallback');
@@ -752,12 +755,11 @@ const UnhandledIntentHandler = {
     //get the session attributes
     var sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
     
-    console.log('from unhandledIntentHandler ' + JSON.stringify(sessionAttributes));
+    // console.log('from unhandledIntentHandler ' + JSON.stringify(sessionAttributes));
 
     if(
       sessionAttributes 
-      && sessionAttributes.commentary 
-      && sessionAttributes.commentary.state === 'commentary'
+      && sessionAttributes.state === 'commentary'
     ) {
 
       //check whether there is commentary error and update the session
@@ -793,11 +795,16 @@ const UnhandledIntentHandler = {
     var  generalError = sessionAttributes.generalError || 0
     sessionAttributes.generalError = parseInt(generalError, 10) + 1;
 
-
+    console.log('========= from unhandled ===================');
+    console.log(JSON.stringify(sessionAttributes));
+    console.log(generalError);
+    console.log('========= from unhandled ===================');
     //set the value fo general error back to 
     handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
 
-    if(generalError<2) {
+    if(generalError < 2) {
+
+      console.log('************************ in general exceptions unhandled part ************************');
 
       var speech = new Speech();
       speech.audio(lodash.sample(exceptions.unhandled.prompt));
@@ -844,14 +851,50 @@ const RequestLog = {
         attributes.currentIntent = 'LaunchRequest';
         handlerInput.attributesManager.setSessionAttributes(attributes);
       } else {
-        console.log("in else : " + handlerInput.requestEnvelope.request.intent.name );
-        const attributes = handlerInput.attributesManager.getSessionAttributes();
-        attributes.previousIntent = attributes.currentIntent;
-        attributes.currentIntent = handlerInput.requestEnvelope.request.intent.name;
-        handlerInput.attributesManager.setSessionAttributes(attributes);
+
+        if(handlerInput.requestEnvelope.request.intent 
+          && handlerInput.requestEnvelope.request.intent.name) {
+
+          
+          console.log("in else : " + handlerInput.requestEnvelope.request.intent.name );
+          const attributes = handlerInput.attributesManager.getSessionAttributes();
+          attributes.previousIntent = attributes.currentIntent;
+          attributes.currentIntent = handlerInput.requestEnvelope.request.intent.name;
+
+          if(handlerInput.requestEnvelope.request.intent.name === 'PlayClipForIntent'
+          || handlerInput.requestEnvelope.request.intent.name === 'CommentaryIntent'
+          || handlerInput.requestEnvelope.request.intent.name === 'AMAZON.NextIntent'
+          || handlerInput.requestEnvelope.request.intent.name === 'AMAZON.RepeatIntent'
+          || handlerInput.requestEnvelope.request.intent.name === 'NextMessageIntent'
+          ) {
+
+            attributes.state = 'commentary'
+            console.log('Request Log : commentary : ' + attributes.state);
+            
+          } else if(handlerInput.requestEnvelope.request.intent.name === 'NotesOnTheWeekAheadIntent' 
+          || handlerInput.requestEnvelope.request.intent.name === 'AMAZON.YesIntent'
+          || handlerInput.requestEnvelope.request.intent.name === 'AMAZON.PauseIntent'
+          || handlerInput.requestEnvelope.request.intent.name === 'AMAZON.ResumeIntent'
+          ) {
+            
+            attributes.state = 'notes';
+            console.log('Request Log : notes : ' + attributes.state);
+
+          } else {
+
+              if(handlerInput.requestEnvelope.request.intent.name !== 'AMAZON.HelpIntent') {
+                attributes.state = '';
+              }
+              console.log('Request Log : else : ' + attributes.state);
+          }
+
+          handlerInput.attributesManager.setSessionAttributes(attributes);
+
+       }
       }
 
-      console.log('THIS.EVENT = ' + JSON.stringify(this.event));
+
+      // console.log('THIS.EVENT = ' + JSON.stringify(this.event));
       console.log("REQUEST ENVELOPE = " + JSON.stringify(handlerInput.requestEnvelope));
     } catch (error) {
       console.log(error)

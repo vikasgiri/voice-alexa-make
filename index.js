@@ -75,7 +75,7 @@ router.post('/voice/alexa/marketinsights', function(req, res) {
       res.json(responseBody);
     })
     .catch(function(error) {
-      console.log(error);
+      // console.log(error);
       res.status(500).send('Error during the request');
     });
 });
