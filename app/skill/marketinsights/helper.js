@@ -93,10 +93,11 @@ const WhatIsThisIntentHandler = {
 
 const LaunchRequestHandler = {
   canHandle(handlerInput) {
+    console.log('market-insights launch');
     return handlerInput.requestEnvelope.request.type === 'LaunchRequest';
   },
   handle(handlerInput) {      
-    console.log(JSON.stringify(handlerInput));
+    console.log("in LaunchRequestHandler");
     const attributes = handlerInput.attributesManager.getSessionAttributes();
     
     //check whether user is new or registered
@@ -173,7 +174,7 @@ const LaunchRequestHandler = {
   
       return handlerInput.responseBuilder
         .speak(speechOutput)
-        .withStandardCard(CARD.title, CARD.body, 'https://image.shutterstock.com/image-photo/financial-business-color-charts-450w-1039907653.jpg', 'https://image.shutterstock.com/image-photo/financial-business-color-charts-450w-1039907653.jpg')
+        .withStandardCard(CARD.title, CARD.body, 'https://s3.amazonaws.com/alexa-chase-voice/image/alexa_card_logo_small.png', 'https://s3.amazonaws.com/alexa-chase-voice/image/alexa_card_logo_large.png')
         .withShouldEndSession(false)
         .getResponse();
       
@@ -240,10 +241,19 @@ const StopIntentHandler = {
   handle(handlerInput) {
     console.log('in StopIntentHandler');
 
+    //if condition to check whether it has currentintent the pervious value
+
+    const attributes = handlerInput.attributesManager.getSessionAttributes();
+    console.log("Previous Intent : " + attributes.previousIntent);
+
+    if(attributes.previousIntent !== 'CommentaryIntent') {
+      return CancelIntentHandler.handle(handlerInput);  
+    }
+    
     var speech = new Speech();
     speech.audio(lodash.sample(commentary.stop.prompt));
     var speechOutput = speech.ssml(true);
-   
+  
     return handlerInput.responseBuilder
       .speak(speechOutput)
       .withShouldEndSession(false)
@@ -807,20 +817,29 @@ const ErrorHandler = {
 //logging request to database
 const RequestLog = {
   process(handlerInput) {
-    console.log('THIS.EVENT = ' + JSON.stringify(this.event));
-    console.log("REQUEST ENVELOPE = " + JSON.stringify(handlerInput.requestEnvelope));
-    // Sequelize.sync().then(function () {
-    // Table created
-    // return db.voicedata.create({
-    //           logdata: JSON.stringify(handlerInput)
-    //         }).then(output => {
-    //             console.log("log inserted request");
-    //         }).catch(err => {
-    //             console.log('Error in storing the request log record');
-    //             console.log(err);
-    //         }) ;
-    // });
-    
+    try {
+      //get the session attributes
+      //in launch only set the 
+      if(handlerInput.requestEnvelope.request.type === 'LaunchRequest') {
+        console.log("in if : " + JSON.stringify(handlerInput.requestEnvelope.request));
+        console.log("in if : " + handlerInput.requestEnvelope.request.type );
+        const attributes = handlerInput.attributesManager.getSessionAttributes();
+        attributes.previousIntent = 'LaunchRequest';
+        attributes.currentIntent = 'LaunchRequest';
+        handlerInput.attributesManager.setSessionAttributes(attributes);
+      } else {
+        console.log("in else : " + handlerInput.requestEnvelope.request.intent.name );
+        const attributes = handlerInput.attributesManager.getSessionAttributes();
+        attributes.previousIntent = attributes.currentIntent;
+        attributes.currentIntent = handlerInput.requestEnvelope.request.intent.name;
+        handlerInput.attributesManager.setSessionAttributes(attributes);
+      }
+
+      console.log('THIS.EVENT = ' + JSON.stringify(this.event));
+      console.log("REQUEST ENVELOPE = " + JSON.stringify(handlerInput.requestEnvelope));
+    } catch (error) {
+      console.log(error)
+    }
   }
 };
 

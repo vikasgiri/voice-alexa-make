@@ -16,9 +16,15 @@ var port = process.env.VCAP_APP_PORT || 3000;
 
 const app = express();
 var router = express.Router();
+// accept url encoded
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
 
 app.use(bodyParser.json());
 app.use(router);
+
+
 
 let helloSkill;
 let myNextMove;
