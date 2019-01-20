@@ -108,6 +108,7 @@ router.post('/voice/alexa/mynextmove', function(req, res) {
         myNextMoveMainHelper.LaunchRequestHandler,
         myNextMoveMainHelper.NewWelcomeIntentHandler,
         myNextMoveMainHelper.WelcomeIntentHandler,
+        myNextMoveMainHelper.YesIntentHandler,
         myNextMoveMainHelper.SkillEventHandler
         
       ).addErrorHandlers(myNextMoveMainHelper.ErrorHandler)
@@ -146,6 +147,12 @@ router.post('/voice/alexa/eyeonthemarket', function(req, res) {
         eyeOnTheMarketHelper.LaunchRequestHandler,
         eyeOnTheMarketHelper.SessionEndedRequestHandler,
         eyeOnTheMarketHelper.SkillEventHandler,
+        eyeOnTheMarketHelper.CancelIntentHandler,
+        eyeOnTheMarketHelper.StopIntentHandler,
+        eyeOnTheMarketHelper.HelpIntentHandler,
+        eyeOnTheMarketHelper.PodcastIntentHandler,
+        eyeOnTheMarketHelper.PauseIntentHandler,
+        eyeOnTheMarketHelper.ResumeIntentHandler,
         eyeOnTheMarketHelper.UnhandledIntentHandler
       ).addErrorHandlers(eyeOnTheMarketHelper.ErrorHandler)
       .addRequestInterceptors(eyeOnTheMarketHelper.RequestLog)

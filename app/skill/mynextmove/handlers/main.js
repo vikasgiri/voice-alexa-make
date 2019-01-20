@@ -153,6 +153,18 @@ const WhoIsIntentHandler = {
     }
 };
 
+const YesIntentHandler = {
+    canHandle(handlerInput) {
+        console.log('in YesIntentHandler');
+        return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+        && handlerInput.requestEnvelope.request.intent.name === 'AMAZON.YesIntent';
+    },
+    handle(handlerInput) {
+        console.log('in YesIntentHandler');
+        return LatestIntentHandler.handle(handlerInput);
+    }
+};
+
 const NoIntentHandler = {
     canHandle(handlerInput) {
         console.log('in no intent');
@@ -696,6 +708,7 @@ module.exports = {
     AudioPlayerEventHandler,
     PauseIntentHandler,
     ResumeIntentHandler,
+    YesIntentHandler,
     ErrorHandler,
     RequestLog,
     ResponseLog
