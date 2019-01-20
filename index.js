@@ -109,8 +109,11 @@ router.post('/voice/alexa/mynextmove', function(req, res) {
         myNextMoveMainHelper.NewWelcomeIntentHandler,
         myNextMoveMainHelper.WelcomeIntentHandler,
         myNextMoveMainHelper.YesIntentHandler,
-        myNextMoveMainHelper.SkillEventHandler
-        
+        myNextMoveMainHelper.SkillEventHandler,
+        myNextMoveMainHelper.CancelIntentHandler,
+        myNextMoveMainHelper.PlaybackHandler,
+        myNextMoveMainHelper.PauseIntentHandler,
+        myNextMoveMainHelper.ResumeIntentHandler
       ).addErrorHandlers(myNextMoveMainHelper.ErrorHandler)
       .addRequestInterceptors(myNextMoveMainHelper.RequestLog)
       .addResponseInterceptors(myNextMoveMainHelper.ResponseLog)

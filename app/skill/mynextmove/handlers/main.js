@@ -7,6 +7,8 @@ const library = require('../responses/library');
 const audioPlayer = require('../responses/audioPlayer');
 const AudioFeed = require('../libs/audio-feed-api');
 
+var podcastURL = '';
+
 const feedUrl = 'https://am.jpmorgan.com/us/en/asset-management/gim/adv/alexarss/voice-insights/My-Next-Move';
 const audioFeed = new AudioFeed(feedUrl);
 // const audioFeed = new AudioFeed(process.env.AUDIO_API_URI);
@@ -238,7 +240,7 @@ const ErrorHandler = {
 const RequestLog = {
     process(handlerInput) {
       console.log('THIS.EVENT = ' + JSON.stringify(this.event));
-      console.log("REQUEST ENVELOPE MY-NEXT-MOVE : " + JSON.stringify(handlerInput.requestEnvelope));
+      console.log("REQUEST ENVELOPE MY-NEXT-MOVE : " + JSON.stringify(handlerInput));
     }
 };
   
@@ -322,6 +324,7 @@ const EpisodeIntentHandler = {
         // const feed = audioFeed.getJSONFeed(process.env.AUDIO_API_URI);
         const episode = feed.getEpisode(episodeNumber);
 
+        
         console.log("episode details : " + episode );
 
         if(!episode || episode === '') {
@@ -339,6 +342,8 @@ const EpisodeIntentHandler = {
             speech.audio(lodash.sample(audioPlayer.yes.prompt));
             var speechOutput = speech.ssml(true);
 
+            podcastURL = episode.audioURL;
+            
             return handlerInput.responseBuilder
             .speak(speechOutput)
             .withSimpleCard(episode.title, episode.description)
@@ -494,7 +499,9 @@ const LatestIntentHandler = {
         const latest = feed.getLatest();
 
         console.log('latest ===>', latest);
-            
+        
+        podcastURL = latest.audioURL;
+
         var speech = new Speech();
         speech.audio(lodash.sample(audioPlayer.yes.prompt));
         var speechOutput = speech.ssml(true);
@@ -600,7 +607,7 @@ const ResumeIntentHandler = {
     handle(handlerInput) {
       console.log('in ResumeIntentHandler');
   
-      var sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
+    //   var sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
   
       // console.log(JSON.stringify(sessionAttributes));
   
@@ -686,6 +693,34 @@ const SkillEventHandler = {
     },
   };
 
+const PlaybackHandler = {
+    canHandle(handlerInput) {
+        console.log('in PlaybackHandler');
+      
+        const request = handlerInput.requestEnvelope.request;
+        return (request.type === 'PlaybackController.PlayCommandIssued' ||
+        request.type === 'PlaybackController.PauseCommandIssued');
+    },
+    handle(handlerInput) {
+        console.log('in PlaybackHandler');
+     
+      switch (handlerInput.requestEnvelope.request.type) {
+        case 'PlaybackController.PlayCommandIssued':
+          ResumeIntentHandler.handle(handlerInput);
+          break;
+        case 'PlaybackController.PauseCommandIssued':
+          PauseIntentHandler.handle(handlerInput);
+          break;
+        
+        default:
+          console.log(`unexpected request type: ${handlerInput.requestEnvelope.request.type}`);
+      }
+    }
+};
+
+
+
+  
 module.exports = {
     SkillEventHandler,
     LaunchRequestHandler,
@@ -709,6 +744,8 @@ module.exports = {
     PauseIntentHandler,
     ResumeIntentHandler,
     YesIntentHandler,
+    CancelIntentHandler,
+    PlaybackHandler,
     ErrorHandler,
     RequestLog,
     ResponseLog
