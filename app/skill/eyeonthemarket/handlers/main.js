@@ -20,26 +20,109 @@ const LaunchRequestHandler = {
     async handle(handlerInput) {
       console.log('In launch handler')
 
-      const feed = await audioFeed.getJSONFeed(feedUrl);
-      const sortedData = feed.getSortedAudioUrl();
-      const audioURLFeed = sortedData[sortedData.length - 1].audioURL
+      var dataObj = {};
+      dataObj.userid = handlerInput.requestEnvelope.session.user.userId;
+      dataObj.skillid = handlerInput.requestEnvelope.session.application.applicationId;
 
-      console.log('latest ===>', audioURLFeed);
+      var options = {
+        method: 'POST',
+        uri: feedUrl,
+        body: dataObj,
+        json: true // Automatically stringifies the body to JSON
+      };
 
-      podcastUrl = audioURLFeed;
-      
-      var speech = new Speech();
-      speech.audio(lodash.sample(welcome.subscribedUser.prompt));
-      var speechOutput = speech.ssml(true);
+      var promiseObj = new Promise(function(resolve, reject) {
+          request(options)
+            .then(function (result) {
+                resolve(result);
+            })
+            .catch(function (err) {
+                reject();
+            });
+      });
 
-      // .speak(speechOutput)
-      // .withSimpleCard('My Next Move', latest.title)
-      return handlerInput.responseBuilder
-      .speak(speechOutput)
-      .withSimpleCard('Eye on the market', 'Eye on the market')
-      .addAudioPlayerPlayDirective('REPLACE_ALL', audioURLFeed, 'wx', 0,null)
-      .withShouldEndSession(false)
-      .getResponse();
+      return promiseObj.then(function(result) {
+
+        // if (!this.user().data.subscription) this.user().data.subscription = false;
+        // const subCheck = this.user().data.subscription;
+        const subCheck = false;
+        const USER_TYPE = result.visit_count < 2 ? 'newUser' : subCheck ? 'subscribedUser' : 'returningUser'
+        
+        var speech = new Speech();
+
+        if(result.visit_count < 4) {
+          speech.audio(lodash.sample(welcome[USER_TYPE].prompt));
+        } else if(result.visit_count >= 4) {
+          speech.audio(lodash.sample(welcome.subscribedUser.prompt));
+        }
+
+        var speechOutput = speech.ssml(true);
+        // .addText(welcome.notifications.prompt, this.user().data.visits < 4 && !subCheck);
+
+        //implement below
+        // if (this.user().data.visits < 4 && !subCheck && PLATFORM_TYPE === 'AlexaSkill') {
+        //   if (this.user().data.visits === 1) {
+        //     const card = new AskForListPermissionsCard(['read']);
+        //     card.setPermissions(['alexa::devices:all:notifications:write']);
+    
+        //     this.alexaSkill().showCard(card);
+        //   }
+        //   this.ask(SPEECH);
+        // } else {
+        //   if (PLATFORM_TYPE === 'AlexaSkill') {
+        //     this.alexaSkill().audioPlayer().setOffsetInMilliseconds(0).setExpectedPreviousToken(null)
+        //       .play(audio, 'WELCOME_PLAY')
+        //       .tell(SPEECH);
+        //   } else {
+        //     this.googleAction().audioPlayer()
+        //       .play(audio, 'Podcast Clip');
+        //     this.tell(SPEECH);
+        //   }
+        // }
+
+        const feed = await audioFeed.getJSONFeed(feedUrl);
+        const sortedData = feed.getSortedAudioUrl();
+        const audioURLFeed = sortedData[sortedData.length - 1].audioURL
+
+        console.log('latest ===>', audioURLFeed);
+
+        // podcastUrl = audioURLFeed;
+        //store the audio url in DB
+        var dataObj = {};
+        dataObj.userid = handlerInput.requestEnvelope.session.user.userId;
+        dataObj.skillid = handlerInput.requestEnvelope.session.application.applicationId;
+        dataObj.offsetmili = "0";
+        dataObj.audiourl = audioURLFeed;
+
+        var options = {
+          method: 'POST',
+          uri: 'http://localhost:8090/user/updateSkillAudio',
+          body: dataObj,
+          json: true // Automatically stringifies the body to JSON
+        };
+
+        var promiseObj = new Promise(function(resolve, reject) {
+          request(options)
+            .then(function (result) {
+                resolve();
+            })
+            .catch(function (err) {
+                reject();
+            });
+          });
+
+        return handlerInput.responseBuilder
+          .speak(speechOutput)
+          .withSimpleCard('Eye on the market', 'Eye on the market')
+          .addAudioPlayerPlayDirective('REPLACE_ALL', audioURLFeed, 'wx', 0,null)
+          .withShouldEndSession(false)
+          .getResponse();
+      })
+      .catch(function(err) {
+        console.log('in promise catch');
+        console.log(err);
+        return ErrorHandler.handle(handlerInput);
+      });
   }
 };
 
@@ -51,14 +134,46 @@ const PodcastIntentHandler = {
   },
   async handle(handlerInput) {
     console.log('In PodcastIntentHandler')
-    // .speak(speechOutput)
-    // .withSimpleCard('My Next Move', latest.title)
-    return handlerInput.responseBuilder
-    .withSimpleCard('Eye on the market', 'Eye on the market')
-    .addAudioPlayerPlayDirective('REPLACE_ALL', podcastUrl, 'wx', 0,null)
-    .withShouldEndSession(false)
-    .getResponse();
-}
+
+    var dataObj = {};
+    dataObj.userid = handlerInput.requestEnvelope.session.user.userId;
+    dataObj.skillid = handlerInput.requestEnvelope.session.application.applicationId;
+   
+    var options = {
+      method: 'POST',
+      uri: 'http://localhost:8090/user/getAudioUrlOnUserSkillId',
+      body: dataObj,
+      json: true // Automatically stringifies the body to JSON
+    };
+
+    var promiseObj = new Promise(function(resolve, reject) {
+      request(options)
+        .then(function (result) {
+            resolve(result);
+        })
+        .catch(function (err) {
+            reject();
+        });
+      });
+    
+    return promiseObj.then(function(result) {
+      console.log('--------------------------------resume related---------------------------------');
+      return handlerInput.responseBuilder
+      .addAudioPlayerPlayDirective('REPLACE_ALL', result.audiourl, 'wx', 0, null)
+      .withShouldEndSession(true)
+      .getResponse();
+    })
+    .catch(function(err) {
+      console.log(err)
+
+      // podcastURL will generate an error. 
+      return handlerInput.responseBuilder
+        .addAudioPlayerPlayDirective('REPLACE_ALL', podcastURL, 'wx', 0,null)
+        .withShouldEndSession(true)
+        .getResponse();
+    });
+
+  }
 };
 
 //unhandled
@@ -366,26 +481,43 @@ const PauseIntentHandler = {
     handle(handlerInput) {
       console.log('in PauseIntentHandler');
       console.log('--------------------------------pause related---------------------------------');
-      console.log(handlerInput.requestEnvelope.context.AudioPlayer.offsetInMilliseconds);
-      console.log(handlerInput.requestEnvelope.context.System.apiAccessToken);
-  
-      var audioPause = {
-        "offsetInMilliseconds": handlerInput.requestEnvelope.context.AudioPlayer.offsetInMilliseconds,
-        "apiAccessToken" : handlerInput.requestEnvelope.context.System.apiAccessToken
-      }
-  
-      var attributes = handlerInput.attributesManager.getSessionAttributes();
-      attributes.audioPause = audioPause;
-      handlerInput.attributesManager.setSessionAttributes(attributes);
-  
-      console.log('--------------------------------pause related---------------------------------');
-      console.log(handlerInput);
-      // var token2 = handlerInput.requestEnvelope.context.System.apiAccessToken;
+
+      var dataObj = {};
+      dataObj.userid = handlerInput.requestEnvelope.session.user.userId;
+      dataObj.skillid = handlerInput.requestEnvelope.session.application.applicationId;
+      dataObj.offsetmili = handlerInput.requestEnvelope.context.AudioPlayer.offsetInMilliseconds;
+
+      var options = {
+        method: 'POST',
+        uri: 'http://localhost:8090/user/updateSkillAudio',
+        body: dataObj,
+        json: true // Automatically stringifies the body to JSON
+      };
+
+      var promiseObj = new Promise(function(resolve, reject) {
+        request(options)
+          .then(function (result) {
+              resolve();
+          })
+          .catch(function (err) {
+              reject();
+          });
+        });
+      
+      return promiseObj.then(function() {
+        console.log('--------------------------------pause related---------------------------------');
         return handlerInput.responseBuilder
-        .addAudioPlayerStopDirective()
-        .withShouldEndSession(false)
-        .getResponse();
-       
+          .addAudioPlayerStopDirective()
+          .withShouldEndSession(false)
+          .getResponse();
+      })
+      .catch(function(err) {
+        console.log('--------------------------------pause related---------------------------------');
+        return handlerInput.responseBuilder
+          .addAudioPlayerStopDirective()
+          .withShouldEndSession(false)
+          .getResponse();
+      });
     }
 };
 
@@ -398,17 +530,53 @@ const ResumeIntentHandler = {
     handle(handlerInput) {
       console.log('in ResumeIntentHandler');
   
-      var sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
-  
-      // console.log(JSON.stringify(sessionAttributes));
-  
-      // console.log(JSON.stringify(handlerInput.requestEnvelope));
-      // console.log('offset : ' + handlerInput.requestEnvelope.context.AudioPlayer.offsetInMilliseconds);
-      return handlerInput.responseBuilder
-      .addAudioPlayerPlayDirective('REPLACE_ALL', podcastUrl, 'wx', handlerInput.requestEnvelope.context.AudioPlayer.offsetInMilliseconds,null)
-      .withShouldEndSession(true)
-      .getResponse();
-     
+      var dataObj = {};
+      dataObj.userid = handlerInput.requestEnvelope.session.user.userId;
+      dataObj.skillid = handlerInput.requestEnvelope.session.application.applicationId;
+    
+      var options = {
+        method: 'POST',
+        uri: 'http://localhost:8090/user/getAudioUrlOnUserSkillId',
+        body: dataObj,
+        json: true // Automatically stringifies the body to JSON
+      };
+
+      var promiseObj = new Promise(function(resolve, reject) {
+        request(options)
+          .then(function (result) {
+              resolve(result);
+          })
+          .catch(function (err) {
+              reject();
+          });
+        });
+      
+      return promiseObj.then(function(result) {
+        console.log('--------------------------------resume related---------------------------------');
+        console.log("result.offsetmili :::::: " + result.offsetmili)
+
+        if(result.offsetmili === null){
+          return handlerInput.responseBuilder
+          .addAudioPlayerPlayDirective('REPLACE_ALL', result.audiourl, 'wx', 0, null)
+          .withShouldEndSession(true)
+          .getResponse();
+        } else {
+          console.log("2222222222222");
+          return handlerInput.responseBuilder
+          .addAudioPlayerPlayDirective('REPLACE_ALL', result.audiourl, 'wx', result.offsetmili ,null)
+          .withShouldEndSession(true)
+          .getResponse();
+        }
+      })
+      .catch(function(err) {
+        console.log(err)
+
+        console.log("333333333333333");
+        return handlerInput.responseBuilder
+          .addAudioPlayerPlayDirective('REPLACE_ALL', podcastURL, 'wx', 0,null)
+          .withShouldEndSession(true)
+          .getResponse();
+      });
     }
 };
 
