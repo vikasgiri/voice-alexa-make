@@ -1,8 +1,6 @@
 var Speech = require('ssml-builder');
 const lodash = require('lodash');
 const request = require("request-promise");
-const axios = require('axios');
-
 const intentHelper = require('./intentHelper');
 const eastereggs = require('./responses/easterEggs');
 const welcome = require('./responses/welcome');
