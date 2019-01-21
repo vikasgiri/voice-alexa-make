@@ -24,6 +24,11 @@ class AudioFeed {
             console.log('results', results);
             this.feed = results;
             return this;
+        }).catch(err => {
+            console.log(err)
+
+            this.feed = {"visit_count": "0"};
+            return this;
         });
     }
 

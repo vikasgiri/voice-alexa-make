@@ -1,5 +1,8 @@
 var Speech = require('ssml-builder');
 const lodash = require('lodash');
+const request = require("request-promise");
+const axios = require('axios');
+
 const intentHelper = require('./intentHelper');
 const eastereggs = require('./responses/easterEggs');
 const welcome = require('./responses/welcome');
@@ -10,12 +13,18 @@ const notes = require("./responses/notes.js");
 
 var podcastURL = "https://am.jpmorgan.com/blob-gim/1383559896296/83456/WeeklyNotes.mp3";
 
-var stream = {
-  "url": podcastURL,
-  "token": "0",
-  "expectedPreviousToken": null,
-  "offsetInMilliseconds": 0
-};
+
+const feedUrl = "http://localhost:8090/user/getUserVisitCountOnSkill";
+// const AudioFeed = require('./libs/audio-feed-api');
+// const audioFeed = new AudioFeed(feedUrl);
+
+
+// var stream = {
+//   "url": podcastURL,
+//   "token": "0",
+//   "expectedPreviousToken": null,
+//   "offsetInMilliseconds": 0
+// };
 
 const AboutDrKellyIntentHandler = {
   canHandle(handlerInput) {
@@ -98,101 +107,67 @@ const LaunchRequestHandler = {
   },
   handle(handlerInput) {      
     console.log("in LaunchRequestHandler");
-    const attributes = handlerInput.attributesManager.getSessionAttributes();
-    
-    //check whether user is new or registered
+   
+    var dataObj = {};
+    dataObj.userid = handlerInput.requestEnvelope.session.user.userId;
+    dataObj.skillid = handlerInput.requestEnvelope.session.application.applicationId;
+
+    var options = {
+      method: 'POST',
+      uri: feedUrl,
+      body: dataObj,
+      json: true // Automatically stringifies the body to JSON
+    };
+
     var USER_TYPE = 'newUser';
     var visitVal =0;
-    //convert into a method to check whether a user is present and increment visit count
-    var userIdVal = handlerInput.requestEnvelope.session.user.userId;
 
-  //   var promiseObj = new Promise(function(resolve, reject) {
-  //     db.user.findOne({
-  //       where: {
-  //         user_id: userIdVal
-  //       }})
-  //       .then(person => {
-  //         console.log('from then user ::::::')
-  //         console.log(JSON.stringify(person)) 
+    var promiseObj = new Promise(function(resolve, reject) {
+        request(options)
+      .then(function (result) {
+          visitVal = result.visit_count;
+          resolve();
+      })
+      .catch(function (err) {
+          reject();
+      });
+    });
 
-  //         if(person) { 
-  //           // update
-  //           console.log('update');
-  //           // return obj.update(values);
-  //           visitVal = person.visit + 1;
-  //           db.user.update(
-  //             {visit: visitVal},
-  //             { returning: true, where: {user_id: userIdVal }}
-  //           )
-  //           .then(function(rowsUpdated) {
-  //             console.log('updated visit');
-  //             console.log(rowsUpdated);
-  //             resolve();
-
-  //           }).catch(err => {
-  //             console.log('error in updating user visit');
-  //             reject();
-  //           })
-          
-
-  //         } else { // insert
-  //           console.log('insert');
-  //           visitVal = 0
-  //           db.user.create({
-  //             user_id: userIdVal,
-  //             visit:1
-  //           }).then(output => {
-  //               console.log("user record inserted request");
-  //               resolve();
-  //           }).catch(err => {
-  //               console.log('Error in storing the user id record');
-  //               console.log(err);
-  //               reject()
-  //           }) ;
-  //         }
-  //     }).catch(err => {
-  //       console.log('Error in checking user id');
-  //       console.log(err);
-  //       reject();
-  //     });
-
-  // });
-    
-  // helper.card(conv, welcome[USER_TYPE]);
-  console.log('after user : ' + USER_TYPE);
-  const CARD = disclosures.card;
-  // return promiseObj.then(function() {
+    // helper.card(conv, welcome[USER_TYPE]);
+    console.log('after user : ' + USER_TYPE);
+    const CARD = disclosures.card;
+    return promiseObj.then(function() {
       console.log('in promise then');
 
       USER_TYPE = visitVal < 2 ? 'newUser' : 'returningUser'
       console.log(visitVal + ' visit count final ' + USER_TYPE + ' is the final ');
-      
+
       var speech = new Speech();
       speech.audio(welcome[USER_TYPE].prompt);
       speech.pause('500ms');
       var speechOutput = speech.ssml(true);
-  
+
       return handlerInput.responseBuilder
         .speak(speechOutput)
         .withStandardCard(CARD.title, CARD.body, 'https://s3.amazonaws.com/alexa-chase-voice/image/alexa_card_logo_small.png', 'https://s3.amazonaws.com/alexa-chase-voice/image/alexa_card_logo_large.png')
         .withShouldEndSession(false)
         .getResponse();
-      
-    // })
-    // .catch(function(err) {
-      // console.log('in promise catch');
-      // console.log(err);
-      // var speech = new Speech();
-      // speech.audio(welcome[USER_TYPE].prompt);
-      // speech.pause('500ms');
-      // var speechOutput = speech.ssml(true);
-  
-      // return handlerInput.responseBuilder
-      //   .speak(speechOutput)
-      //   .withStandardCard(CARD.title, CARD.body, 'https://image.shutterstock.com/image-photo/financial-business-color-charts-450w-1039907653.jpg', 'https://image.shutterstock.com/image-photo/financial-business-color-charts-450w-1039907653.jpg')
-      //   .withShouldEndSession(false)
-      //   .getResponse();
-    // });
+    })
+    .catch(function(err) {
+      console.log('in promise catch');
+      console.log(err);
+      var speech = new Speech();
+      speech.audio(welcome[USER_TYPE].prompt);
+      speech.pause('500ms');
+      var speechOutput = speech.ssml(true);
+
+      return handlerInput.responseBuilder
+        .speak(speechOutput)
+        .withStandardCard(CARD.title, CARD.body, 'https://s3.amazonaws.com/alexa-chase-voice/image/alexa_card_logo_small.png', 'https://s3.amazonaws.com/alexa-chase-voice/image/alexa_card_logo_large.png')
+        .withShouldEndSession(false)
+        .getResponse();
+      });
+
   } 
 };
 
@@ -522,26 +497,61 @@ const PauseIntentHandler = {
   handle(handlerInput) {
     console.log('in PauseIntentHandler');
     console.log('--------------------------------pause related---------------------------------');
-    console.log(handlerInput.requestEnvelope.context.AudioPlayer.offsetInMilliseconds);
+    console.log(handlerInput.requestEnvelope.context.AudioPlayer);
     console.log(handlerInput.requestEnvelope.context.System.apiAccessToken);
 
-    var audioPause = {
-      "offsetInMilliseconds": handlerInput.requestEnvelope.context.AudioPlayer.offsetInMilliseconds,
-      "apiAccessToken" : handlerInput.requestEnvelope.context.System.apiAccessToken
-    }
+    // var audioPause = {
+    //   "offsetInMilliseconds": handlerInput.requestEnvelope.context.AudioPlayer.offsetInMilliseconds,
+    //   "apiAccessToken" : handlerInput.requestEnvelope.context.System.apiAccessToken
+    // }
 
-    var attributes = handlerInput.attributesManager.getSessionAttributes();
-    attributes.audioPause = audioPause;
-    handlerInput.attributesManager.setSessionAttributes(attributes);
+    // var attributes = handlerInput.attributesManager.getSessionAttributes();
+    // attributes.audioPause = audioPause;
+    // handlerInput.attributesManager.setSessionAttributes(attributes);
 
-    console.log('--------------------------------pause related---------------------------------');
+    //store the offset and url in DB
+    var dataObj = {};
+    dataObj.userid = handlerInput.requestEnvelope.session.user.userId;
+    dataObj.skillid = handlerInput.requestEnvelope.session.application.applicationId;
+    dataObj.offsetmili = handlerInput.requestEnvelope.context.AudioPlayer.offsetInMilliseconds;
+    dataObj.audiourl = '';
+
+    var options = {
+      method: 'POST',
+      uri: 'http://localhost:8090/user/updateSkillAudio',
+      body: dataObj,
+      json: true // Automatically stringifies the body to JSON
+    };
+
+    var promiseObj = new Promise(function(resolve, reject) {
+      request(options)
+        .then(function (result) {
+            // visitVal = result.visit_count;
+            resolve();
+        })
+        .catch(function (err) {
+            reject();
+        });
+      });
+    
+    return promiseObj.then(function() {
+      console.log('--------------------------------pause related---------------------------------');
+      console.log(handlerInput);
+      // var token2 = handlerInput.requestEnvelope.context.System.apiAccessToken;
+        return handlerInput.responseBuilder
+        .addAudioPlayerStopDirective()
+        .withShouldEndSession(false)
+        .getResponse();
+    })
+    .catch(function(err) {
+      console.log('--------------------------------pause related---------------------------------');
     console.log(handlerInput);
     // var token2 = handlerInput.requestEnvelope.context.System.apiAccessToken;
       return handlerInput.responseBuilder
       .addAudioPlayerStopDirective()
       .withShouldEndSession(false)
       .getResponse();
-     
+    });
   }
 };
 
@@ -639,15 +649,56 @@ const ResumeIntentHandler = {
 
     var sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
 
-    // console.log(JSON.stringify(sessionAttributes));
-
-    // console.log(JSON.stringify(handlerInput.requestEnvelope));
-    // console.log('offset : ' + handlerInput.requestEnvelope.context.AudioPlayer.offsetInMilliseconds);
-    return handlerInput.responseBuilder
-    .addAudioPlayerPlayDirective('REPLACE_ALL', podcastURL, 'wx', handlerInput.requestEnvelope.context.AudioPlayer.offsetInMilliseconds,null)
-    .withShouldEndSession(true)
-    .getResponse();
+    var dataObj = {};
+    dataObj.userid = handlerInput.requestEnvelope.session.user.userId;
+    dataObj.skillid = handlerInput.requestEnvelope.session.application.applicationId;
    
+    var options = {
+      method: 'POST',
+      uri: 'http://localhost:8090/user/getAudioUrlOnUserSkillId',
+      body: dataObj,
+      json: true // Automatically stringifies the body to JSON
+    };
+
+    var promiseObj = new Promise(function(resolve, reject) {
+      request(options)
+        .then(function (result) {
+            // visitVal = result.visit_count;
+            resolve(result);
+        })
+        .catch(function (err) {
+            reject();
+        });
+      });
+    
+    return promiseObj.then(function(result) {
+      console.log('--------------------------------resume related---------------------------------');
+      console.log("result.offsetmili :::::: " + result.offsetmili)
+
+      if(result.offsetmili === null){
+
+        console.log("111111111111");
+        return handlerInput.responseBuilder
+        .addAudioPlayerPlayDirective('REPLACE_ALL', podcastURL, 'wx', 0, null)
+        .withShouldEndSession(true)
+        .getResponse();
+      } else {
+        console.log("2222222222222");
+        return handlerInput.responseBuilder
+        .addAudioPlayerPlayDirective('REPLACE_ALL', podcastURL, 'wx', result.offsetmili ,null)
+        .withShouldEndSession(true)
+        .getResponse();
+      }
+    })
+    .catch(function(err) {
+      console.log(err)
+
+      console.log("333333333333333");
+      return handlerInput.responseBuilder
+        .addAudioPlayerPlayDirective('REPLACE_ALL', podcastURL, 'wx', 0,null)
+        .withShouldEndSession(true)
+        .getResponse();
+    });
   }
 };
 
