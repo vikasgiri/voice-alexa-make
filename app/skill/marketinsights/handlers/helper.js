@@ -1,6 +1,6 @@
 
-const commentary =  require("./responses/commentary");
-const commentaryMap = require("./responses/commentaryMap");
+const commentary =  require("../responses/commentary");
+const commentaryMap = require("../responses/commentaryMap");
 const commentaryDocument = require('./apl/commentary_document.json');
 const commentaryData = require('./apl/commentary_data.json');
 

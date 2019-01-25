@@ -7,8 +7,9 @@ const exceptions = require('../responses/exceptions');
 const welcome = require('../responses/welcome');
 const helper = require('./helper');
 
-const feedUrl = "https://am.jpmorgan.com/us/en/asset-management/gim/adv/alexarss/voice-insights/Eye-on-the-Market";
-const AudioFeed = require('../../libs/audio-feed-api');
+const config = require('../../../config/config.json');
+const feedUrl = config.eyeonthemarket.feedUrl;
+const AudioFeed = require('../../../libs/audio-feed-api');
 const audioFeed = new AudioFeed(feedUrl);
 
 //launchrequest
@@ -31,7 +32,7 @@ const LaunchRequestHandler = {
 
       var options = {
         method: 'POST',
-        uri: 'http://localhost:8090/user/getUserVisitCountOnSkill',
+        uri: config.dbServiceBase + config.getUserVisitCountOnSkill,
         body: dataObj,
         timeout: 5000,
         json: true // Automatically stringifies the body to JSON
@@ -74,7 +75,7 @@ const LaunchRequestHandler = {
 
         var options = {
           method: 'POST',
-          uri: 'http://localhost:8090/user/updateSkillAudio',
+          uri: config.dbServiceBase + config.updateSkillAudio,
           body: dataObj,
           timeout: 5000,
           json: true // Automatically stringifies the body to JSON
@@ -129,7 +130,7 @@ const PodcastIntentHandler = {
    
     var options = {
       method: 'POST',
-      uri: 'http://localhost:8090/user/getAudioUrlOnUserSkillId',
+      uri: config.dbServiceBase + config.getAudioUrlOnUserSkillId,
       body: dataObj,
       json: true // Automatically stringifies the body to JSON
     };
@@ -477,7 +478,7 @@ const PauseIntentHandler = {
 
       var options = {
         method: 'POST',
-        uri: 'http://localhost:8090/user/updateSkillAudioOffset',
+        uri: config.dbServiceBase + config.updateSkillAudioOffset,
         body: dataObj,
         json: true // Automatically stringifies the body to JSON
       };
@@ -524,7 +525,7 @@ const ResumeIntentHandler = {
     
       var options = {
         method: 'POST',
-        uri: 'http://localhost:8090/user/getAudioUrlOnUserSkillId',
+        uri: config.dbServiceBase + config.getAudioUrlOnUserSkillId,
         body: dataObj,
         json: true // Automatically stringifies the body to JSON
       };

@@ -1,5 +1,5 @@
 const main =  require("../responses/main");
-const createOxfordCommaList = require('../../libs/utils').createOxfordCommaList;
+const createOxfordCommaList = require('../../../libs/utils').createOxfordCommaList;
 
 const lodash = require('lodash');
 var Speech = require('ssml-builder');

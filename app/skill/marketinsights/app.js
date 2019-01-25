@@ -1,15 +1,28 @@
 var Speech = require('ssml-builder');
 const lodash = require('lodash');
 const request = require("request-promise");
-const intentHelper = require('./helper');
-const eastereggs = require('../responses/easterEggs');
-const welcome = require('../responses/welcome');
-const disclosures = require('../responses/disclosures');
-const exceptions = require('../responses/exceptions');
-const commentary = require('../responses/commentary');
-const notes = require("../responses/notes.js");
+const intentHelper = require('./handlers/helper');
+const eastereggs = require('./responses/easterEggs');
+const welcome = require('./responses/welcome');
+const disclosures = require('./responses/disclosures');
+const exceptions = require('./responses/exceptions');
+const commentary = require('./responses/commentary');
+const notes = require("./responses/notes.js");
 
-const config = require('../../../config/config.json');
+var podcastURL = "https://am.jpmorgan.com/blob-gim/1383559896296/83456/WeeklyNotes.mp3";
+
+
+const feedUrl = "http://localhost:8090/user/getUserVisitCountOnSkill";
+// const AudioFeed = require('./libs/audio-feed-api');
+// const audioFeed = new AudioFeed(feedUrl);
+
+
+// var stream = {
+//   "url": podcastURL,
+//   "token": "0",
+//   "expectedPreviousToken": null,
+//   "offsetInMilliseconds": 0
+// };
 
 const AboutDrKellyIntentHandler = {
   canHandle(handlerInput) {
@@ -99,7 +112,7 @@ const LaunchRequestHandler = {
 
     var options = {
       method: 'POST',
-      uri: config.dbServiceBase + config.getUserVisitCountOnSkill,
+      uri: feedUrl,
       body: dataObj,
       json: true // Automatically stringifies the body to JSON
     };
@@ -464,7 +477,7 @@ const YesIntentHandler = {
 
     var token2 = handlerInput.requestEnvelope.context.System.apiAccessToken;
       return handlerInput.responseBuilder
-      .addAudioPlayerPlayDirective('REPLACE_ALL', notes.stories.audio, 'wx', 0,null)
+      .addAudioPlayerPlayDirective('REPLACE_ALL', podcastURL, 'wx', 0,null)
       .withShouldEndSession(true)
       .getResponse();
      
@@ -503,7 +516,7 @@ const PauseIntentHandler = {
 
     var options = {
       method: 'POST',
-      uri: config.dbServiceBase + config.updateSkillAudio,
+      uri: 'http://localhost:8090/user/updateSkillAudio',
       body: dataObj,
       json: true // Automatically stringifies the body to JSON
     };
@@ -638,7 +651,7 @@ const ResumeIntentHandler = {
    
     var options = {
       method: 'POST',
-      uri: config.dbServiceBase + config.getAudioUrlOnUserSkillId,
+      uri: 'http://localhost:8090/user/getAudioUrlOnUserSkillId',
       body: dataObj,
       json: true // Automatically stringifies the body to JSON
     };
@@ -662,13 +675,13 @@ const ResumeIntentHandler = {
 
         console.log("111111111111");
         return handlerInput.responseBuilder
-        .addAudioPlayerPlayDirective('REPLACE_ALL', notes.stories.audio, 'wx', 0, null)
+        .addAudioPlayerPlayDirective('REPLACE_ALL', podcastURL, 'wx', 0, null)
         .withShouldEndSession(true)
         .getResponse();
       } else {
         console.log("2222222222222");
         return handlerInput.responseBuilder
-        .addAudioPlayerPlayDirective('REPLACE_ALL', notes.stories.audio, 'wx', result.offsetmili ,null)
+        .addAudioPlayerPlayDirective('REPLACE_ALL', podcastURL, 'wx', result.offsetmili ,null)
         .withShouldEndSession(true)
         .getResponse();
       }
@@ -678,7 +691,7 @@ const ResumeIntentHandler = {
 
       console.log("333333333333333");
       return handlerInput.responseBuilder
-        .addAudioPlayerPlayDirective('REPLACE_ALL', notes.stories.audio, 'wx', 0,null)
+        .addAudioPlayerPlayDirective('REPLACE_ALL', podcastURL, 'wx', 0,null)
         .withShouldEndSession(true)
         .getResponse();
     });
