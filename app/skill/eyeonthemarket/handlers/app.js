@@ -8,7 +8,7 @@ const welcome = require('../responses/welcome');
 const helper = require('./helper');
 
 const feedUrl = "https://am.jpmorgan.com/us/en/asset-management/gim/adv/alexarss/voice-insights/Eye-on-the-Market";
-const AudioFeed = require('../libs/audio-feed-api');
+const AudioFeed = require('../../libs/audio-feed-api');
 const audioFeed = new AudioFeed(feedUrl);
 
 //launchrequest

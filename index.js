@@ -1,13 +1,11 @@
 const Alexa = require('ask-sdk');
 
 //helper for marketinsights
-const helper = require('./app/skill/marketinsights/helper');
-
+const helper = require('./app/skill/marketinsights/handlers/app');
 //helper for mynextmove
-const myNextMoveMainHelper = require('./app/skill/mynextmove/handlers/main');
-
+const myNextMoveMainHelper = require('./app/skill/mynextmove/handlers/app');
 //helper for eyeonthemarket
-const eyeOnTheMarketHelper = require('./app/skill/eyeonthemarket/handlers/main');
+const eyeOnTheMarketHelper = require('./app/skill/eyeonthemarket/handlers/app');
 // var Sequelize = require('sequelize');
 const express = require('express');
 var bodyParser = require('body-parser');

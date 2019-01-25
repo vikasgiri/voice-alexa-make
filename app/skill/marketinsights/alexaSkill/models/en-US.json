@@ -1,0 +1,254 @@
+{
+    "interactionModel": {
+        "languageModel": {
+            "invocationName": "market insights",
+            "types": [],
+            "intents": [
+                {
+                    "name": "CommentaryIntent",
+                    "samples": [
+                        "{commentaryNumber}",
+                        "and play {commentaryNumber}",
+                        "and play audio clip {commentaryNumber}",
+                        "and play audio clip number {commentaryNumber}",
+                        "and play clip {commentaryNumber}",
+                        "and play clip number {commentaryNumber}",
+                        "and play commentary {commentaryNumber}",
+                        "and play commentary number {commentaryNumber}",
+                        "and play number {commentaryNumber}",
+                        "annotation {commentaryNumber}",
+                        "audio {commentaryNumber}",
+                        "clip {commentaryNumber}",
+                        "commentary {commentaryNumber}",
+                        "graph {commentaryNumber}",
+                        "number {commentaryNumber}",
+                        "text {commentaryNumber}",
+                        "play {commentaryNumber}",
+                        "play annotation {commentaryNumber}",
+                        "play annotation number {commentaryNumber}",
+                        "play audio {commentaryNumber}",
+                        "play audio number {commentaryNumber}",
+                        "play clip {commentaryNumber}",
+                        "play clip number {commentaryNumber}",
+                        "play commentary {commentaryNumber}",
+                        "play commentary number {commentaryNumber}",
+                        "play graph {commentaryNumber}",
+                        "play graph number {commentaryNumber}",
+                        "play number {commentaryNumber}",
+                        "play text {commentaryNumber}",
+                        "play text number {commentaryNumber}",
+                        "and play commentary",
+                        "and listen to commentary",
+                        "commentary",
+                        "commentary guide",
+                        "commentary report",
+                        "listen to commentary",
+                        "guide",
+                        "report",
+                        "play clip",
+                        "play commentary",
+                        "play guide",
+                        "play report"
+                    ],
+                    "slots": [
+                        {
+                            "name": "commentaryNumber",
+                            "type": "AMAZON.NUMBER"
+                        }
+                    ]
+                },
+                {
+                    "name": "NotesOnTheWeekAheadIntent",
+                    "samples": [
+                        "and go to digest",
+                        "and go to notes",
+                        "and go to notes from the week ahead",
+                        "and go to notes on the week ahead",
+                        "and go to podcast",
+                        "and go to week ahead",
+                        "and play digest",
+                        "and play notes",
+                        "and play notes from the week ahead",
+                        "and play notes on the week ahead",
+                        "and play week ahead",
+                        "digest",
+                        "go to digest",
+                        "go to notes",
+                        "go to notes from the week ahead",
+                        "go to notes on the week ahead",
+                        "go to podcast",
+                        "go to the digest",
+                        "go to the notes",
+                        "go to the notes from the week ahead",
+                        "go to the notes on the week ahead",
+                        "go to the podcast",
+                        "hear notes on the week ahead",
+                        "hear the digest",
+                        "hear the podcast",
+                        "listen to notes on the week ahead",
+                        "listen to the digest",
+                        "listen to the notes",
+                        "listen to the notes from the week ahead",
+                        "listen to the notes on the week ahead",
+                        "listen to the podcast",
+                        "notes",
+                        "notes from the week ahead",
+                        "notes on the week ahead",
+                        "podcast",
+                        "play notes on the week ahead",
+                        "play podcast",
+                        "play doctor kelly's podcast",
+                        "week ahead podcast",
+                        "weekly podcast"
+                    ]
+                },
+                {
+                    "name": "DisclosuresIntent",
+                    "samples": [
+                        "disclosures",
+                        "can I hear the disclosures"
+                    ]
+                },
+                {
+                    "name": "AboutDrKellyIntent",
+                    "samples": [
+                        "who is he",
+                        "who is doctor kelly",
+                        "who is kelly",
+                        "who is this guy",
+                        "about doctor kelly",
+                        "tell me about doctor kelly",
+                        "tell me about him",
+                        "who is david kelly",
+                        "who is david"
+                    ]
+                },
+                {
+                    "name": "QuoteIntent",
+                    "samples": [
+                        "tell me a quote",
+                        "can I hear a quote",
+                        "hear a quote",
+                        "play a quote"
+                    ]
+                },
+                {
+                    "name": "WhatIsThisIntent",
+                    "samples": [
+                        "what is this skill",
+                        "what is this",
+                        "what is market insights"
+                    ]
+                },
+                {
+                    "name": "KeepReadingIntent",
+                    "samples": [
+                        "keep reading",
+                        "reading",
+                        "continue reading",
+                        "take time",
+                        "take some time",
+                        "I need more time",
+                        "I need a break",
+                        "give me more time",
+                        "more time"
+                    ]
+                },
+                {
+                    "name": "AMAZON.CancelIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.FallbackIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.YesIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.NoIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.HelpIntent",
+                    "samples": [
+                        "help",
+                        "what can I do",
+                        "I don't know"
+                    ]
+                },
+                {
+                    "name": "AMAZON.StopIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.PauseIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.PreviousIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.NextIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.ResumeIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.RepeatIntent",
+                    "samples": [
+                        "play the same",
+                        "play this one",
+                        "this one",
+                        "repeat this",
+                        "same one",
+                        "another time",
+                        "again",
+                        "play it again",
+                        "play again"
+                    ]
+                },
+                {
+                    "name": "AMAZON.ScrollUpIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.ScrollDownIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.ScrollLeftIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.ScrollRightIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.PageUpIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.PageDownIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.MoreIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.NavigateHomeIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.NavigateSettingsIntent",
+                    "samples": []
+                }
+            ]
+        }
+    }
+}

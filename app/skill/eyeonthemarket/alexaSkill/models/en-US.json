@@ -1,0 +1,124 @@
+{
+  "interactionModel": {
+    "languageModel": {
+      "invocationName": "eye on the market",
+      "intents": [
+        {
+          "name": "AboutMichaelIntent",
+          "samples": [
+            "who is he",
+            "who is michael cembalest",
+            "who is michael",
+            "who is this guy",
+            "about michael",
+            "tell me about michael",
+            "tell me about him",
+            "who is michael cembalest",
+            "who is michael"
+          ]
+        },
+        {
+          "name": "NewContentIntent",
+          "samples": [
+            "new content",
+            "when will there be new content",
+            "when there will be new content"
+          ]
+        },
+        {
+          "name": "PodcastIntent",
+          "samples": [
+            "pod cast",
+            "cast",
+            "pod",
+            "podcast"
+          ]
+        },
+        {
+          "name": "AMAZON.CancelIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.FallbackIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.YesIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.NoIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.HelpIntent",
+          "samples": [
+            "help",
+            "what can I do",
+            "I don't know"
+          ]
+        },
+        {
+          "name": "AMAZON.StopIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.PauseIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.PreviousIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.NextIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.ResumeIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.RepeatIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.ScrollUpIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.ScrollDownIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.ScrollLeftIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.ScrollRightIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.PageUpIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.PageDownIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.MoreIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.NavigateHomeIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.NavigateSettingsIntent",
+          "samples": []
+        }
+      ]
+    }
+  }
+}

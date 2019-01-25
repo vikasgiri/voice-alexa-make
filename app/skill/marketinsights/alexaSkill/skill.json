@@ -1,0 +1,88 @@
+{
+    "manifest": {
+        "publishingInformation": {
+            "locales": {
+                "en-US": {
+                    "summary": "Market Insights gives you access to the latest insights from Dr. David Kelly, Chief Global Strategist at J.P. Morgan Asset Management.",
+                    "examplePhrases": [
+                        "Alexa, open Market Insights",
+                        "Alexa, open Market Insights and play Notes on the Week Ahead",
+                        "Alexa, open Market Insights and play commentary"
+                    ],
+                    "name": "Market Insights",
+                    "keywords": [
+                        "JPMorgan",
+                        "J.P.Morgan",
+                        "JPMorganChase",
+                        "J.P.MorganChase",
+                        "JP",
+                        "J.P.",
+                        "Morgan",
+                        "Chase",
+                        "Private",
+                        "Bank",
+                        "Guide",
+                        "Markets",
+                        "Dr.",
+                        "David",
+                        "Kelly",
+                        "Finance",
+                        "Markets",
+                        "JPMC"
+                    ],
+                    "smallIconUri": "https://s3.amazonaws.com/CAPS-SSE/echo_developer/dee9/b32a7c8dcd8940bdbd277d6c9b0ffa15/APP_ICON?versionId=WEy6r_BwmXn2jwHsHRqXZ_nRgMMktKad&AWSAccessKeyId=AKIAIEYXX6DHY7O4XWMA&Expires=1537379014&Signature=MYIpsKOVS7Ub4b8x8dZ3dLvafio%3D",
+                    "description": "Market Insights gives you access to the latest insights from Dr. David Kelly, Chief Global Strategist at J.P. Morgan Asset Management.\n\nEach week, listen to Dr. Kelly’s Notes on the Week Ahead, a weekly digest of what investors should be following. Notes on the Week Ahead is a valuable way to keep a pulse on market events, economic developments and the factors driving investment decisions.\n\nAlternatively, access Dr. Kelly’s commentary on the quarter’s key investment themes while referencing slides from the Guide to the Markets. For the best experience, we recommend having a copy of the latest Guide in front of you.\n\nFor comments or questions, please contact your J.P. Morgan Asset Management representative or contact us at jpmam.questions@jpmorgan.com.",
+                    "largeIconUri": "https://s3.amazonaws.com/CAPS-SSE/echo_developer/fd2c/c04ca08552274c9092894ebd7367caf0/APP_ICON_LARGE?versionId=4PdD.ScK62hLp_jesIg33p4_TQEA1Fai&AWSAccessKeyId=AKIAIEYXX6DHY7O4XWMA&Expires=1537379014&Signature=M5gb9ZRaPhrY%2Frn8ClMwwK2vlC8%3D"
+                }
+            },
+            "isAvailableWorldwide": true,
+            "testingInstructions": "",
+            "category": "BUSINESS_AND_FINANCE",
+            "distributionCountries": []
+        },
+        "apis": {
+            "custom": {
+                "endpoint": {
+                    "sslCertificateType": "Wildcard",
+                    "uri": "https://webhook.jovo.cloud/2de6a451-1f35-4ae1-9404-eb6ab88a7f98"
+                },
+                "interfaces": [
+                    {
+                        "type": "AUDIO_PLAYER"
+                    },
+                    {
+                        "type": "ALEXA_PRESENTATION_APL"
+                    },
+                    {
+                        "type": "RENDER_TEMPLATE",
+                        "minimumTemplateVersion": "1.0"
+                    }
+                ]
+            }
+        },
+        "manifestVersion": "1.0",
+        "privacyAndCompliance": {
+            "allowsPurchases": false,
+            "locales": {
+                "en-US": {
+                    "termsOfUseUrl": "https://am.jpmorgan.com/us/en/asset-management/gim/adv/voice-terms-of-service",
+                    "privacyPolicyUrl": "https://am.jpmorgan.com/us/en/asset-management/gim/adv/voice-privacy-policy"
+                }
+            },
+            "isExportCompliant": true,
+            "containsAds": false,
+            "isChildDirected": false,
+            "usesPersonalInfo": false
+        },
+        "events": {
+            "endpoint": {
+                "uri": "https://webhook.jovo.cloud/2de6a451-1f35-4ae1-9404-eb6ab88a7f98"
+            },
+            "subscriptions": [
+                {
+                    "eventName": "SKILL_ENABLED"
+                }
+            ]
+        }
+    }
+}

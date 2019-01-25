@@ -1,0 +1,271 @@
+{
+  "interactionModel": {
+    "languageModel": {
+      "invocationName": "my next move",
+      "intents": [
+        {
+          "name": "MoreIntent",
+          "samples": [
+            "more",
+            "more episodes",
+            "tell me more",
+            "other episodes",
+            "are there any more episodes",
+            "is that it",
+            "are there more",
+            "are there other podcasts",
+            "are there other episodes"
+          ]
+        },
+        {
+          "name": "LatestIntent",
+          "samples": [
+            "latest",
+            "the latest",
+            "what is the latest",
+            "play the most recent",
+            "play the most recent episode",
+            "let's listen to the latest",
+            "listen to the latest",
+            "play the latest episode",
+            "play this week's episode",
+            "what are your latest thoughts",
+            "give me the latest",
+            "hear the latest",
+            "what's the latest",
+            "listen to the latest",
+            "play the latest",
+            "let's hear the latest",
+            "tell me the latest",
+            "tell me your latest thoughts"
+          ]
+        },
+        {
+          "name": "DescriptionIntent",
+          "samples": [
+            "description",
+            "tell me about the subjects",
+            "what are the subjects",
+            "tell me what the subjects are",
+            "what do those subjects mean",
+            "tell me what those are"
+          ]
+        },
+        {
+          "name": "NotificationsIntent",
+          "samples": [
+            "notifications",
+            "set up notifications",
+            "enable notifications",
+            "sign me up for notifications",
+            "let me know when there is a new episode",
+            "keep me updated",
+            "turn on notifications",
+            "keep me updated on new episodes",
+            "let me know when new episodes come out",
+            "keep me posted"
+          ]
+        },
+        {
+          "name": "LibraryIntent",
+          "samples": [
+            "library",
+            "take me to the library",
+            "let's hear the library",
+            "archive",
+            "let me hear a previous episode",
+            "let me hear archived episodes",
+            "I want an old episode",
+            "I want a previous episode",
+            "previous episode",
+            "previous"
+          ]
+        },
+        {
+          "name": "SubjectOnlyIntent",
+          "slots": [
+            {
+              "name": "subject",
+              "type": "SUBJECT"
+            }
+          ],
+          "samples": [
+            "{subject}"
+          ]
+        },
+        {
+          "name": "SubjectIntent",
+          "slots": [
+            {
+              "name": "subject",
+              "type": "SUBJECT"
+            }
+          ],
+          "samples": [
+            "play {subject}",
+            "tell me about {subject}",
+            "can you talk about {subject}",
+            "let me hear about {subject}",
+            "let's hear about {subject}",
+            "can i listen to {subject}",
+            "let me hear podcasts about {subject}",
+            "{subject} podcasts",
+            "{subject} episodes"
+          ]
+        },
+        {
+          "name": "EpisodeOnlyIntent",
+          "slots": [
+            {
+              "name": "episodeNumber",
+              "type": "AMAZON.NUMBER"
+            }
+          ],
+          "samples": [
+            "{episodeNumber}"
+          ]
+        },
+        {
+          "name": "EpisodeIntent",
+          "slots": [
+            {
+              "name": "episodeNumber",
+              "type": "AMAZON.NUMBER"
+            }
+          ],
+          "samples": [
+            "play {episodeNumber}",
+            "play number {episodeNumber}",
+            "play episode {episodeNumber}",
+            "play episode number {episodeNumber}",
+            "episode {episodeNumber}",
+            "let me hear number {episodeNumber}",
+            "let me hear {episodeNumber}",
+            "podcast {episodeNumber}",
+            "podcast number {episodeNumber}"
+          ]
+        },
+        {
+          "name": "WhoIsIntent",
+          "samples": [
+            "who is Michael Liersch",
+            "tell me about Michael Liersch",
+            "who are you",
+            "tell me about yourself",
+            "who are you"
+          ]
+        },
+        {
+          "name": "AMAZON.YesIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.NoIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.CancelIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.HelpIntent",
+          "samples": [
+            "I don't know"
+          ]
+        },
+        {
+          "name": "AMAZON.StopIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.NextIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.PreviousIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.ResumeIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.PauseIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.ScrollDownIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.NavigateSettingsIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.NavigateHomeIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.ScrollUpIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.ScrollLeftIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.ScrollRightIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.MoreIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.PageDownIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.PageUpIntent",
+          "samples": []
+        }
+      ],
+      "types": [
+        {
+          "values": [
+            {
+              "name": {
+                "value": "spend",
+                "synonyms": [
+                  "spending"
+                ]
+              }
+            },
+            {
+              "name": {
+                "value": "divide",
+                "synonyms": [
+                  "division"
+                ]
+              }
+            },
+            {
+              "name": {
+                "value": "grow",
+                "synonyms": [
+                  "growth"
+                ]
+              }
+            },
+            {
+              "name": {
+                "value": "preserve"
+              }
+            }
+          ],
+          "name": "SUBJECT"
+        }
+      ]
+    }
+  }
+}

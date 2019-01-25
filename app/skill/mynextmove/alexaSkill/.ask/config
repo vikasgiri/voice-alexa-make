@@ -1,0 +1,36 @@
+{
+  "deploy_settings": {
+    "default": {
+      "skill_id": "amzn1.ask.skill.7fb7938b-325e-406c-a879-6d9a6202a209",
+      "was_cloned": false,
+      "resources": {
+        "manifest": {
+          "eTag": "359a961162d1f128feaab929247c6c9c"
+        },
+        "interactionModel": {
+          "en-US": {
+            "eTag": "09d0effbd5e90d709abbefb391fc65a0"
+          }
+        }
+      }
+    },
+    "development": {
+      "skill_id": "amzn1.ask.skill.7fb7938b-325e-406c-a879-6d9a6202a209",
+      "was_cloned": false,
+      "resources": {
+        "manifest": {
+          "eTag": "359a961162d1f128feaab929247c6c9c"
+        }
+      }
+    },
+    "production": {
+      "skill_id": "amzn1.ask.skill.7fb7938b-325e-406c-a879-6d9a6202a209",
+      "was_cloned": false,
+      "resources": {
+        "manifest": {
+          "eTag": "359a961162d1f128feaab929247c6c9c"
+        }
+      }
+    }
+  }
+}

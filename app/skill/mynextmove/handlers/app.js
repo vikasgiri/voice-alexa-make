@@ -2,12 +2,12 @@ var Speech = require('ssml-builder');
 const lodash = require('lodash');
 const request = require("request-promise");
 
-const intentHelper = require('../intentHelper');
+const intentHelper = require('./helper');
 const main = require('../responses/main');
 const errors = require('../responses/errors');
 const library = require('../responses/library');
 const audioPlayer = require('../responses/audioPlayer');
-const AudioFeed = require('../libs/audio-feed-api');
+const AudioFeed = require('../../libs/audio-feed-api');
 
 var podcastURL = '';
 
