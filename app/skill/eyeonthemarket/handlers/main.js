@@ -10,7 +10,6 @@ const helper = require('./helper');
 const feedUrl = "https://am.jpmorgan.com/us/en/asset-management/gim/adv/alexarss/voice-insights/Eye-on-the-Market";
 const AudioFeed = require('../libs/audio-feed-api');
 const audioFeed = new AudioFeed(feedUrl);
-var podcastUrl = '';
 
 //launchrequest
 const LaunchRequestHandler = {
@@ -478,7 +477,7 @@ const PauseIntentHandler = {
 
       var options = {
         method: 'POST',
-        uri: 'http://localhost:8090/user/updateSkillAudio',
+        uri: 'http://localhost:8090/user/updateSkillAudioOffset',
         body: dataObj,
         json: true // Automatically stringifies the body to JSON
       };
