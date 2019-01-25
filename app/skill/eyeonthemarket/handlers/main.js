@@ -20,14 +20,21 @@ const LaunchRequestHandler = {
     async handle(handlerInput) {
       console.log('In launch handler')
 
+      const feed = await audioFeed.getJSONFeed(feedUrl);
+      const sortedData = feed.getSortedAudioUrl();
+      const audioURLFeed = sortedData[sortedData.length - 1].audioURL
+
+      console.log('latest ===>', audioURLFeed);
+
       var dataObj = {};
       dataObj.userid = handlerInput.requestEnvelope.session.user.userId;
       dataObj.skillid = handlerInput.requestEnvelope.session.application.applicationId;
 
       var options = {
         method: 'POST',
-        uri: feedUrl,
+        uri: 'http://localhost:8090/user/getUserVisitCountOnSkill',
         body: dataObj,
+        timeout: 5000,
         json: true // Automatically stringifies the body to JSON
       };
 
@@ -57,35 +64,7 @@ const LaunchRequestHandler = {
         }
 
         var speechOutput = speech.ssml(true);
-        // .addText(welcome.notifications.prompt, this.user().data.visits < 4 && !subCheck);
-
-        //implement below
-        // if (this.user().data.visits < 4 && !subCheck && PLATFORM_TYPE === 'AlexaSkill') {
-        //   if (this.user().data.visits === 1) {
-        //     const card = new AskForListPermissionsCard(['read']);
-        //     card.setPermissions(['alexa::devices:all:notifications:write']);
-    
-        //     this.alexaSkill().showCard(card);
-        //   }
-        //   this.ask(SPEECH);
-        // } else {
-        //   if (PLATFORM_TYPE === 'AlexaSkill') {
-        //     this.alexaSkill().audioPlayer().setOffsetInMilliseconds(0).setExpectedPreviousToken(null)
-        //       .play(audio, 'WELCOME_PLAY')
-        //       .tell(SPEECH);
-        //   } else {
-        //     this.googleAction().audioPlayer()
-        //       .play(audio, 'Podcast Clip');
-        //     this.tell(SPEECH);
-        //   }
-        // }
-
-        const feed = await audioFeed.getJSONFeed(feedUrl);
-        const sortedData = feed.getSortedAudioUrl();
-        const audioURLFeed = sortedData[sortedData.length - 1].audioURL
-
-        console.log('latest ===>', audioURLFeed);
-
+      
         // podcastUrl = audioURLFeed;
         //store the audio url in DB
         var dataObj = {};
@@ -98,10 +77,11 @@ const LaunchRequestHandler = {
           method: 'POST',
           uri: 'http://localhost:8090/user/updateSkillAudio',
           body: dataObj,
+          timeout: 5000,
           json: true // Automatically stringifies the body to JSON
         };
 
-        var promiseObj = new Promise(function(resolve, reject) {
+        var promiseObjNew = new Promise(function(resolve, reject) {
           request(options)
             .then(function (result) {
                 resolve();
@@ -111,12 +91,21 @@ const LaunchRequestHandler = {
             });
           });
 
-        return handlerInput.responseBuilder
-          .speak(speechOutput)
-          .withSimpleCard('Eye on the market', 'Eye on the market')
-          .addAudioPlayerPlayDirective('REPLACE_ALL', audioURLFeed, 'wx', 0,null)
-          .withShouldEndSession(false)
-          .getResponse();
+          return promiseObjNew.then(function(result) {
+            console.log('--------------------------------resume related---------------------------------');
+            
+            return handlerInput.responseBuilder
+              .speak(speechOutput)
+              .withSimpleCard('Eye on the market', 'Eye on the market')
+              .addAudioPlayerPlayDirective('REPLACE_ALL', audioURLFeed, 'wx', 0,null)
+              .withShouldEndSession(false)
+              .getResponse();
+           
+            })
+            .catch(function(err) {
+                console.log(err)
+            });
+       
       })
       .catch(function(err) {
         console.log('in promise catch');

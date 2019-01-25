@@ -645,8 +645,6 @@ const ResumeIntentHandler = {
   handle(handlerInput) {
     console.log('in ResumeIntentHandler');
 
-    var sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
-
     var dataObj = {};
     dataObj.userid = handlerInput.requestEnvelope.session.user.userId;
     dataObj.skillid = handlerInput.requestEnvelope.session.application.applicationId;
