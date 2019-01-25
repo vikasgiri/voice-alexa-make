@@ -1,8 +1,8 @@
 
 const commentary =  require("../responses/commentary");
 const commentaryMap = require("../responses/commentaryMap");
-const commentaryDocument = require('./apl/commentary_document.json');
-const commentaryData = require('./apl/commentary_data.json');
+const commentaryDocument = require('../apl/commentary_document.json');
+const commentaryData = require('../apl/commentary_data.json');
 
 const lodash = require('lodash');
 var Speech = require('ssml-builder');
