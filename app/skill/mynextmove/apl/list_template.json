@@ -1,0 +1,230 @@
+{
+    "document": {
+        "type": "APL",
+        "version": "1.0",
+        "theme": "dark",
+        "import": [
+            {
+                "name": "alexa-layouts",
+                "version": "1.0.0"
+            }
+        ],
+        "resources": [
+            {
+                "description": "Stock color for the light theme",
+                "colors": {
+                    "colorTextPrimary": "#151920"
+                }
+            },
+            {
+                "description": "Stock color for the dark theme",
+                "when": "${viewport.theme == 'dark'}",
+                "colors": {
+                    "colorTextPrimary": "#FFF"
+                }
+            },
+            {
+                "description": "Standard font sizes",
+                "dimensions": {
+                    "textSizeBody": 48,
+                    "textSizeSpotBody": 32
+                }
+            },
+            {
+                "description": "Common spacing values",
+                "dimensions": {
+                    "spacingThin": 6,
+                    "spacingSmall": 12,
+                    "spacingMedium": 24,
+                    "spacingLarge": 48,
+                    "spacingExtraLarge": 72
+                }
+            },
+            {
+                "description": "Common margins and padding",
+                "dimensions": {
+                    "marginTop": 40,
+                    "marginLeft": 60,
+                    "marginRight": 60,
+                    "marginBottom": 40
+                }
+            }
+        ],
+        "styles": {
+            "textStyleBase": {
+                "description": "Base font description; set color and core font family",
+                "values": [
+                    {
+                        "color": "@colorTextPrimary",
+                        "fontFamily": "Amazon Ember"
+                    }
+                ]
+            },
+            "textStyleBase0": {
+                "description": "Thin version of basic font",
+                "extend": "textStyleBase",
+                "values": {
+                    "fontWeight": "100"
+                }
+            },
+            "mixinBody": {
+                "values": {
+                    "fontSize": "@textSizeBody",
+                    "fontStyle": "italic",
+                    "fontWeight": 100
+                }
+            },
+            "mixinSpotBody": {
+                "values": {
+                    "fontSize": "@textSizeSpotBody",
+                    "fontStyle": "italic",
+                    "fontWeight": 100
+                }
+            },
+            "textStyleBody": {
+                "extend": [
+                    "textStyleBase0",
+                    "mixinBody"
+                ]
+            },
+            "textStyleSpotBody": {
+                "extend": [
+                    "textStyleBase0",
+                    "mixinSpotBody"
+                ]
+            }
+        },
+        "layouts": {
+            "ListTemplate": {
+                "parameters": [
+                    "backgroundImage",
+                    "title",
+                    "logo",
+                    "listData"
+                ],
+                "item": [
+                    {
+                        "type": "Container",
+                        "width": "100vw",
+                        "height": "100vh",
+                        "direction": "column",
+                        "items": [
+                            {
+                                "type": "Image",
+                                "source": "${viewport.shape == 'round'?backgroundImage[0].url:backgroundImage[1].url}",
+                                "scale": "best-fill",
+                                "width": "100vw",
+                                "height": "100vh",
+                                "position": "absolute"
+                            },
+                            {
+                                "when": "${viewport.shape != 'round'}",
+                                "type": "AlexaHeader",
+                                "headerTitle": "${title}",
+                                "headerAttributionImage": "${logo}"
+                            },
+                            {
+                                "type": "Sequence",
+                                "grow": 1,
+                                "height": "${viewport.shape != 'round'?80vh:100vh}",
+                                "scrollDirection": "vertical",
+                                "paddingTop": "${viewport.shape == 'round'?'20vh':0}",
+                                "paddingLeft": "${viewport.shape == 'round'?'10vw':@marginLeft}",
+                                "paddingRight": "@marginRight",
+                                "data": "${listData}",
+                                "numbered": true,
+                                "items": [
+                                    {
+                                        "type": "VerticalListItem",
+                                        "image": "${data.image.sources[0].url}",
+                                        "primaryText": "${data.textContent.primaryText.text}",
+                                        "token": "${data.token}"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            "VerticalListItem": {
+                "parameters": [
+                    "primaryText",
+                    "image",
+                    "token",
+                    "subject"
+                ],
+                "items": [
+                    {
+                        "when": "${viewport.shape == 'round'}",
+                        "type": "Container",
+                        "direction": "row",
+                        "height": "10vh",
+                        "width": "100%",
+                        "spacing": "4vh",
+                        "separator": true,
+                        "alignItems": "center",
+                        "items": [
+                            {
+                                "type": "Text",
+                                "text": "${primaryText}",
+                                "style": "textStyleSpotBody"
+                            }
+                        ]
+                    },
+                    {
+                        "when": "${viewport.shape != 'round'}",
+                        "type": "Container",
+                        "direction": "row",
+                        "height": "16vh",
+                        "width": "100%",
+                        "paddingLeft": "4vw",
+                        "alignItems": "center",
+                        "separator": true,
+                        "items": [
+                            {
+                                "when": "${true}",
+                                "type": "Text",
+                                "text": "${ordinal}.",
+                                "style": "textStyleBody",
+                                "maxLines": 1
+                            },
+                            {
+                                "type": "Image",
+                                "when": "${image}",
+                                "source": "${image}",
+                                "height": "14vh",
+                                "width": "14vh",
+                                "align": "top",
+                                "spacing": "4vw",
+                                "scale": "best-fit"
+                            },
+                            {
+                                "type": "Text",
+                                "text": "${primaryText}",
+                                "style": "textStyleBody",
+                                "spacing": "8vw",
+                                "grow": 1,
+                                "shrink": 1,
+                                "maxLines": 1
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        "mainTemplate": {
+            "parameters": [
+                "payload"
+            ],
+            "item": [
+                {
+                    "type": "ListTemplate",
+                    "backgroundImage": "${payload.ListTemplateMetadata.backgroundImage.sources}",
+                    "title": "${payload.ListTemplateMetadata.title}",
+                    "logo": "${payload.ListTemplateMetadata.logoUrl}",
+                    "listData": "${payload.ListTemplateListData.listPage.listItems}"
+                }
+            ]
+        }
+    }
+}

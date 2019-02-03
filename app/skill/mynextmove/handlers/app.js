@@ -9,6 +9,11 @@ const library = require('../responses/library');
 const audioPlayer = require('../responses/audioPlayer');
 const AudioFeed = require('../../../libs/audio-feed-api');
 
+const listTemplate = require('../apl/list_template');
+const subjectsData = require('../apl/subjects_data');
+const episodesData = require('../apl/episodes_data');
+const episodesTemplate = require('../apl/episode');
+
 const config = require('../../../config/config.json');
 const feedUrl = config.mynextmove.feedUrl;
 const audioFeed = new AudioFeed(feedUrl);
@@ -302,10 +307,23 @@ const IntroIntent = {
         speech.audio(library.intro.prompt);
         var speechOutput = speech.ssml(true);
 
-        return handlerInput.responseBuilder
-        .speak(speechOutput)
-        .withShouldEndSession(false)
-        .getResponse();
+        if (suportedIntefaces.hasOwnProperty("Alexa.Presentation.APL")) {
+            return handlerInput.responseBuilder
+            .speak(speechOutput)
+            .addDirective({
+                type: 'Alexa.Presentation.APL.RenderDocument',
+                version: '1.0',
+                document: listTemplate.document,
+                datasources: subjectsData.dataSources
+            })
+            .withShouldEndSession(false)
+            .getResponse();
+        } else {
+            return handlerInput.responseBuilder
+            .speak(speechOutput)
+            .withShouldEndSession(false)
+            .getResponse();
+        }
     }
 }
 
@@ -462,13 +480,14 @@ const SubjectIntentHandler = {
             //replace with the original url and test
             // const feed = await audioFeed.getJSONFeed(process.env.AUDIO_API_URI);
             const feed = await audioFeed.getJSONFeed(feedUrl);
-            const subjects = feed.getSubjectList(subject);
+            const podcasts = feed.getSubjectList(subject);
 
-            const titles = subjects.map(episode => {
-                return `episode ${episode.episode_num}, ${episode.title}`
-            })
+            // const titles = subjects.map(episode => {
+            //     return `episode ${episode.episode_num}, ${episode.title}`
+            // })
             const data =  {
-                titles: titles,
+                subject: subject,
+                podcasts: podcasts,
                 prompt: library.episodes.prompt,
                 reprompt: library.episodes.reprompt,
                 repromptMore: library.episodes.repromptMore
@@ -521,9 +540,9 @@ const MoreIntentHandler = {
         console.log('in MoreIntentHandler');
         
         const attributes = handlerInput.attributesManager.getSessionAttributes();
-        const titles = attributes.titles;
+        const podcasts = attributes.podcasts;
 
-        if(!titles.length) {
+        if(!podcasts.length) {
             var speech = new Speech();
             speech.audio(lodash.sample(library.nocontent.prompt));
             
@@ -541,7 +560,7 @@ const MoreIntentHandler = {
             .getResponse();
         } else {
             const data =  {
-                titles: titles,
+                podcasts: podcasts,
                 prompt: library.moreEpisodes.prompt,
                 reprompt: library.moreEpisodes.reprompt,
                 repromptMore: library.moreEpisodes.repromptMore

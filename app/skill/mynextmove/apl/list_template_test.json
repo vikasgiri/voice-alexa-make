@@ -1,0 +1,422 @@
+{
+  "document":
+  {
+    "type": "APL",
+    "version": "1.0",
+    "theme": "dark",
+    "import": [
+    {
+      "name": "alexa-layouts",
+      "version": "1.0.0"
+    }],
+    "resources": [
+    {
+      "description": "Stock color for the light theme",
+      "colors":
+      {
+        "colorTextPrimary": "#151920"
+      }
+    },
+    {
+      "description": "Stock color for the dark theme",
+      "when": "${viewport.theme == 'dark'}",
+      "colors":
+      {
+        "colorTextPrimary": "#FFF"
+      }
+    },
+    {
+      "description": "Standard font sizes",
+      "dimensions":
+      {
+        "textSizeBody": 48
+      }
+    },
+    {
+      "description": "Common spacing values",
+      "dimensions":
+      {
+        "spacingThin": 6,
+        "spacingSmall": 12,
+        "spacingMedium": 24,
+        "spacingLarge": 48,
+        "spacingExtraLarge": 72
+      }
+    },
+    {
+      "description": "Common margins and padding",
+      "dimensions":
+      {
+        "marginTop": 40,
+        "marginLeft": 60,
+        "marginRight": 60,
+        "marginBottom": 40
+      }
+    }],
+    "styles":
+    {
+      "textStyleBase":
+      {
+        "description": "Base font description; set color and core font family",
+        "values": [
+        {
+          "color": "@colorTextPrimary",
+          "fontFamily": "Amazon Ember"
+        }]
+      },
+      "textStyleBase0":
+      {
+        "description": "Thin version of basic font",
+        "extend": "textStyleBase",
+        "values":
+        {
+          "fontWeight": "100"
+        }
+      },
+      "mixinBody":
+      {
+        "values":
+        {
+          "fontSize": "@textSizeBody",
+          "fontStyle": "italic",
+          "fontWeight": 100
+        }
+      },
+      "textStyleBody":
+      {
+        "extend": [
+          "textStyleBase0",
+          "mixinBody"
+        ]
+      }
+    },
+    "layouts":
+    {
+      "ListTemplate":
+      {
+        "parameters": [
+          "backgroundImage",
+          "title",
+          "logo",
+          "listData"
+        ],
+        "item": [
+        {
+          "type": "Container",
+          "width": "100vw",
+          "height": "100vh",
+          "direction": "column",
+          "items": [
+          {
+            "type": "Image",
+            "source": "${viewport.shape == 'round'?backgroundImage[0].url:backgroundImage[1].url}",
+            "scale": "best-fill",
+            "width": "100vw",
+            "height": "100vh",
+            "position": "absolute"
+          },
+          {
+            "when": "${viewport.shape != 'round'}",
+            "type": "AlexaHeader",
+            "headerTitle": "${title}",
+            "headerAttributionImage": "${logo}"
+          },
+          {
+            "type": "Sequence",
+            "grow": 1,
+            "height": "${viewport.shape != 'round'?80vh:100vh}",
+            "scrollDirection": "vertical",
+            "paddingTop": "${viewport.shape == 'round'?'20vh':0}",
+            "paddingLeft": "${viewport.shape == 'round'?'25vw':@marginLeft}",
+            "paddingRight": "@marginRight",
+            "data": "${listData}",
+            "numbered": true,
+            "items": [
+            {
+              "type": "VerticalListItem",
+              "image": "${data.image.sources[0].url}",
+              "primaryText": "${data.textContent.primaryText.text}"
+            }]
+          }]
+        }]
+      },
+      "VerticalListItem":
+      {
+        "parameters": [
+          "primaryText",
+          "image"
+        ],
+        "items": [
+        {
+          "when": "${viewport.shape == 'round'}",
+          "type": "Container",
+          "direction": "row",
+          "height": "10vh",
+          "width": "100%",
+          "spacing": "10vh",
+          "separator": true,
+          "alignItems": "center",
+          "items": [
+          {
+            "type": "Text",
+            "text": "${ordinal}. ${primaryText}",
+            "style": "textStyleBody"
+          }]
+        },
+        {
+          "when": "${viewport.shape != 'round'}",
+          "type": "Container",
+          "direction": "row",
+          "height": "16vh",
+          "width": "100%",
+          "paddingLeft": "4vw",
+          "alignItems": "center",
+          "separator": true,
+          "items": [
+          {
+            "type": "Text",
+            "text": "${ordinal}.",
+            "style": "textStyleBody",
+            "maxLines": 1
+          },
+          {
+            "type": "Image",
+            "when": "${image}",
+            "source": "${image}",
+            "height": "14vh",
+            "width": "14vh",
+            "align": "top",
+            "spacing": "4vw",
+            "scale": "best-fit"
+          },
+          {
+            "type": "Text",
+            "text": "${primaryText}",
+            "style": "textStyleBody",
+            "spacing": "8vw",
+            "grow": 1,
+            "shrink": 1,
+            "maxLines": 1
+          }]
+        }]
+      }
+    },
+    "mainTemplate":
+    {
+      "parameters": [
+        "payload"
+      ],
+      "item": [
+      {
+        "type": "ListTemplate",
+        "backgroundImage": "${payload.ListTemplateMetadata.backgroundImage.sources}",
+        "title": "${payload.ListTemplateMetadata.title}",
+        "logo": "${payload.ListTemplateMetadata.logoUrl}",
+        "listData": "${payload.ListTemplateListData.listPage.listItems}",
+        "style": "textStyleBody"
+      }]
+    }
+  },
+  "dataSources":
+  {
+    "ListTemplateMetadata":
+    {
+      "type": "object",
+      "objectId": "lt1Metadata",
+      "backgroundImage":
+      {
+        "contentDescription": null,
+        "sources": [
+        {
+          "url": "https://s3.amazonaws.com/alexa-chase-voice/MichaelLierschRecordings/image/apl/Spot_Background_Image/Michael-Liersch-Dark.png",
+          "size": "small",
+          "widthPixels": "100vw",
+          "heightPixels": "100vh"
+        },
+        {
+          "url": "https://s3.amazonaws.com/alexa-chase-voice/MichaelLierschRecordings/image/apl/Show_Main_Menu/Show_Background_Image/MyNextMove_Logo_Dark.png",
+          "size": "large",
+          "widthPixels": "100vw",
+          "heightPixels": "100vh"
+        }]
+      },
+      "logoUrl": "https://s3.amazonaws.com/alexa-chase-voice/MichaelLierschRecordings/image/apl/Show_Main_Menu/mnm_logo.png",
+      "title": "Spend"
+    },
+    "ListTemplateListData":
+    {
+      "type": "list",
+      "listId": "lt1Sample",
+      "totalNumberOfItems": 4,
+      "listPage":
+      {
+        "listItems": [
+        {
+          "listItemIdentifier": 0,
+          "ordinalNumber": "3",
+          "textContent":
+          {
+            "primaryText":
+            {
+              "type": "PlainText",
+              "text": "How do I talk to my spouse about money?"
+            }
+          },
+          "image":
+          {
+            "contentDescription": null,
+            "smallSourceUrl": null,
+            "largeSourceUrl": null,
+            "sources": [
+            {
+              "url": "https://s3.amazonaws.com/alexa-chase-voice/MichaelLierschRecordings/image/apl/Show_Main_Menu/Show_Episode_Icons/Michael-Liersch_Still_1.png",
+              "size": "small",
+              "widthPixels": 100,
+              "heightPixels": 100
+            },
+            {
+              "url": "https://s3.amazonaws.com/alexa-chase-voice/MichaelLierschRecordings/image/apl/Show_Main_Menu/Show_Episode_Icons/Michael-Liersch_Still_1.png",
+              "size": "large",
+              "widthPixels": 100,
+              "heightPixels": 100
+            }]
+          },
+          "token": "3",
+          "title": ""
+        },
+        {
+          "listItemIdentifier": 1,
+          "ordinalNumber": "1",
+          "textContent":
+          {
+            "primaryText":
+            {
+              "type": "PlainText",
+              "text": "How do I talk to my spouse about money?"
+            }
+          },
+          "image":
+          {
+            "contentDescription": null,
+            "smallSourceUrl": null,
+            "largeSourceUrl": null,
+            "sources": [
+            {
+              "url": "https://s3.amazonaws.com/alexa-chase-voice/MichaelLierschRecordings/image/apl/Show_Main_Menu/Show_Episode_Icons/Michael-Liersch_Still_1.png",
+              "size": "small",
+              "widthPixels": 100,
+              "heightPixels": 100
+            },
+            {
+              "url": "https://s3.amazonaws.com/alexa-chase-voice/MichaelLierschRecordings/image/apl/Show_Main_Menu/Show_Episode_Icons/Michael-Liersch_Still_1.png",
+              "size": "large",
+              "widthPixels": 100,
+              "heightPixels": 100
+            }]
+          },
+          "token": "1",
+          "title": ""
+        },
+        {
+          "listItemIdentifier": 2,
+          "ordinalNumber": "8",
+          "textContent":
+          {
+            "primaryText":
+            {
+              "type": "PlainText",
+              "text": "How do I talk to my spouse about money?"
+            }
+          },
+          "image":
+          {
+            "contentDescription": null,
+            "smallSourceUrl": null,
+            "largeSourceUrl": null,
+            "sources": [
+            {
+              "url": "https://s3.amazonaws.com/alexa-chase-voice/MichaelLierschRecordings/image/apl/Show_Main_Menu/Show_Episode_Icons/Michael-Liersch_Still_1.png",
+              "size": "small",
+              "widthPixels": 100,
+              "heightPixels": 100
+            },
+            {
+              "url": "https://s3.amazonaws.com/alexa-chase-voice/MichaelLierschRecordings/image/apl/Show_Main_Menu/Show_Episode_Icons/Michael-Liersch_Still_1.png",
+              "size": "large",
+              "widthPixels": 100,
+              "heightPixels": 100
+            }]
+          },
+          "token": "8",
+          "title": ""
+        },
+        {
+          "listItemIdentifier": 3,
+          "ordinalNumber": "12",
+          "textContent":
+          {
+            "primaryText":
+            {
+              "type": "PlainText",
+              "text": "How do I talk to my spouse about money?"
+            }
+          },
+          "image":
+          {
+            "contentDescription": null,
+            "smallSourceUrl": null,
+            "largeSourceUrl": null,
+            "sources": [
+            {
+              "url": "https://s3.amazonaws.com/alexa-chase-voice/MichaelLierschRecordings/image/apl/Show_Main_Menu/Show_Episode_Icons/Michael-Liersch_Still_1.png",
+              "size": "small",
+              "widthPixels": 100,
+              "heightPixels": 100
+            },
+            {
+              "url": "https://s3.amazonaws.com/alexa-chase-voice/MichaelLierschRecordings/image/apl/Show_Main_Menu/Show_Episode_Icons/Michael-Liersch_Still_1.png",
+              "size": "large",
+              "widthPixels": 100,
+              "heightPixels": 100
+            }]
+          },
+          "token": "12",
+          "title": ""
+        },
+        {
+          "listItemIdentifier": 4,
+          "ordinalNumber": "15",
+          "textContent":
+          {
+            "primaryText":
+            {
+              "type": "PlainText",
+              "text": "How do I talk to my spouse about money?"
+            }
+          },
+          "image":
+          {
+            "contentDescription": null,
+            "smallSourceUrl": null,
+            "largeSourceUrl": null,
+            "sources": [
+            {
+              "url": "https://s3.amazonaws.com/alexa-chase-voice/MichaelLierschRecordings/image/apl/Show_Main_Menu/Show_Episode_Icons/Michael-Liersch_Still_1.png",
+              "size": "small",
+              "widthPixels": 100,
+              "heightPixels": 100
+            },
+            {
+              "url": "https://s3.amazonaws.com/alexa-chase-voice/MichaelLierschRecordings/image/apl/Show_Main_Menu/Show_Episode_Icons/Michael-Liersch_Still_1.png",
+              "size": "large",
+              "widthPixels": 100,
+              "heightPixels": 100
+            }]
+          },
+          "token": "15",
+          "title": ""
+        }]
+      }
+    }
+  }
+}

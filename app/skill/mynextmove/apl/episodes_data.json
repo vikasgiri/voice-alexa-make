@@ -1,0 +1,34 @@
+{
+    "dataSources": {
+        "ListTemplateMetadata": {
+            "type": "object",
+            "objectId": "lt1Metadata",
+            "backgroundImage": {
+                "contentDescription": null,
+                "sources": [
+                    {
+                        "url": "https://s3.amazonaws.com/alexa-chase-voice/MichaelLierschRecordings/image/apl/Spot_Background_Image/Michael-Liersch-Dark.png",
+                        "size": "small",
+                        "widthPixels": "100vw",
+                        "heightPixels": "100vh"
+                    },
+                    {
+                        "url": "https://s3.amazonaws.com/alexa-chase-voice/MichaelLierschRecordings/image/apl/Show_Main_Menu/Show_Background_Image/MyNextMove_Logo_Dark.png",
+                        "size": "large",
+                        "widthPixels": "100vw",
+                        "heightPixels": "100vh"
+                    }
+                ]
+            },
+            "logoUrl": "https://s3.amazonaws.com/alexa-chase-voice/MichaelLierschRecordings/image/apl/Show_Main_Menu/mnm_logo.png"
+        },
+        "ListTemplateListData": {
+            "type": "list",
+            "listId": "lt1Sample",
+            "totalNumberOfItems": 4,
+            "listPage": {
+                "listItems": []
+            }
+        }
+    }
+}

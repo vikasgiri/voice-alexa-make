@@ -1,0 +1,31 @@
+{
+    "listItemIdentifier": "",
+    "ordinalNumber": 0,
+    "textContent": {
+        "primaryText": {
+            "type": "PlainText",
+            "text": ""
+        }
+    },
+    "image": {
+        "contentDescription": null,
+        "smallSourceUrl": null,
+        "largeSourceUrl": null,
+        "sources": [
+            {
+                "url": "https://s3.amazonaws.com/alexa-chase-voice/MichaelLierschRecordings/image/apl/Show_Main_Menu/Show_Episode_Icons/Michael-Liersch_Still_1.png",
+                "size": "small",
+                "widthPixels": 100,
+                "heightPixels": 100
+            },
+            {
+                "url": "https://s3.amazonaws.com/alexa-chase-voice/MichaelLierschRecordings/image/apl/Show_Main_Menu/Show_Episode_Icons/Michael-Liersch_Still_1.png",
+                "size": "large",
+                "widthPixels": 100,
+                "heightPixels": 100
+            }
+        ]
+    },
+    "token": "",
+    "title": ""
+}
