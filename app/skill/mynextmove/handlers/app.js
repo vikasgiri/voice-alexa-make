@@ -303,6 +303,7 @@ const IntroIntent = {
     handle(handlerInput) {
         console.log('in in IntroIntent LibraryIntent');
     
+        const suportedIntefaces = handlerInput.requestEnvelope.context.System.device.supportedInterfaces;
         var speech = new Speech();
         speech.audio(library.intro.prompt);
         var speechOutput = speech.ssml(true);
