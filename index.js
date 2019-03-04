@@ -154,6 +154,7 @@ router.post('/voice/alexa/eyeonthemarket', function(req, res) {
         eyeOnTheMarketHelper.PodcastIntentHandler,
         eyeOnTheMarketHelper.PauseIntentHandler,
         eyeOnTheMarketHelper.ResumeIntentHandler,
+        eyeOnTheMarketHelper.PlaybackHandler,
         eyeOnTheMarketHelper.UnhandledIntentHandler
       ).addErrorHandlers(eyeOnTheMarketHelper.ErrorHandler)
       .addRequestInterceptors(eyeOnTheMarketHelper.RequestLog)

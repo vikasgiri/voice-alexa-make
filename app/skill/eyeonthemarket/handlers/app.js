@@ -647,6 +647,31 @@ const ResponseLog = {
     }
 };
 
+const PlaybackHandler = {
+  canHandle(handlerInput) {
+      console.log('in PlaybackHandler');
+    
+      const request = handlerInput.requestEnvelope.request;
+      return (request.type === 'PlaybackController.PlayCommandIssued' ||
+      request.type === 'PlaybackController.PauseCommandIssued');
+  },
+  handle(handlerInput) {
+      console.log('in PlaybackHandler');
+   
+    switch (handlerInput.requestEnvelope.request.type) {
+      case 'PlaybackController.PlayCommandIssued':
+        ResumeIntentHandler.handle(handlerInput);
+        break;
+      case 'PlaybackController.PauseCommandIssued':
+        PauseIntentHandler.handle(handlerInput);
+        break;
+      
+      default:
+        console.log(`unexpected request type: ${handlerInput.requestEnvelope.request.type}`);
+    }
+  }
+};
+
 module.exports = {
     LaunchRequestHandler,
     SessionEndedRequestHandler,
@@ -661,6 +686,7 @@ module.exports = {
     PodcastIntentHandler,
     PauseIntentHandler,
     ResumeIntentHandler,
+    PlaybackHandler,
     ErrorHandler,
     RequestLog,
     ResponseLog
