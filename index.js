@@ -133,47 +133,56 @@ router.post('/voice/alexa/mynextmove', function(req, res) {
 });
 
 router.post('/voice/alexa/eyeonthemarket', function(req, res) {
-  // console.log("in marketinsights");
-  console.log("---------------eyeonthemarket-------------------------");
-  // console.log(JSON.stringify(req.body));
-  // console.log("---------------guidetomarket-------------------------");
-  if (!eyeonthemarket) {
+  try {
+    
+  
+    // console.log("in marketinsights");
+    console.log("---------------eyeonthemarket-------------------------");
+    // console.log(JSON.stringify(req.body));
+    // console.log("---------------guidetomarket-------------------------");
+    if (!eyeonthemarket) {
 
-    //change the request and response loggers to common
-    eyeonthemarket = Alexa.SkillBuilders.custom()
-      .addRequestHandlers(
-        eyeOnTheMarketHelper.AboutMichaelIntentHandler,
-        eyeOnTheMarketHelper.NewContentIntentHandler,
-        eyeOnTheMarketHelper.AudioPlayerEventHandler,
-        eyeOnTheMarketHelper.LaunchRequestHandler,
-        eyeOnTheMarketHelper.SessionEndedRequestHandler,
-        eyeOnTheMarketHelper.SkillEventHandler,
-        eyeOnTheMarketHelper.CancelIntentHandler,
-        eyeOnTheMarketHelper.StopIntentHandler,
-        eyeOnTheMarketHelper.HelpIntentHandler,
-        eyeOnTheMarketHelper.PodcastIntentHandler,
-        eyeOnTheMarketHelper.PauseIntentHandler,
-        eyeOnTheMarketHelper.ResumeIntentHandler,
-        eyeOnTheMarketHelper.PlaybackHandler,
-        eyeOnTheMarketHelper.UnhandledIntentHandler
-      ).addErrorHandlers(eyeOnTheMarketHelper.ErrorHandler)
-      .addRequestInterceptors(eyeOnTheMarketHelper.RequestLog)
-      .addResponseInterceptors(eyeOnTheMarketHelper.ResponseLog)
-      .create();
+      //change the request and response loggers to common
+      eyeonthemarket = Alexa.SkillBuilders.custom()
+        .addRequestHandlers(
+          eyeOnTheMarketHelper.AboutMichaelIntentHandler,
+          eyeOnTheMarketHelper.NewContentIntentHandler,
+          eyeOnTheMarketHelper.AudioPlayerEventHandler,
+          eyeOnTheMarketHelper.LaunchRequestHandler,
+          eyeOnTheMarketHelper.SessionEndedRequestHandler,
+          eyeOnTheMarketHelper.SkillEventHandler,
+          eyeOnTheMarketHelper.CancelIntentHandler,
+          eyeOnTheMarketHelper.StopIntentHandler,
+          eyeOnTheMarketHelper.HelpIntentHandler,
+          eyeOnTheMarketHelper.PodcastIntentHandler,
+          eyeOnTheMarketHelper.PauseIntentHandler,
+          eyeOnTheMarketHelper.ResumeIntentHandler,
+          eyeOnTheMarketHelper.PlaybackHandler,
+          eyeOnTheMarketHelper.NoIntentHandler,
+          eyeOnTheMarketHelper.YesIntentHandler,
+          eyeOnTheMarketHelper.NotificationAskIntentHandler,
+          eyeOnTheMarketHelper.UnhandledIntentHandler
+        ).addErrorHandlers(eyeOnTheMarketHelper.ErrorHandler)
+        .addRequestInterceptors(eyeOnTheMarketHelper.RequestLog)
+        .addResponseInterceptors(eyeOnTheMarketHelper.ResponseLog)
+        .create();
+    }
+          // .withSkillId('amzn1.ask.skill.d928634f-f6c9-40c9-9b8c-2e14ccd8f5e2')
+      eyeonthemarket.invoke(req.body)
+      .then(function(responseBody) {
+        // console.log("--------------------------------req.body start-------------------------------");
+        // console.log(responseBody);
+        // console.log("--------------------------------req.body stop-------------------------------");
+
+        res.json(responseBody);
+      })
+      .catch(function(error) {
+        console.log(error);
+        res.status(500).send('Error during the request');
+      });
+  } catch (error) {
+    console.log("Index file : eyeonthemarket error : " + error)
   }
-        // .withSkillId('amzn1.ask.skill.d928634f-f6c9-40c9-9b8c-2e14ccd8f5e2')
-    eyeonthemarket.invoke(req.body)
-    .then(function(responseBody) {
-      // console.log("--------------------------------req.body start-------------------------------");
-      // console.log(responseBody);
-      // console.log("--------------------------------req.body stop-------------------------------");
-
-      res.json(responseBody);
-    })
-    .catch(function(error) {
-      console.log(error);
-      res.status(500).send('Error during the request');
-    });
 });
 
 // Start server

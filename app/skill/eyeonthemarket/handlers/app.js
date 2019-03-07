@@ -12,6 +12,7 @@ const feedUrl = config.eyeonthemarket.feedUrl;
 const AudioFeed = require('../../../libs/audio-feed-api');
 const audioFeed = new AudioFeed(feedUrl);
 
+var podcastUrl = "";
 //launchrequest
 const LaunchRequestHandler = {
     canHandle(handlerInput) {
@@ -22,40 +23,56 @@ const LaunchRequestHandler = {
 
       const feed = await audioFeed.getJSONFeed(feedUrl);
       const sortedData = feed.getSortedAudioUrl();
-      const audioURLFeed = sortedData[sortedData.length - 1].audioURL
+      const audioURLFeed = sortedData[0].audioURL
 
-      console.log('latest ===>', audioURLFeed);
+      //when the DB fails to make it work in offline mode.
+      podcastUrl = audioURLFeed;
+      console.log('latest ===>', podcastUrl);
 
+      console.log(1);
       var dataObj = {};
       dataObj.userid = handlerInput.requestEnvelope.session.user.userId;
       dataObj.skillid = handlerInput.requestEnvelope.session.application.applicationId;
 
       var options = {
         method: 'POST',
-        uri: config.dbServiceBase + config.getUserVisitCountOnSkill,
+        uri: config.dbServiceBase + config.dbService.getUserVisitCountOnSkill,
         body: dataObj,
         timeout: 5000,
         json: true // Automatically stringifies the body to JSON
       };
 
+      console.log("options : " + JSON.stringify(options));
+      console.log(2);
       var promiseObj = new Promise(function(resolve, reject) {
           request(options)
             .then(function (result) {
+              console.log(3);
                 resolve(result);
             })
             .catch(function (err) {
+              console.log(4);
                 reject();
             });
       });
 
       return promiseObj.then(function(result) {
 
+        console.log(5);
+        console.log("subscription : " + result.subscription);
         // if (!this.user().data.subscription) this.user().data.subscription = false;
         // const subCheck = this.user().data.subscription;
-        const subCheck = false;
+
+        const subCheck = result.subscription === 0 ? false : true;
         const USER_TYPE = result.visit_count < 2 ? 'newUser' : subCheck ? 'subscribedUser' : 'returningUser'
         
+        console.log("subCheck : " + subCheck);
+
         var speech = new Speech();
+
+        console.log("user type" + USER_TYPE);
+        console.log("result.visit_count : " + result.visit_count );
+        console.log("result object : " + JSON.stringify(result));
 
         if(result.visit_count < 4) {
           speech.audio(lodash.sample(welcome[USER_TYPE].prompt));
@@ -63,8 +80,10 @@ const LaunchRequestHandler = {
           speech.audio(lodash.sample(welcome.subscribedUser.prompt));
         }
 
-        var speechOutput = speech.ssml(true);
-      
+        var visitVal = result.visit_count;
+        
+        console.log(6);
+        console.log("speech object" + speech);
         // podcastUrl = audioURLFeed;
         //store the audio url in DB
         var dataObj = {};
@@ -75,7 +94,7 @@ const LaunchRequestHandler = {
 
         var options = {
           method: 'POST',
-          uri: config.dbServiceBase + config.updateSkillAudio,
+          uri: config.dbServiceBase + config.dbService.updateSkillAudio,
           body: dataObj,
           timeout: 5000,
           json: true // Automatically stringifies the body to JSON
@@ -94,13 +113,38 @@ const LaunchRequestHandler = {
           return promiseObjNew.then(function(result) {
             console.log('--------------------------------resume related---------------------------------');
             
-            return handlerInput.responseBuilder
+            if(visitVal < 4 && !subCheck ) {
+              
+              //if user vist is 1 and subscription is false
+        //       const card = new AskForListPermissionsCard(['read']);
+				// card.setPermissions(['alexa::devices:all:notifications:write']);
+
+        // this.alexaSkill().showCard(card);
+        
+              console.log('subcheck false or 0');
+
+              speech.paragraph(welcome.notifications.prompt);
+              var speechOutput = speech.ssml(true);
+              
+              return handlerInput.responseBuilder
               .speak(speechOutput)
-              .withSimpleCard('Eye on the market', 'Eye on the market')
+              .withStandardCard('Eye on the market', 'Eye on the market', 'https://s3.amazonaws.com/alexa-chase-voice/image/alexa_card_logo_small.png', 'https://s3.amazonaws.com/alexa-chase-voice/image/alexa_card_logo_large.png')
+              // .addAudioPlayerPlayDirective('REPLACE_ALL', audioURLFeed, 'wx', 0,null)
+              .withShouldEndSession(false)
+              .getResponse();
+            } else {
+              
+              console.log('subcheck true  or 1 or visitcount greater than 4');
+              var speechOutput = speech.ssml(true);
+              
+              return handlerInput.responseBuilder
+              .speak(speechOutput)
+              // .withSimpleCard('Eye on the market', 'Eye on the market')
+              .withStandardCard('Eye on the market', 'Eye on the market', 'https://s3.amazonaws.com/alexa-chase-voice/image/alexa_card_logo_small.png', 'https://s3.amazonaws.com/alexa-chase-voice/image/alexa_card_logo_large.png')
               .addAudioPlayerPlayDirective('REPLACE_ALL', audioURLFeed, 'wx', 0,null)
               .withShouldEndSession(false)
               .getResponse();
-           
+            }
             })
             .catch(function(err) {
                 console.log(err)
@@ -109,8 +153,21 @@ const LaunchRequestHandler = {
       })
       .catch(function(err) {
         console.log('in promise catch');
+        //if db connection fails
+        console.log('DB failed ===>', audioURLFeed);
         console.log(err);
-        return ErrorHandler.handle(handlerInput);
+
+        var speech = new Speech();
+        speech.audio(lodash.sample(welcome['newUser'].prompt));
+        var speechOutput = speech.ssml(true);
+
+        return handlerInput.responseBuilder
+              .speak(speechOutput)
+              // .withSimpleCard('Eye on the market', 'Eye on the market')
+              .withStandardCard('Eye on the market', 'Eye on the market', 'https://s3.amazonaws.com/alexa-chase-voice/image/alexa_card_logo_small.png', 'https://s3.amazonaws.com/alexa-chase-voice/image/alexa_card_logo_large.png')
+              .addAudioPlayerPlayDirective('REPLACE_ALL', audioURLFeed, 'wx', 0,null)
+              .withShouldEndSession(true)
+              .getResponse();
       });
   }
 };
@@ -255,59 +312,189 @@ const SessionEndedRequestHandler = {
     }
 };
 
-const WelcomeIntentHandler = {
-    canHandle(handlerInput) {
-        console.log('WelcomeIntentHandler');
-        // console.log(handlerInput.requestEnvelope.request);
-        return handlerInput.requestEnvelope.request.type === 'IntentRequest'
-        && handlerInput.requestEnvelope.request.intent.name === 'WelcomeIntentHandler';
-    },
-    handle(handlerInput) {
-        console.log('in WelcomeIntentHandler');
+// const WelcomeIntentHandler = {
+//     canHandle(handlerInput) {
+//         console.log('WelcomeIntentHandler');
+//         // console.log(handlerInput.requestEnvelope.request);
+//         return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+//         && handlerInput.requestEnvelope.request.intent.name === 'WelcomeIntentHandler';
+//     },
+//     handle(handlerInput) {
+//         console.log('in WelcomeIntentHandler');
 
-        //add speech
-    var speech = new Speech();
-    speech.audio(lodash.sample(main.welcome.returning))
+//         //add speech
+//     var speech = new Speech();
+//     speech.audio(lodash.sample(main.welcome.returning))
 
-    //add reprompt
-    var repromptSpeech = new Speech();
-    repromptSpeech.audio(lodash.sample(main.welcome.reprompt));
+//     //add reprompt
+//     var repromptSpeech = new Speech();
+//     repromptSpeech.audio(lodash.sample(main.welcome.reprompt));
 
-    //make it ssml
-    var speechOutput = speech.ssml(true);
-    var repromptSpeechOutput = repromptSpeech.ssml(true);
+//     //make it ssml
+//     var speechOutput = speech.ssml(true);
+//     var repromptSpeechOutput = repromptSpeech.ssml(true);
 
-    return handlerInput.responseBuilder
-      .speak(speechOutput)
-      .reprompt(repromptSpeechOutput)
-      .withShouldEndSession(false)
-      .getResponse();
-    }
-};
+//     return handlerInput.responseBuilder
+//       .speak(speechOutput)
+//       .reprompt(repromptSpeechOutput)
+//       .withShouldEndSession(false)
+//       .getResponse();
+//     }
+// };
 
 const YesIntentHandler = {
     canHandle(handlerInput) {
-     // console.log(handlerInput.requestEnvelope);
-      return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+      try {
+        return handlerInput.requestEnvelope.request.type === 'IntentRequest'
         && handlerInput.requestEnvelope.request.intent.name === 'AMAZON.YesIntent';
+      } catch (error) {
+        console.log("YesIntentHandler canHandle : " + error);
+      }
     },
     handle(handlerInput) {
-      console.log('in YesIntentHandler');
-  
-      var repromptSpeech = new Speech();
-      repromptSpeech.audio(notes.preview.reprompt);
-       var repromptSpeechOutput = repromptSpeech.ssml(true);
-  
-      var token2 = handlerInput.requestEnvelope.context.System.apiAccessToken;
-        return handlerInput.responseBuilder
-        .addAudioPlayerPlayDirective('REPLACE_ALL', podcastURL, 'wx', 0,null)
-        .withShouldEndSession(true)
-        .getResponse();
-       
-        // .reprompt(repromptSpeechOutput)
-        // .withShouldEndSession(false)
+      try {
+        
+      
+            console.log('in YesIntentHandler');
+
+            console.log("Previous intent value : " + handlerInput.requestEnvelope.request.intent.name );
+            const attributes = handlerInput.attributesManager.getSessionAttributes();
+
+            console.log("attributes from notifications yesintent : " +  JSON.stringify(attributes));
+
+            console.log("attributes.currentIntent : " + attributes.currentIntent);
+
+            if(attributes.previousIntent === 'NotificationAskIntent') {
+
+            console.log("i am in the if part of notificationsintent");
+            //this.alexaSkill().tell(welcome.notifications.yes.yes);
+
+            var speech = new Speech();
+            speech.paragraph(welcome.notifications.yes.yes);
+            var speechOutput = speech.ssml();
+
+            var dataObj = {};
+            dataObj.userid = handlerInput.requestEnvelope.session.user.userId;
+            dataObj.skillid = handlerInput.requestEnvelope.session.application.applicationId;
+
+            var options = {
+            method: 'POST',
+            uri: config.dbServiceBase + config.dbService.getAudioUrlOnUserSkillId,
+            body: dataObj,
+            json: true // Automatically stringifies the body to JSON
+            };
+
+            var promiseObj = new Promise(function(resolve, reject) {
+            request(options)
+              .then(function (result) {
+                  resolve(result);
+              })
+              .catch(function (err) {
+                  reject();
+              });
+            });
+
+            return promiseObj.then(function(result) {
+
+              return handlerInput.responseBuilder
+              .speak(speechOutput)
+              .addAudioPlayerPlayDirective('REPLACE_ALL', result.audiourl, 'wx', 0, null)
+              .withShouldEndSession(true)
+              .getResponse();
+
+            })
+            .catch(function(err) {
+              console.log(err)
+
+              console.log("333333333333333");
+              return handlerInput.responseBuilder
+                .addAudioPlayerPlayDirective('REPLACE_ALL', podcastURL, 'wx', 0,null)
+                .withShouldEndSession(true)
+                .getResponse();
+            });
+            } 
+
+            var dataObj = {};
+            dataObj.userid = handlerInput.requestEnvelope.session.user.userId;
+            dataObj.skillid = handlerInput.requestEnvelope.session.application.applicationId;
+            dataObj.subscription = 1;
+
+            var options = {
+            method: 'POST',
+            uri: config.dbServiceBase + config.dbService.updateUserSubscription,
+            body: dataObj,
+            json: true // Automatically stringifies the body to JSON
+            };
+
+            console.log("************** Subscription getting updated******************");
+
+            var promiseObj = new Promise(function(resolve, reject) {
+            request(options)
+              .then(function (result) {
+                  resolve(result);
+              })
+              .catch(function (err) {
+                  reject();
+              });
+            });
+
+            return promiseObj.then(function(result) {
+              return NotificationAskIntentHandler.handle(handlerInput);
+            })
+            .catch(function(err) {
+              console.log(err);
+              return NotificationAskIntentHandler.handle(handlerInput);
+            });
+      } catch (error) {
+        console.log("YesIntentHandler handle : " + error);
+      }
     }
   };
+
+
+  //helpintent
+const NotificationAskIntentHandler = {
+  canHandle(handlerInput) {
+   console.log('In NotificationAskIntentHandler');
+    try {
+      return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+      && handlerInput.requestEnvelope.request.intent.name === 'NotificationAskIntent';
+    } catch (error) {
+      console.log("NotificationAskIntentHandler canHandle : " + error);
+    }
+    
+  },
+   
+  handle(handlerInput) {
+    try {
+      
+      console.log('In NotificationAskIntentHandler handle method');
+
+      const PERMISSIONS = ['alexa::devices:all:notifications:write'];
+      const attributes = handlerInput.attributesManager.getSessionAttributes();
+      attributes.currentIntent = 'NotificationAskIntent';
+      handlerInput.attributesManager.setSessionAttributes(attributes);
+
+      console.log("attributes from notifications : " +  JSON.stringify(attributes));
+
+      var speech = new Speech();
+      speech.paragraph(welcome.notifications.yes.prompt);
+      //make it ssml
+      var speechOutput = speech.ssml(true);
+
+      // const consentToken = handlerInput.requestEnvelope.context.System.user.permissions && handlerInput.requestEnvelope.context.System.user.permissions.consentToken;
+
+      // console.log("consentToken from notification intent : " + consentToken);
+      // .withAskForPermissionsConsentCard(PERMISSIONS)
+      return handlerInput.responseBuilder
+      .speak(speechOutput)
+      .withShouldEndSession(false)
+      .getResponse();
+    } catch (error) {
+      console.log("NotificationAskIntentHandler handle : " + error);
+    }
+  }
+};
 
   const NoIntentHandler = {
     canHandle(handlerInput) {
@@ -318,7 +505,61 @@ const YesIntentHandler = {
     },
     handle(handlerInput) {
       console.log('in NoIntentHandler');
-      return SessionEndedRequestHandler.handle(handlerInput);
+
+      console.log();
+
+      var speech = new Speech();
+      speech.paragraph(welcome.notifications.no);
+      var speechOutput = speech.ssml(true);
+
+      var dataObj = {};
+      dataObj.userid = handlerInput.requestEnvelope.session.user.userId;
+      dataObj.skillid = handlerInput.requestEnvelope.session.application.applicationId;
+    
+      var options = {
+        method: 'POST',
+        uri: config.dbServiceBase + config.dbService.getAudioUrlOnUserSkillId,
+        body: dataObj,
+        json: true // Automatically stringifies the body to JSON
+      };
+
+      var promiseObj = new Promise(function(resolve, reject) {
+        request(options)
+          .then(function (result) {
+              resolve(result);
+          })
+          .catch(function (err) {
+              reject();
+          });
+        });
+      
+      return promiseObj.then(function(result) {
+
+        if(result.offsetmili === null){
+          return handlerInput.responseBuilder
+          .speak(speechOutput)
+          .addAudioPlayerPlayDirective('REPLACE_ALL', result.audiourl, 'wx', 0, null)
+          .withShouldEndSession(true)
+          .getResponse();
+        } else {
+          console.log("2222222222222");
+          return handlerInput.responseBuilder
+          .speak(speechOutput)
+          .addAudioPlayerPlayDirective('REPLACE_ALL', result.audiourl, 'wx', result.offsetmili ,null)
+          .withShouldEndSession(true)
+          .getResponse();
+        }
+      })
+      .catch(function(err) {
+        console.log(err)
+
+        console.log("333333333333333" + podcastURL);
+        return handlerInput.responseBuilder
+          .speak(speechOutput)
+          .addAudioPlayerPlayDirective('REPLACE_ALL', podcastURL, 'wx', 0,null)
+          .withShouldEndSession(true)
+          .getResponse();
+      });
     }
   };
 
@@ -360,27 +601,27 @@ const SkillEventHandler = {
   },
 };
 
-//helpintent
-const NotificationIntentHandler = {
-  canHandle(handlerInput) {
-   console.log('In help intent');
-    return handlerInput.requestEnvelope.request.type === 'IntentRequest'
-      && handlerInput.requestEnvelope.request.intent.name === 'NotificationIntent';
-  },
+// //helpintent
+// const NotificationIntentHandler = {
+//   canHandle(handlerInput) {
+//    console.log('In help intent');
+//     return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+//       && handlerInput.requestEnvelope.request.intent.name === 'NotificationIntent';
+//   },
    
-  handle(handlerInput) {
-      var speech = new Speech();
-      speech.paragraph(welcome.notifications.prompt);
+//   handle(handlerInput) {
+//       var speech = new Speech();
+//       speech.paragraph(welcome.notifications.prompt);
       
-      //make it ssml
-      var speechOutput = speech.ssml(true);
+//       //make it ssml
+//       var speechOutput = speech.ssml(true);
 
-      return handlerInput.responseBuilder
-      .speak(speechOutput)
-      .withShouldEndSession(true)
-      .getResponse();
-}
-};
+//       return handlerInput.responseBuilder
+//       .speak(speechOutput)
+//       .withShouldEndSession(true)
+//       .getResponse();
+// }
+// };
 
 //helpintent
 const HelpIntentHandler = {
@@ -478,7 +719,7 @@ const PauseIntentHandler = {
 
       var options = {
         method: 'POST',
-        uri: config.dbServiceBase + config.updateSkillAudioOffset,
+        uri: config.dbServiceBase + config.dbService.updateSkillAudioOffset,
         body: dataObj,
         json: true // Automatically stringifies the body to JSON
       };
@@ -497,14 +738,14 @@ const PauseIntentHandler = {
         console.log('--------------------------------pause related---------------------------------');
         return handlerInput.responseBuilder
           .addAudioPlayerStopDirective()
-          .withShouldEndSession(false)
+          .withShouldEndSession(true)
           .getResponse();
       })
       .catch(function(err) {
         console.log('--------------------------------pause related---------------------------------');
         return handlerInput.responseBuilder
           .addAudioPlayerStopDirective()
-          .withShouldEndSession(false)
+          .withShouldEndSession(true)
           .getResponse();
       });
     }
@@ -525,7 +766,7 @@ const ResumeIntentHandler = {
     
       var options = {
         method: 'POST',
-        uri: config.dbServiceBase + config.getAudioUrlOnUserSkillId,
+        uri: config.dbServiceBase + config.dbService.getAudioUrlOnUserSkillId,
         body: dataObj,
         json: true // Automatically stringifies the body to JSON
       };
@@ -572,10 +813,12 @@ const ResumeIntentHandler = {
 const AudioPlayerEventHandler = {
 
     canHandle(handlerInput) {
+      console.log("here in AudioPlayerEventHandler canhandle ");
       return handlerInput.requestEnvelope.request.type.startsWith('AudioPlayer.');
     },
     async handle(handlerInput) {
   
+      console.log("here in AudioPlayerEventHandler handle ");
       console.log('AudioPlayerEventHandler 1');
       const {
         requestEnvelope,
@@ -637,6 +880,21 @@ const RequestLog = {
     process(handlerInput) {
       // console.log('THIS.EVENT = ' + JSON.stringify(this.event));
       console.log("REQUEST ENVELOPE MY-NEXT-MOVE : " + JSON.stringify(handlerInput.requestEnvelope));
+
+      if(handlerInput.requestEnvelope.request.type === 'LaunchRequest') {
+        console.log("in if : " + JSON.stringify(handlerInput.requestEnvelope.request));
+        console.log("in if : " + handlerInput.requestEnvelope.request.type );
+        const attributes = handlerInput.attributesManager.getSessionAttributes();
+        attributes.previousIntent = 'LaunchRequest';
+        attributes.currentIntent = 'LaunchRequest';
+        handlerInput.attributesManager.setSessionAttributes(attributes);
+      } else {
+        console.log("in else : " + handlerInput.requestEnvelope.request.intent.name );
+        const attributes = handlerInput.attributesManager.getSessionAttributes();
+        attributes.previousIntent = attributes.currentIntent;
+        attributes.currentIntent = handlerInput.requestEnvelope.request.intent.name;
+        handlerInput.attributesManager.setSessionAttributes(attributes);
+      }
     }
 };
   
@@ -656,7 +914,8 @@ const PlaybackHandler = {
       request.type === 'PlaybackController.PauseCommandIssued');
   },
   handle(handlerInput) {
-      console.log('in PlaybackHandler');
+      console.log('in PlaybackHandler handle ');
+      console.log('handlerInput.requestEnvelope.request.type : ' +  handlerInput.requestEnvelope.request.type);
    
     switch (handlerInput.requestEnvelope.request.type) {
       case 'PlaybackController.PlayCommandIssued':
@@ -686,6 +945,9 @@ module.exports = {
     PodcastIntentHandler,
     PauseIntentHandler,
     ResumeIntentHandler,
+    NoIntentHandler,
+    YesIntentHandler,
+    NotificationAskIntentHandler,
     PlaybackHandler,
     ErrorHandler,
     RequestLog,
