@@ -14,6 +14,7 @@ const AudioFeed = require('../../../libs/audio-feed-api');
 const audioFeed = new AudioFeed(feedUrl);
 
 var podcastUrl = "";
+var playBackInfo = false;
 //launchrequest
 const LaunchRequestHandler = {
     canHandle(handlerInput) {
@@ -718,7 +719,13 @@ const PauseIntentHandler = {
     },
     handle(handlerInput) {
       console.log('in PauseIntentHandler');
-      console.log('--------------------------------pause related---------------------------------');
+      console.log('--------------------------------pause related then 1---------------------------------');
+
+      if(playBackInfo) {
+        console.log("the playBackInfo is : " + playBackInfo);
+      } else {
+        console.log("false the playBackInfo is : " + playBackInfo);
+      }
 
       var dataObj = {};
       dataObj.userid = handlerInput.requestEnvelope.session.user.userId;
@@ -743,18 +750,16 @@ const PauseIntentHandler = {
         });
       
       return promiseObj.then(function() {
-        console.log('--------------------------------pause related---------------------------------');
+        console.log('--------------------------------pause related then---------------------------------');
         return handlerInput.responseBuilder
-          .addAudioPlayerStopDirective()
-          .withShouldEndSession(true)
-          .getResponse();
+        .addAudioPlayerStopDirective()
+        .getResponse();
       })
       .catch(function(err) {
-        console.log('--------------------------------pause related---------------------------------');
+        console.log('--------------------------------pause related catch ---------------------------------');
         return handlerInput.responseBuilder
-          .addAudioPlayerStopDirective()
-          .withShouldEndSession(true)
-          .getResponse();
+        .addAudioPlayerStopDirective()
+        .getResponse();
       });
     }
 };
@@ -844,10 +849,12 @@ const AudioPlayerEventHandler = {
       switch (audioPlayerEventName) {
         case 'PlaybackStarted':
           console.log('AudioPlayerEventHandler 3');
+          playBackInfo =  true;
           responseBuilder.withShouldEndSession(true)
           break;
         case 'PlaybackFinished':
           console.log('AudioPlayerEventHandler 4');
+          playBackInfo =  false;
           responseBuilder.addAudioPlayerStopDirective().withShouldEndSession(true)
        
           break;
