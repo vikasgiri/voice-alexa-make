@@ -1,6 +1,7 @@
 const Speech = require('ssml-builder');
 const lodash = require('lodash');
 const request = require('request-promise');
+const Alexa = require('ask-sdk');
 
 const easterEggs = require('../responses/easterEggs');
 const exceptions = require('../responses/exceptions');
@@ -16,6 +17,7 @@ var podcastUrl = "";
 //launchrequest
 const LaunchRequestHandler = {
     canHandle(handlerInput) {
+      console.log('LaunchRequest');
       return handlerInput.requestEnvelope.request.type === 'LaunchRequest';
     },
     async handle(handlerInput) {
@@ -161,10 +163,40 @@ const LaunchRequestHandler = {
         speech.audio(lodash.sample(welcome['newUser'].prompt));
         var speechOutput = speech.ssml(true);
 
+        console.log('before support display ');
+        if (supportsDisplay(handlerInput) ) {
+
+          console.log('inside support display if');
+          const myImage1 = new Alexa.ImageHelper()
+            .addImageInstance(DisplayImg1.url)
+            .getImage();
+    
+         
+          const primaryText = new Alexa.RichTextContentHelper()
+            .withPrimaryText('test')
+            .getTextContent();
+    
+         return handlerInput.responseBuilder.addRenderTemplateDirective({
+            type: 'BodyTemplate1',
+            token: 'string',
+            backButton: 'HIDDEN',
+            backgroundImage: myImage1,
+            // image: myImage1,
+            title: "space facts",
+            textContent: primaryText,
+          })
+          // .addAudioPlayerPlayDirective('REPLACE_ALL', audioURLFeed, 'wx', 0,null)
+          // .addAudioPlayerPlayDirective('REPLACE_ALL', audioURLFeed, 'wx', 0,null, getAudioPlayerMetadata('Sample1, Sample2', DisplayImg1.url, DisplayImg1.url))
+          .addAudioPlayerPlayDirective('REPLACE_ALL', audioURLFeed, 'wx', 0,null)
+          .withShouldEndSession(true)
+          .getResponse();
+    
+      }
+
         return handlerInput.responseBuilder
               .speak(speechOutput)
               // .withSimpleCard('Eye on the market', 'Eye on the market')
-              .withStandardCard('Eye on the market', 'Eye on the market', 'https://s3.amazonaws.com/alexa-chase-voice/image/alexa_card_logo_small.png', 'https://s3.amazonaws.com/alexa-chase-voice/image/alexa_card_logo_large.png')
+              // .withStandardCard('Eye on the market', 'Eye on the market', 'https://s3.amazonaws.com/alexa-chase-voice/image/alexa_card_logo_small.png', 'https://s3.amazonaws.com/alexa-chase-voice/image/alexa_card_logo_large.png')
               .addAudioPlayerPlayDirective('REPLACE_ALL', audioURLFeed, 'wx', 0,null)
               .withShouldEndSession(true)
               .getResponse();
@@ -175,6 +207,7 @@ const LaunchRequestHandler = {
 //PodcastIntent
 const PodcastIntentHandler = {
   canHandle(handlerInput) {
+    console.log('PodcastIntentHandler');
     return handlerInput.requestEnvelope.request.type === 'IntentRequest'
     && handlerInput.requestEnvelope.request.intent.name === 'PodcastIntent';
   },
@@ -187,7 +220,7 @@ const PodcastIntentHandler = {
    
     var options = {
       method: 'POST',
-      uri: config.dbServiceBase + config.getAudioUrlOnUserSkillId,
+      uri: config.dbServiceBase + config.dbService.getAudioUrlOnUserSkillId,
       body: dataObj,
       json: true // Automatically stringifies the body to JSON
     };
@@ -225,6 +258,7 @@ const PodcastIntentHandler = {
 //unhandled
 const UnhandledIntentHandler = {
     canHandle(handlerInput) {
+      console.log('UnhandledIntentHandler');
       return handlerInput.requestEnvelope.request.type === 'IntentRequest'
         && handlerInput.requestEnvelope.request.intent.name === 'AMAZON.FallbackIntent';
     },
@@ -312,39 +346,11 @@ const SessionEndedRequestHandler = {
     }
 };
 
-// const WelcomeIntentHandler = {
-//     canHandle(handlerInput) {
-//         console.log('WelcomeIntentHandler');
-//         // console.log(handlerInput.requestEnvelope.request);
-//         return handlerInput.requestEnvelope.request.type === 'IntentRequest'
-//         && handlerInput.requestEnvelope.request.intent.name === 'WelcomeIntentHandler';
-//     },
-//     handle(handlerInput) {
-//         console.log('in WelcomeIntentHandler');
-
-//         //add speech
-//     var speech = new Speech();
-//     speech.audio(lodash.sample(main.welcome.returning))
-
-//     //add reprompt
-//     var repromptSpeech = new Speech();
-//     repromptSpeech.audio(lodash.sample(main.welcome.reprompt));
-
-//     //make it ssml
-//     var speechOutput = speech.ssml(true);
-//     var repromptSpeechOutput = repromptSpeech.ssml(true);
-
-//     return handlerInput.responseBuilder
-//       .speak(speechOutput)
-//       .reprompt(repromptSpeechOutput)
-//       .withShouldEndSession(false)
-//       .getResponse();
-//     }
-// };
 
 const YesIntentHandler = {
     canHandle(handlerInput) {
       try {
+        console.log('in YesIntentHandler');
         return handlerInput.requestEnvelope.request.type === 'IntentRequest'
         && handlerInput.requestEnvelope.request.intent.name === 'AMAZON.YesIntent';
       } catch (error) {
@@ -567,6 +573,7 @@ const NotificationAskIntentHandler = {
 //intents to get the notifications
 const SkillEventHandler = {
   canHandle(handlerInput) {
+    console.log('in SkillEventHandler');
     const request = handlerInput.requestEnvelope.request;
     return (request.type === 'AlexaSkillEvent.SkillEnabled' ||
       request.type === 'AlexaSkillEvent.SkillDisabled' ||
@@ -704,6 +711,7 @@ const NewContentIntentHandler = {
 
 const PauseIntentHandler = {
     canHandle(handlerInput) {
+      console.log('in PauseIntentHandler');
       console.log(JSON.stringify(handlerInput.requestEnvelope));
       return handlerInput.requestEnvelope.request.type === 'IntentRequest'
         && handlerInput.requestEnvelope.request.intent.name === 'AMAZON.PauseIntent';
@@ -753,6 +761,7 @@ const PauseIntentHandler = {
 
 const ResumeIntentHandler = {
     canHandle(handlerInput) {
+      console.log('in ResumeIntentHandler');
      // console.log(handlerInput.requestEnvelope);
       return handlerInput.requestEnvelope.request.type === 'IntentRequest'
         && handlerInput.requestEnvelope.request.intent.name === 'AMAZON.ResumeIntent';
@@ -827,24 +836,29 @@ const AudioPlayerEventHandler = {
       } = handlerInput;
       const audioPlayerEventName = requestEnvelope.request.type.split('.')[1];
     
+      var speech = new Speech();
+      speech.paragraph(exceptions.goodbye.prompt);
+      var speechOutput = speech.ssml();
+
       console.log('AudioPlayerEventHandler 2');
       switch (audioPlayerEventName) {
         case 'PlaybackStarted':
           console.log('AudioPlayerEventHandler 3');
-         
+          responseBuilder.withShouldEndSession(true)
           break;
         case 'PlaybackFinished':
           console.log('AudioPlayerEventHandler 4');
+          responseBuilder.addAudioPlayerStopDirective().withShouldEndSession(true)
        
           break;
         case 'PlaybackStopped':
           console.log('AudioPlayerEventHandler 5');
-         
+          responseBuilder.withShouldEndSession(true)
           break;
         case 'PlaybackNearlyFinished':
           {
             console.log('AudioPlayerEventHandler 6');
-           
+            responseBuilder.withShouldEndSession(true)
             break;
           }
         case 'PlaybackFailed':
@@ -877,7 +891,12 @@ const ErrorHandler = {
 
 //logging request to database
 const RequestLog = {
+  
     process(handlerInput) {
+  
+      try {
+    
+      
       // console.log('THIS.EVENT = ' + JSON.stringify(this.event));
       console.log("REQUEST ENVELOPE MY-NEXT-MOVE : " + JSON.stringify(handlerInput.requestEnvelope));
 
@@ -888,13 +907,17 @@ const RequestLog = {
         attributes.previousIntent = 'LaunchRequest';
         attributes.currentIntent = 'LaunchRequest';
         handlerInput.attributesManager.setSessionAttributes(attributes);
-      } else {
+      } else if(handlerInput.requestEnvelope.request.intent) {
         console.log("in else : " + handlerInput.requestEnvelope.request.intent.name );
         const attributes = handlerInput.attributesManager.getSessionAttributes();
         attributes.previousIntent = attributes.currentIntent;
         attributes.currentIntent = handlerInput.requestEnvelope.request.intent.name;
         handlerInput.attributesManager.setSessionAttributes(attributes);
       }
+
+    } catch (error) {
+        console.log("request log catch : " + error);
+    }
     }
 };
   
@@ -930,6 +953,35 @@ const PlaybackHandler = {
     }
   }
 };
+
+/* HELPER FUNCTIONS */
+
+// returns true if the skill is running on a device with a display (show|spot)
+function supportsDisplay(handlerInput) {
+  var hasDisplay =
+    handlerInput.requestEnvelope.context &&
+    handlerInput.requestEnvelope.context.System &&
+    handlerInput.requestEnvelope.context.System.device &&
+    handlerInput.requestEnvelope.context.System.device.supportedInterfaces &&
+    handlerInput.requestEnvelope.context.System.device.supportedInterfaces.Display
+
+  console.log("Supported Interfaces are" + JSON.stringify(handlerInput.requestEnvelope.context.System.device.supportedInterfaces));
+  return hasDisplay;
+}
+
+const DisplayImg1 = {
+  title: 'Market Insights',
+  url: 'https://s3.amazonaws.com/alexa-chase-voice/image/alexa_card_logo_large.png'
+};
+
+function getAudioPlayerMetadata(title, subtitle, art, backgroundImage) {
+  return {
+    title,
+    subtitle,
+    art: new Alexa.ImageHelper().addImageInstance(art).getImage(),
+    backgroundImage: new Alexa.ImageHelper().addImageInstance(backgroundImage).getImage()
+  };
+}
 
 module.exports = {
     LaunchRequestHandler,
