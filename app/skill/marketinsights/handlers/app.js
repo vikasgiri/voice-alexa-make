@@ -25,7 +25,7 @@ const AboutDrKellyIntentHandler = {
   
     var speechOutput = speech.ssml(true);
     var repromptSpeech = new Speech();
-    repromptSpeech.audio(eastereggs.general.prompt);
+    repromptSpeech.audio(eastereggs.aboutDr.reprompt);
     var repromptSpeechOutput = repromptSpeech.ssml(true);
 
     return handlerInput.responseBuilder
@@ -49,7 +49,7 @@ const QuoteIntentHandler = {
     
     var speechOutput = speech.ssml(true);
     var repromptSpeech = new Speech();
-    repromptSpeech.audio(eastereggs.general.prompt);
+    repromptSpeech.audio(eastereggs.aboutDr.reprompt);
     var repromptSpeechOutput = repromptSpeech.ssml(true);
 
     return handlerInput.responseBuilder
@@ -74,7 +74,7 @@ const WhatIsThisIntentHandler = {
     
     var speechOutput = speech.ssml(true);
     var repromptSpeech = new Speech();
-    repromptSpeech.audio(eastereggs.general.prompt);
+    repromptSpeech.audio(eastereggs.aboutDr.reprompt);
     var repromptSpeechOutput = repromptSpeech.ssml(true);
 
     return handlerInput.responseBuilder
