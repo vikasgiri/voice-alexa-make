@@ -1,4 +1,5 @@
 const Alexa = require('ask-sdk');
+var verifier = require('./app/plugin/alexa-verifier/index');
 
 //helper for marketinsights
 const helper = require('./app/skill/marketinsights/handlers/app');
@@ -14,14 +15,22 @@ var port = process.env.VCAP_APP_PORT || 3000;
 
 const app = express();
 var router = express.Router();
-// accept url encoded
-app.use(bodyParser.urlencoded({
-  extended: true
-}));
 
-app.use(bodyParser.json());
 app.use(router);
 
+router.use(verifier);
+// accept url encoded
+// app.use(bodyParser.urlencoded({
+//   extended: true
+// }));
+
+router.use(bodyParser.json());
+// app.use(router);
+
+router.get('/voice/alexa/keepalive', function(req, res){
+  console.log("keepalive");
+  res.json({"status": "ok"});
+});
 
 
 let helloSkill;
@@ -188,7 +197,7 @@ router.post('/voice/alexa/eyeonthemarket', function(req, res) {
 // Start server
 app.listen(port, function () {
   console.log('************' + NODE_ENV + '******************');
-  // console.log('************' + process.env.VCAP_APP_PORT + '******************');
+  console.log('************' + process.env.VCAP_APP_PORT + '******************');
   console.log("Server started.");
   console.log('*******************************');
 

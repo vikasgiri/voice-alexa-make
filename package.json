@@ -7,6 +7,7 @@
     "applicationId": "amzn1.ask.skill.047a0c51-44a6-423a-9272-a324b6af372c"
   },
   "dependencies": {
+    "alexa-verifier-middleware": "^1.0.2",
     "ask-sdk": "^2.1.0",
     "axios": "^0.18.0",
     "bluebird": "^3.5.3",

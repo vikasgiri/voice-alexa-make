@@ -1,0 +1,93 @@
+{
+    "manifest": {
+        "publishingInformation": {
+            "locales": {
+                "en-US": {
+                    "summary": "Eye on the Market",
+                    "examplePhrases": [
+                        "Alexa, open Eye On the Market",
+                        "Alexa, start Eye On the Market",
+                        "Alexa, play Eye On the Market"
+                    ],
+                    "keywords": [
+                        "JPMorgan",
+                        "J.P.Morgan",
+                        "JPMorganChase",
+                        "J.P.MorganChase",
+                        "JP",
+                        "J.P.",
+                        "Morgan",
+                        "Chase",
+                        "Private",
+                        "Bank",
+                        "Guide",
+                        "Markets",
+                        "Michael",
+                        "Cembalest",
+                        "Finance",
+                        "Markets",
+                        "JPMC"
+                    ],
+                    "name": "Eye On the Market",
+                    "smallIconUri": "https://s3.amazonaws.com/CAPS-SSE/echo_developer/9a21/400f6103a6104dc38ee413fa056bdd3b/APP_ICON?versionId=YG2X9Nk00VfaQj_wx5oaRLydjl.WISAN&AWSAccessKeyId=AKIAJFEYRBGIHK2BBYKA&Expires=1540488363&Signature=85zP0RM%2BI5Wd%2B9rq3fKmYpPNvEI%3D",
+                    "description": "Keeping on top of market conditions and everything that influences it can be overwhelming. But this is where Chairman of Market and Investment Strategy for J.P. Morgan, Michael Cembalest thrives. In his podcast, Eye On The Market, Michael invites you to join him as he explores a wide variety of investment topics, including the economy, policy and markets.",
+                    "largeIconUri": "https://s3.amazonaws.com/CAPS-SSE/echo_developer/cf3d/56b1b269c2284e0e8bb771675ec4f232/APP_ICON_LARGE?versionId=6em4GxQdqX4eS.0hc9NGz0SP8aw9KKtQ&AWSAccessKeyId=AKIAJFEYRBGIHK2BBYKA&Expires=1540488363&Signature=XYoyEeUtegKWcIZEaMvBuuE40k0%3D"
+                }
+            },
+            "isAvailableWorldwide": true,
+            "testingInstructions": "Just say \"Alexa, open test development\" and the rest is guided. Can say \"Yes, No\" to subscribe (not currently implemented fully) and \"Podcast\" to just play the latest audio clip",
+            "category": "BUSINESS_AND_FINANCE",
+            "distributionCountries": []
+        },
+        "apis": {
+            "custom": {
+                "endpoint": {
+                    "uri": "arn:aws:lambda:us-east-1:214554526846:function:eyeonthemarket-alexa"
+                },
+                "interfaces": [
+                    {
+                        "type": "AUDIO_PLAYER"
+                    }
+                ]
+            }
+        },
+        "manifestVersion": "1.0",
+        "permissions": [
+            {
+                "name": "alexa::devices:all:notifications:write"
+            }
+        ],
+        "privacyAndCompliance": {
+            "allowsPurchases": false,
+            "locales": {
+                "en-US": {
+                    "termsOfUseUrl": "https://am.jpmorgan.com/us/en/asset-management/gim/adv/voice-terms-of-service",
+                    "privacyPolicyUrl": "https://am.jpmorgan.com/us/en/asset-management/gim/adv/voice-privacy-policy"
+                }
+            },
+            "isExportCompliant": true,
+            "containsAds": false,
+            "isChildDirected": false,
+            "usesPersonalInfo": false
+        },
+        "events": {
+            "endpoint": {
+                "uri": "arn:aws:lambda:us-east-1:214554526846:function:eyeonthemarket-alexa"
+            },
+            "subscriptions": [
+                {
+                    "eventName": "SKILL_PERMISSION_ACCEPTED"
+                },
+                {
+                    "eventName": "SKILL_PERMISSION_CHANGED"
+                },
+                {
+                    "eventName": "SKILL_ENABLED"
+                },
+                {
+                    "eventName": "SKILL_DISABLED"
+                }
+            ]
+        }
+    }
+}
