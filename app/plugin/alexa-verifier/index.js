@@ -1,66 +1,128 @@
-var verifier = require('alexa-verifier')
+'use strict'
 
-// the alexa API calls specify an HTTPS certificate that must be validated.
-// the validation uses the request's raw POST body which isn't available from
-// the body parser module. so we look for any requests that include a
-// signaturecertchainurl HTTP request header, parse out the entire body as a
-// text string, and set a flag on the request object so other body parser
-// middlewares don't try to parse the body again
-module.exports = function alexaVerifierMiddleware(req, res, next) {
-  console.log("In alexaVerifierMiddleware ");
+var crypto          = require('crypto')
+var fetchCert       = require('./fetch-cert')
+var url             = require('url')
+var validateCert    = require('./validate-cert')
+var validateCertUri = require('./validate-cert-uri')
+var validator       = require('validator')
 
-  console.log("req.headers.signaturecertchainurl : " + req.headers.signaturecertchainurl);
-  console.log("req.headers.signature : " + req.headers.signature);
-  console.log("req.rawBody : " + req.rawBody);
-  console.log("req._body : " + req._body);
 
-  if (req._body) {
-    var er = 'The raw request body has already been parsed.'
-    return res.status(400).json({ status: 'failure', reason: er })
-  }
+// constants
+var TIMESTAMP_TOLERANCE = 150
+var SIGNATURE_FORMAT = 'base64'
 
-  // TODO: if _rawBody is set and a string, don't obliterate it here!
+console.log("Alexa-Verifier : 1");
+function getCert (cert_url, callback) {
 
-  // mark the request body as already having been parsed so it's ignored by
-  // other body parser middlewares
-  req._body = true
-  req.rawBody = ''
-  req.on('data', function(data) {
-    console.log('0000000000000000000000000');
-    console.log("req.rawBody ::*******************:: " + req.rawBody);
-    console.log("data ::*******************:: " + data);
-    return req.rawBody += data
+  console.log("Alexa-Verifier : getCert : 1");
+
+  var options = { url: url.parse(cert_url) }
+  var result = validateCertUri(options.url)
+  if (result !== true)
+    return process.nextTick(callback, result)
+
+  fetchCert(options, function (er, pem_cert) {
+
+    console.log("Alexa-Verifier : fetchCert : 1");
+
+    if (er)
+      return callback(er)
+
+    er = validateCert(pem_cert)
+    if (er)
+      return callback(er)
+
+    callback(er, pem_cert)
   })
+}
 
-  req.on('end', function() {
-    var certUrl, er, error, signature
+console.log("Alexa-Verifier : 2");
 
-    console.log('1111111111111111111');
-    try {
-      console.log('222222222222222222222');
-      req.body = JSON.parse(req.rawBody)
-    } catch (error) {
-      console.log('3333333333333333333333');
-      er = error
-      req.body = {}
-    }
+// returns true if the signature for the request body is valid, false otherwise
+function isValidSignature (pem_cert, signature, requestBody) {
 
-    console.log('4444444444444444444444444444');
-    certUrl = req.headers.signaturecertchainurl
-    signature = req.headers.signature
+  console.log("Alexa-Verifier : isValidSignature : 1");
+  
+  var verifier = crypto.createVerify('RSA-SHA1')
+  verifier.update(requestBody, 'utf8')
+  return verifier.verify(pem_cert, signature, SIGNATURE_FORMAT)
+}
 
-    verifier(certUrl, signature, req.rawBody, function(er) {
-      console.log('5555555555555555555555555');
 
-      console.log("req.rawBody ::::::: " + req.rawBody);
-      if (er) {
-        console.log('666666666666666666666666');
-        res.status(400).json({ status: 'failure', reason: er })
-      } else {
+// determine if a timestamp is valid for a given request with a tolerance of
+// TIMESTAMP_TOLERANCE seconds
+// returns undefined if valid, or an error string otherwise
+function validateTimestamp (requestBody) {
 
-        console.log("VERIFICATION DONE IN ELSE PART");
-        next()
-      }
-    })
+  console.log("Alexa-Verifier : validateTimestamp : 1");
+
+  var d, e, error, now, oldestTime, request_json
+  try {
+    request_json = JSON.parse(requestBody)
+  } catch (error) {
+    e = error
+    return 'request body invalid json'
+  }
+  if (!(request_json.request && request_json.request.timestamp))
+    return 'Timestamp field not present in request'
+
+  d = new Date(request_json.request.timestamp)
+  now = new Date()
+  oldestTime = now.getTime() - (TIMESTAMP_TOLERANCE * 1000)
+  if (d.getTime() < oldestTime)
+    return 'Request is from more than ' + TIMESTAMP_TOLERANCE + ' seconds ago'
+}
+
+
+function verifier (cert_url, signature, requestBody, callback) {
+
+  console.log("Alexa-Verifier : verifier : 1");
+
+  var er
+
+  if(!cert_url)
+    return process.nextTick(callback, 'missing certificate url')
+
+  if (!signature)
+    return process.nextTick(callback, 'missing signature')
+
+  if (!requestBody)
+    return process.nextTick(callback, 'missing request (certificate) body')
+
+  if (!validator.isBase64(signature))
+    return process.nextTick(callback, 'invalid signature (not base64 encoded)')
+
+  er = validateTimestamp(requestBody)
+
+  if (er)
+    return process.nextTick(callback, er)
+
+  getCert(cert_url, function (er, pem_cert) {
+    if (er)
+      return callback(er)
+
+    if (!isValidSignature(pem_cert, signature, requestBody))
+      return callback('invalid signature')
+
+    callback()
+  })
+}
+
+
+// certificate validator for amazon echo
+module.exports = function (cert_url, signature, requestBody, cb) {
+
+  console.log("Alexa-Verifier : exports : 1");
+
+  if(cb)
+    return verifier(cert_url, signature, requestBody, cb)
+
+  return new Promise(function( resolve, reject) {
+     verifier(cert_url, signature, requestBody, function(er) {
+        if(er)
+          return reject(er)
+        resolve()
+     })
   })
 }

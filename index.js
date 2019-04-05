@@ -1,5 +1,5 @@
 const Alexa = require('ask-sdk');
-var verifier = require('./app/plugin/alexa-verifier/index');
+var verifier = require('./app/plugin/alexa-verifier-middleware/index');
 
 //helper for marketinsights
 const helper = require('./app/skill/marketinsights/handlers/app');
@@ -15,6 +15,26 @@ var port = process.env.VCAP_APP_PORT || 3000;
 
 const app = express();
 var router = express.Router();
+
+
+
+app.use(function(req, res, next) {
+  req.rawBody = '';
+  req.setEncoding('utf8');
+
+  console.log("middleware app use");
+
+  req.on('data', function(chunk) { 
+    req.rawBody += chunk;
+
+    console.log("middleware app use : req.on data : " + req.rawBody);
+
+  });
+
+  req.on('end', function() {
+    next();
+  });
+});
 
 app.use(router);
 
