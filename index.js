@@ -18,23 +18,23 @@ var router = express.Router();
 
 
 
-app.use(function(req, res, next) {
-  req.rawBody = '';
-  req.setEncoding('utf8');
+// app.use(function(req, res, next) {
+//   req.rawBody = '';
+//   req.setEncoding('utf8');
 
-  console.log("middleware app use");
+//   console.log("middleware app use");
 
-  req.on('data', function(chunk) { 
-    req.rawBody += chunk;
+//   req.on('data', function(chunk) { 
+//     req.rawBody += chunk;
 
-    console.log("middleware app use : req.on data : " + req.rawBody);
+//     console.log("middleware app use : req.on data : " + req.rawBody);
 
-  });
+//   });
 
-  req.on('end', function() {
-    next();
-  });
-});
+//   req.on('end', function() {
+//     next();
+//   });
+// });
 
 app.use(router);
 
@@ -190,7 +190,8 @@ router.post('/voice/alexa/eyeonthemarket', function(req, res) {
           eyeOnTheMarketHelper.NoIntentHandler,
           eyeOnTheMarketHelper.YesIntentHandler,
           eyeOnTheMarketHelper.NotificationAskIntentHandler,
-          eyeOnTheMarketHelper.UnhandledIntentHandler
+          eyeOnTheMarketHelper.UnhandledIntentHandler,
+          eyeOnTheMarketHelper.ProactiveEventHandler
         ).addErrorHandlers(eyeOnTheMarketHelper.ErrorHandler)
         .addRequestInterceptors(eyeOnTheMarketHelper.RequestLog)
         .addResponseInterceptors(eyeOnTheMarketHelper.ResponseLog)

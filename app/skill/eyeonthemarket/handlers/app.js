@@ -506,7 +506,7 @@ const NotificationAskIntentHandler = {
   const NoIntentHandler = {
     canHandle(handlerInput) {
       console.log('in no intent');
-      console.log(handlerInput.requestEnvelope.request);
+      // console.log(handlerInput.requestEnvelope.request);
       return handlerInput.requestEnvelope.request.type === 'IntentRequest'
         && handlerInput.requestEnvelope.request.intent.name === 'AMAZON.NoIntent';
     },
@@ -961,6 +961,25 @@ const PlaybackHandler = {
   }
 };
 
+const ProactiveEventHandler = {
+  canHandle(handlerInput) {
+    console.log(handlerInput);
+    return handlerInput.requestEnvelope.request.type === 'AlexaSkillEvent.ProactiveSubscriptionChanged'
+  },
+  handle(handlerInput) {
+    console.log('-------------------------------------------------------------------------');
+    console.log(handlerInput.requestEnvelope);
+    console.log('-------------------------------------------------------------------------');
+    console.log(handlerInput.requestEnvelope.request);
+    console.log('-------------------------------------------------------------------------');
+    console.log(handlerInput.requestEnvelope.request.body);
+    console.log('-------------------------------------------------------------------------');
+    console.log("AWS User " + handlerInput.requestEnvelope.context.System.user.userId);
+    console.log("API Endpoint " + handlerInput.requestEnvelope.context.System.apiEndpoint);
+    console.log("Permissions" + JSON.stringify(handlerInput.requestEnvelope.request.body.subscriptions));
+  },
+}
+
 /* HELPER FUNCTIONS */
 
 // returns true if the skill is running on a device with a display (show|spot)
@@ -1009,6 +1028,7 @@ module.exports = {
     NotificationAskIntentHandler,
     PlaybackHandler,
     ErrorHandler,
+    ProactiveEventHandler,
     RequestLog,
     ResponseLog
 }
