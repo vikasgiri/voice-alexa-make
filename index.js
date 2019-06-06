@@ -1,5 +1,5 @@
 const Alexa = require('ask-sdk');
-var verifier = require('./app/plugin/alexa-verifier-middleware/index');
+// var verifier = require('./app/plugin/alexa-verifier-middleware/index');
 
 //helper for marketinsights
 const helper = require('./app/skill/marketinsights/handlers/app');
@@ -7,6 +7,8 @@ const helper = require('./app/skill/marketinsights/handlers/app');
 const myNextMoveMainHelper = require('./app/skill/mynextmove/handlers/app');
 //helper for eyeonthemarket
 const eyeOnTheMarketHelper = require('./app/skill/eyeonthemarket/handlers/app');
+
+const testsampleHelper = require('./app/skill/testsample/handlers/app');
 // var Sequelize = require('sequelize');
 const express = require('express');
 var bodyParser = require('body-parser');
@@ -17,35 +19,9 @@ const app = express();
 var router = express.Router();
 
 
-
-// app.use(function(req, res, next) {
-//   req.rawBody = '';
-//   req.setEncoding('utf8');
-
-//   console.log("middleware app use");
-
-//   req.on('data', function(chunk) { 
-//     req.rawBody += chunk;
-
-//     console.log("middleware app use : req.on data : " + req.rawBody);
-
-//   });
-
-//   req.on('end', function() {
-//     next();
-//   });
-// });
-
 app.use(router);
 
-router.use(verifier);
-// accept url encoded
-// app.use(bodyParser.urlencoded({
-//   extended: true
-// }));
-
 router.use(bodyParser.json());
-// app.use(router);
 
 router.get('/voice/alexa/keepalive', function(req, res){
   console.log("keepalive");
@@ -56,6 +32,7 @@ router.get('/voice/alexa/keepalive', function(req, res){
 let helloSkill;
 let myNextMove;
 let eyeonthemarket;
+let testsample;
 router.post('/voice/alexa/marketinsights', function(req, res) {
   // console.log("in marketinsights");
   // console.log("---------------guidetomarket-------------------------");
@@ -214,6 +191,37 @@ router.post('/voice/alexa/eyeonthemarket', function(req, res) {
     console.log("Index file : eyeonthemarket error : " + error)
   }
 });
+
+
+router.post('/voice/alexa/testsample', function(req, res) {
+  try {
+    console.log("---------------testsample-------------------------");
+    if (!testsample) {
+
+      //change the request and response loggers to common
+      testsample = Alexa.SkillBuilders.custom()
+        .addRequestHandlers(
+          testsampleHelper.LaunchRequestHandler,
+          testsampleHelper.HelloWorldIntentHandler
+        ).addErrorHandlers(eyeOnTheMarketHelper.ErrorHandler)
+        .addRequestInterceptors(eyeOnTheMarketHelper.RequestLog)
+        .addResponseInterceptors(eyeOnTheMarketHelper.ResponseLog)
+        .create();
+    }
+          // .withSkillId('amzn1.ask.skill.d928634f-f6c9-40c9-9b8c-2e14ccd8f5e2')
+      testsample.invoke(req.body)
+      .then(function(responseBody) {
+        res.json(responseBody);
+      })
+      .catch(function(error) {
+        console.log(error);
+        res.status(500).send('Error during the request');
+      });
+  } catch (error) {
+    console.log("Index file : eyeonthemarket error : " + error)
+  }
+});
+
 
 // Start server
 app.listen(port, function () {

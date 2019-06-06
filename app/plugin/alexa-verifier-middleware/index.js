@@ -14,29 +14,29 @@ module.exports = function alexaVerifierMiddleware(req, res, next) {
   console.log("Alexa-verifier-middleware : req.rawBody : " + req.rawBody);
   console.log("Alexa-verifier-middleware : req._body : " + req._body);
 
-  var cache = [];
-  var convertedJson = JSON.stringify(req, function(key, value) {
-      if (typeof value === 'object' && value !== null) {
-          if (cache.indexOf(value) !== -1) {
-              // Duplicate reference found
-              try {
-                  // If this value does not reference a parent it can be deduped
-                  return JSON.parse(JSON.stringify(value));
-              } catch (error) {
-                  // discard key if value cannot be deduped
-                  return;
-              }
-          }
-          // Store value in our collection
-          cache.push(value);
-      }
-      return value;
-  });
-  cache = null;
+  // var cache = [];
+  // var convertedJson = JSON.stringify(req, function(key, value) {
+  //     if (typeof value === 'object' && value !== null) {
+  //         if (cache.indexOf(value) !== -1) {
+  //             // Duplicate reference found
+  //             try {
+  //                 // If this value does not reference a parent it can be deduped
+  //                 return JSON.parse(JSON.stringify(value));
+  //             } catch (error) {
+  //                 // discard key if value cannot be deduped
+  //                 return;
+  //             }
+  //         }
+  //         // Store value in our collection
+  //         cache.push(value);
+  //     }
+  //     return value;
+  // });
+  // cache = null;
 
-  console.log('----------------------------------------------------------------------------------------------');
-  console.log("Alexa-verifier-middleware : req : " + convertedJson);
-  console.log('----------------------------------------------------------------------------------------------');
+  // console.log('----------------------------------------------------------------------------------------------');
+  // console.log("Alexa-verifier-middleware : req : " + convertedJson);
+  // console.log('----------------------------------------------------------------------------------------------');
 
   if (req._body) {
     var er = 'The raw request body has already been parsed.'
