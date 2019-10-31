@@ -13,7 +13,7 @@
     "lodash": "^4.17.11",
     "mysql2": "^1.6.1",
     "path": "^0.12.7",
-    "sequelize": "^4.41.0",
+    "sequelize": "^5.15.1",
     "ssml-builder": "^0.4.3"
   }
 }
