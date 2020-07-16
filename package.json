@@ -10,7 +10,7 @@
     "ask-sdk": "^2.1.0",
     "express": "^4.16.4",
     "fs": "0.0.1-security",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.19",
     "mysql2": "^1.6.1",
     "path": "^0.12.7",
     "sequelize": "^4.41.0",
